@@ -10,10 +10,10 @@ section .data
 
 
 section .bss   
-    cantidadOcasVivas   resb 1; tamaño a a discusiòn
-    posicionesOcas      times 17 resb 1;[[0,1],[1,2],...], [X,Y] inicialmente con 17
-    posicionZorro        
-    posicionNueva      
+    cantidadOcasVivas   resb 1;            tamaño a a discusiòn
+    posicionesOcas      times 17 resb 2;   [[0,1],[1,2],...], [X,Y] ->17 pares de coordenadas
+    posicionZorro       resb 2;            [4,5]->posicion inicial del zorro antes del movimiento 
+    posicionNueva       resb 2;            [4,3]->nueva posicion (decodificada a partir de la entrada "D3")
 
 
 section .text
