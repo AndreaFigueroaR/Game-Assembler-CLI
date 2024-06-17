@@ -9,7 +9,7 @@ section     .data
 ;*****************************************************************************
 ;NUESTRAS MACROS CON LLAMADAS A RUTINAS EXTERNAS
 ;*****************************************************************************
-
+;requerimiento 2
 %macro callRecoverGame 5
     ;Pre:recive direcciones de memoria para inicializar: [DirPosicionZorro, DirPosicionesOcas, dirCantOcasVivas, dirRotacion] en los registros por convenciòn
     ;Post: pregunta si se quiere recuperar el juego:
@@ -28,6 +28,7 @@ section     .data
     add     rsp,8
 %endmacro
 
+;requirimiento 3
 %macro callCustomizeGame 3
     ;Pre: Recibe las direcciones de memoria para modificar: [DirSimboloZorro, DirSimboloOcas, DirRotacionTablero]
     ;Post: pregunta si se quiere customizar cada uno de los elementos que contienen las direcciones recibidas
