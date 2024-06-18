@@ -3,10 +3,10 @@
 global main
 
 section .data
-    simboloZorro        db "X"  ;Se puede cambiar a otro simbolo reemplanzando el contenido por el simbolo ASCCI
-    simboloOcas         db "O"  ;idem anterior
-
+    
 section .bss   
+    simboloZorro        db "X"             ;Se puede cambiar a otro simbolo reemplanzando el contenido por el simbolo ASCCI
+    simboloOcas         db "O"             ;idem anterior
     cantidadOcasVivas   resb 1;            tamaño a a discusiòn
     posicionesOcas      times 17 resq 2;   [[0,1],[1,2],...], [X,Y] ->17 pares de coordenadas
     posicionZorro       resq 2;            [5,4]->posicion del zorro 
