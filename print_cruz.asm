@@ -1,35 +1,35 @@
 global imprimirTablero
 extern printf
 extern puts
-%macro changeSimbTo 1
+%macro cambiarSimbA 1
     mov     r8,%1
-    mov     [simbPointer],r8
+    mov     [punteroSimb],r8
 %endmacro
-%macro even? 1
-    ;recibe ròtulo que guarda el num
-    ;carga num
+%macro esPar? 1
+    ;recibe rótulo que guarda el número
+    ;carga el número
     mov     rax,[%1]
-    ;verifica menos significativo
+    ;verifica el menos significativo
     and     rax,1
-    mov     [isEven],rax
+    mov     [esPar],rax
 %endmacro
-%macro showSimb 0
-    mov     rdi,form
-    mov     rsi,[simbPointer]
+%macro mostrarSimb 0
+    mov     rdi,formato
+    mov     rsi,[punteroSimb]
     sub     rsp,8
     call    printf
     add     rsp,8 
 %endmacro
 
-%macro mPuts 0
+%macro ponerPuts 0
     sub     rsp,8
     call    puts
     add     rsp,8 
 %endmacro
-%macro showUbiFilAndUpdate 0
+%macro mostrarUbiFilYActualizar 0
     ;PRE: ubiFil debe ser la fila actual
     ;POST: muestra ubiFil y lo incrementa
-    mov     rdi,formatUbiFil
+    mov     rdi,formatoUbiFil
     mov     rsi,[ubiFil]
     sub     rsp,8
     call    printf
@@ -38,116 +38,116 @@ extern puts
 %endmacro
 
 section     .data
-    form            db  "%s",0
+    formato         db  "%s",0
     despl           dq  0
-    wall            db  "#",0
+    pared           db  "#",0
     salto           db  10,0
-    space           db  " ",0
+    espacio         db  " ",0
     zorro           db  "X",0
     fil             dq  1
     col             dq  1
     ubiCol          db  "   A B C D E F G",0
-    formatUbiFil    db  "%hhi ",0
+    formatoUbiFil   db  "%hhi ",0
     ubiFil          dq  1
 
 section     .bss
-    simbPointer     resb    4   ;4 bytes para un puntero
-    isEven          resq    1   ;0 si es par 1 si es impar    
+    punteroSimb     resb    4   ;4 bytes para un puntero
+    esPar           resq    1   ;0 si es par, 1 si es impar    
 
 section     .text
 imprimirTablero:
-_showUbiFil:
+_mostrarUbiCol:
     mov             rdi,ubiCol
-    mPuts
+    ponerPuts
     ;espacio adicional para mostrar ubiFil al lateral
-    changeSimbTo space
-    showSimb
-    showSimb                ;doble espacio para separar tablero de ubiFil
-_showNextSimb:
-    cmp     qword[despl],225    ;tam real 15
+    cambiarSimbA espacio
+    mostrarSimb
+    mostrarSimb                ;doble espacio para separar el tablero de ubiFil
+_mostrarSimbSiguiente:
+    cmp     qword[despl],225    ;tamaño real 15
     je      fin
     sub     rsp,8
-    call    actIndices
+    call    actualizarIndices
     add     rsp,8
 
-    changeSimbTo space
-    even?   fil
-    ;si es fil impar=>cambia a pared y quizàs a espacio
-    cmp     qword[isEven],0
-    jne     _changeWall
-    even?   col
-    je      _printSimb
+    cambiarSimbA espacio
+    esPar?  fil
+    ;si es fila impar=>cambia a pared y quizás a espacio
+    cmp     qword[esPar],0
+    jne     _cambiarAPared
+    esPar?  col
+    je      _imprimirSimb
 
-    _changeWall:
-    changeSimbTo    wall
+    _cambiarAPared:
+    cambiarSimbA    pared
     sub     rsp,8
-    call    convertToCross
+    call    convertirACruz
     add     rsp,8
 
-    _printSimb:
-    showSimb
+    _imprimirSimb:
+    mostrarSimb
 
     inc     qword[col]
     inc     qword[despl]
-    jmp     _showNextSimb
+    jmp     _mostrarSimbSiguiente
 fin:
-    changeSimbTo    salto
-    showSimb
+    cambiarSimbA    salto
+    mostrarSimb
 ret
 ;_________________RUTINAS INTERNAS_________________________
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-convertToCross:
+convertirACruz:
     cmp     qword[fil],11
-    jg      topOrBottom
-    ;es topside?
+    jg      arribaOAbajo
+    ;es lado superior?
     cmp     qword[fil],5
-    jl      topOrBottom
-    itsAccurate:
+    jl      arribaOAbajo
+    esPreciso:
     ret
 
-    topOrBottom:;fil>11 or fil<5
+    arribaOAbajo:;fil>11 o fil<5
     cmp     qword[col],11
-    jg      updatingToSpace
+    jg      actualizarAEspacio
     cmp     qword[col],5
-    jl      updatingToSpace
-    jmp     itsAccurate
+    jl      actualizarAEspacio
+    jmp     esPreciso
 
-    updatingToSpace:
-    changeSimbTo    space
-    jmp             itsAccurate   
+    actualizarAEspacio:
+    cambiarSimbA    espacio
+    jmp             esPreciso   
 
-actIndices:
-    cmp     qword[col],16;cmp si reinicia col (tam real 15)
-    jne     actFil
+actualizarIndices:
+    cmp     qword[col],16;cmp si reinicia col (tamaño real 15)
+    jne     actualizarFil
     mov     qword[col],1
-    actFil:
+    actualizarFil:
     imul            r8,qword[fil],15
     cmp             r8,[despl]
     jne             finIndices
     inc             qword[fil]
-    changeSimbTo    salto
-    showSimb
+    cambiarSimbA    salto
+    mostrarSimb
     sub     rsp,8
-    call    printUbiFil
+    call    imprimirUbiFil
     add     rsp,8
 
     finIndices:
     ret
 
-printUbiFil:
+imprimirUbiFil:
     cmp     qword[col],1
-    jne     getBackUbiFil
-    even?   fil
-    cmp     qword[isEven],0        
-    jne     printSpace      ;si es impar muestra espacio
-    showUbiFilAndUpdate     ;si es par muestra ubiFil y actualiza
-    jmp     getBackUbiFil
+    jne     regresarUbiFil
+    esPar?   fil
+    cmp     qword[esPar],0        
+    jne     imprimirEspacio      ;si es impar muestra espacio
+    mostrarUbiFilYActualizar     ;si es par muestra ubiFil y actualiza
+    jmp     regresarUbiFil
 
-    printSpace:
-    changeSimbTo    space
-    showSimb
-    showSimb                ;doble espacio para separar tablero de ubiFil
+    imprimirEspacio:
+    cambiarSimbA    espacio
+    mostrarSimb
+    mostrarSimb                ;doble espacio para separar el tablero de ubiFil
     
-    getBackUbiFil:
+    regresarUbiFil:
     ret
