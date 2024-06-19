@@ -33,7 +33,6 @@ continuarJugando:
 
 ;   FIN DEL JUEGO
     imprimirMsgFinJuego     estadoPartida ; imprimir quien gano y asi
-    preguntarGuardarPartida cantidadOcasVivas, posicionesOcas, posicionZorro, comando, jugadorActual, rotacionTablero, estadoPartida, estadisticas, simboloZorro, simboloOcas
     mostrarEstadisticas     estadisticas
 
     ret
