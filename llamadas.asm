@@ -9,27 +9,25 @@ section     .data
 ;*****************************************************************************
 ;NUESTRAS MACROS CON LLAMADAS A RUTINAS EXTERNAS
 ;*****************************************************************************
-;requerimiento 2
-%macro callRecoverGame 5
-    ;Pre:recive direcciones de memoria para inicializar: [DirPosicionZorro, DirPosicionesOcas, dirCantOcasVivas, dirRotacion] en los registros por convenciòn
-    ;Post: pregunta si se quiere recuperar el juego:
-    ;      si no se quiere recuperar el juego se inicializan con valores estandar las mismas direcciones de memoria
-    ;      si sì se quiere recuperar: 
-    ;        si hay un archivo con la configuraciòn de nuestro juego llamado EstadoJuego.txt o csv cualquiera, se asignan a las direcciones de memoria los valores leidos del archivo
-    ;        si no se pudo encontrar el supuesto archivo se muestra mensaje de error y se deja como una partida nueva
 
-    mov RDI, %1
-    mov RSI, %2
-    mov RDX, %3
-    mov RCX, %4
-
+;Pre: recibe las direcciones de memoria de las variables del juego para inicializar en el siguiente orden: dirInfoOcas, dirInfoZorro, 
+;     dirJugadorActual, dirRotacionTablero, dirEstadoPartida, dirEstadisticas
+;Pos: recupera la ultima partida guardada si el usuario quiere y ademas esta existe. Sino crea una nueva inicializando las variables
+;     con sus valores estandar.
+%macro recuperacionPartida 6
     sub     rsp,8
-    call    ;;;;;;;
-    add     rsp,8
+    call    preguntarRecuperarPartida ; deja en orden las inicializaciones en los registros: r8, r9, r10, r11, r12, r13
+
+    mov     %1,r8
+    mov     %2,r9
+    mov     %3,r10
+    mov     %4,r11
+    mov     %5,r12
+    mov     %6,r13
 %endmacro
 
 ;requirimiento 3
-%macro callCustomizeGame 3
+%macro personalizarPartida 3
     ;Pre: Recibe las direcciones de memoria para modificar: [DirSimboloZorro, DirSimboloOcas, DirRotacionTablero]
     ;Post: pregunta si se quiere customizar cada uno de los elementos que contienen las direcciones recibidas
     ;      si el usuario decide cambiar alguno se cambia, si no se deja como està
@@ -48,21 +46,33 @@ section     .data
 ;Auxiliares
 ;*****************************************************************************
 
-%macro myPuts 0
+%macro mPuts 0
     sub     rsp,8
-    call    puts;
+    call    puts
+    add     rsp,8 
+%endmacro
+
+%macro mGets 0
+    sub     rsp,8
+    call    gets
     add     rsp,8
 %endmacro
 
-%macro myPrintf 0
+%macro mAtoi 0
+    sub     rsp,8
+    call    atoi
+    add     rsp,8
+%endmacro
+
+%macro mPrintf 0
     sub     rsp,8
     call    printf
     add     rsp,8
 %endmacro
-%macro limpieza 0
+
+%macro mClear 0
     mov     rdi,cmd_clear
     sub     rsp,8
     call    system
     add     rsp,8
 %endmacro
-
