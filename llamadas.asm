@@ -28,7 +28,7 @@ section     .data
 
 ;requirimiento 3
 %macro personalizarPartida 3
-    ;Pre: Recibe las direcciones de memoria para modificar: [DirSimboloZorro, DirSimboloOcas, DirRotacionTablero]
+    ;Pre: Recibe las direcciones de memoria para modificar: infoOcas, infoZorro, rotacionTablero
     ;Post: pregunta si se quiere customizar cada uno de los elementos que contienen las direcciones recibidas
     ;      si el usuario decide cambiar alguno se cambia, si no se deja como està
 
