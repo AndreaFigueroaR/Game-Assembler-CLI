@@ -1,4 +1,4 @@
-global main
+global imprimirTablero
 extern printf
 extern puts
 %macro changeSimbTo 1
@@ -55,7 +55,7 @@ section     .bss
     isEven          resq    1   ;0 si es par 1 si es impar    
 
 section     .text
-main:
+imprimirTablero:
 _showUbiFil:
     mov             rdi,ubiCol
     mPuts
