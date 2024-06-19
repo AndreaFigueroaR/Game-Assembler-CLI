@@ -10,8 +10,8 @@ section     .data
 ;NUESTRAS MACROS CON LLAMADAS A RUTINAS EXTERNAS
 ;*****************************************************************************
 
-;Pre: recibe las direcciones de memoria de las variables del juego para inicializar en el siguiente orden: dirInfoOcas, dirInfoZorro, 
-;     dirJugadorActual, dirRotacionTablero, dirEstadoPartida, dirEstadisticas
+;Pre: recibe las direcciones de memoria de las variables del juego para inicializar en el siguiente orden: infoOcas, infoZorro, 
+;     jugadorActual, rotacionTablero, estadoPartida, estadisticas
 ;Pos: recupera la ultima partida guardada si el usuario quiere y ademas esta existe. Sino crea una nueva inicializando las variables
 ;     con sus valores estandar.
 %macro recuperacionPartida 6
