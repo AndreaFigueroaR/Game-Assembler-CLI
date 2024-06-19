@@ -40,7 +40,18 @@ section     .data
     call    ;;;;;
     add     rsp,8
 %endmacro
+%macro imprimirTabla 3
+    ;Pre: Recibe las direcciones de memoria de la informaciòn a imprimir en el tablero: infoOcas, infoZorro, rotacionTablero
+    ;Post: Imprime el tablero de acuerdo a la rotacion indicada con la respectiva informaciòn de cada personaje
 
+    mov     RDI,%1      ;dirInfoOcas
+    mov     RSI,%2      ;dirInfoZorro
+    mov     RDX,[%3]    ;rotacion
+    
+    sub     rsp,8
+    call    ;imprimirJuego
+    add     rsp,8
+%endmacro
 
 ;*****************************************************************************
 ;Auxiliares
