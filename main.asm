@@ -5,34 +5,31 @@ global main
 section .data
     
 section .bss   
-    simboloZorro        db 1               ;Se puede cambiar a otro simbolo reemplanzando el contenido por el simbolo ASCCI
-    simboloOcas         db 1               ;idem anterior
-    cantidadOcasVivas   resb 1;            tamaño a a discusiòn
-    posicionesOcas      times 17 resq 2;   [[0,1],[1,2],...], [X,Y] ->17 pares de coordenadas
-    posicionZorro       resq 2;            [5,4]->posicion del zorro 
-    comando             resq 2;
-    jugadorActual       db 1               ;0->turno del zorro, 1->turno de las ocas
-    rotacionTablero     db 1               ; 0->0º, 1->90º, 2->180º, 3-> 250º en sentido horario
-    estadoPartida       db 1               ;0->partidaActiva, 1-> partida terminada: ganò el Zorro, 2-> partida terminada: ganaron las ocas, 3->partida interrumpida
-    estadisticas        db 8               ;es como un vector donde cada posicion corresponde a la cantidad de movimientos en cada direccion. [arriba, abajo, izq, der, arriba-izq, arriba-der, abajo-izq, abajo-der]
+    dirInfoOcas             times 18 resq 2      ; dirInfoOcas es la direccion a un vector de la forma: [cantidadOcasVivas, simboloOcas, posFilOca1, posColOca1, ..., posFilOcaN, posColOcaN], donde 0 <= N <= 17
+    dirInfoZorro            times 3 resq 1       ; dirInfoZorro es la direccion a un vector de la forma: [simboloZorro, posFilZorro, posColZorro]
+    dirComando              resq 1               ; Dirección al comando ingresado por el usuario
+    dirJugadorActual        resq 1               ; Dir al valor del jugador actual. 0 -> turno del zorro, 1 -> turno de las ocas.
+    dirRotacionTablero      resq 1               ; Dir al valor de rotacion de la tabla en sentido antihorario. 0 -> 0º, 1 -> 90º, 2 -> 180º, 3 -> 250º
+    dirEstadoPartida        resq 1               ; Dir al valor del estado de la partida. 0 -> partidaActiva, 1 -> partida terminada: ganó el Zorro, 2 -> partida terminada: ganaron las ocas, 3 -> partida interrumpida
+    dirEstadisticas         times 8 resb 1       ; Dir al vector donde cada posicion corresponde a la cantidad de movimientos en cada direccion: [arriba, abajo, izq, der, arriba-izq, arriba-der, abajo-izq, abajo-der]
 
 section .text
 main:
-;   INICIALIZACIÓN JUEGO
-    callRecoverGame         posicionZorro,  posicionesOcas, cantidadOcasVivas,  rotacionTablero ; también debería de recuperar y guardar en su propieo archivo con sus variables la información de las estadísticas de la anterior partida, pero eso no importa en este archivo
-    callCustomizeGame       simboloZorro,   simboloOcas,    rotacionTablero
+;   INICIALIZACIÓN DEL JUEGO
+    recuperacionPartida     dirInfoOcas, dirInfoZorro, dirJugadorActual, dirRotacionTablero, dirEstadoPartida, dirEstadisticas
+    personalizarPartida     dirInfoOcas, dirInfoZorro, dirRotacionTablero
 
 continuarJugando:
-    call                    clear ; esto ponerlo con al funcion de c
-    imprimirTabla           cantidadOcasVivas, posicionesOcas, posicionZorro, simboloZorro, simboloOcas, rotacionTablero
-    mGets                   comando
-    realizarJugada          cantidadOcasVivas, posicionesOcas, posicionZorro, comando, jugadorActual, estadisticas
-    resultadoJuego          cantidadOcasVivas, posicionesOcas, posicionZorro, jugadorActual, estadoPartida
-    cmp                     byte[estadoPartida],0
+    mClear
+    imprimirTabla           dirInfoOcas, dirInfoZorro, dirRotacionTablero
+    mGets                   dirComando
+    realizarJugada          dirInfoOcas, dirInfoZorro, dirComando, dirJugadorActual, dirEstadisticas
+    resultadoJuego          dirInfoOcas, dirInfoZorro, dirJugadorActual, dirEstadoPartida
+    cmp                     byte[dirEstadoPartida],0
     je                      continuarJugando
 
 ;   FIN DEL JUEGO
-    imprimirMsgFinJuego     estadoPartida ; imprimir quien gano y asi
-    mostrarEstadisticas     estadisticas
+    imprimirMsgFinJuego     dirEstadoPartida
+    mostrarEstadisticas     dirEstadisticas
 
     ret
