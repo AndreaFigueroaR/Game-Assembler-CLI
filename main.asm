@@ -11,7 +11,7 @@ section .bss
     jugadorActual           resq 1               ; Valor del jugador actual. 0 -> turno del zorro, 1 -> turno de las ocas.
     rotacionTablero         resq 1               ; Valor de rotacion de la tabla en sentido antihorario. 0 -> 0º, 1 -> 90º, 2 -> 180º, 3 -> 250º
     estadoPartida           resq 1               ; Valor del estado de la partida. 0 -> partidaActiva, 1 -> partida terminada: ganó el Zorro, 2 -> partida terminada: ganaron las ocas, 3 -> partida interrumpida
-    estadisticas            times 8 resb 1       ; Vector donde cada posicion corresponde a la cantidad de movimientos en cada direccion: [arriba, abajo, izq, der, arriba-izq, arriba-der, abajo-izq, abajo-der]
+    estadisticas            times 8 resq 1       ; Vector donde cada posicion corresponde a la cantidad de movimientos en cada direccion: [arriba, abajo, izq, der, arriba-izq, arriba-der, abajo-izq, abajo-der]
 
 section .text
 main:
