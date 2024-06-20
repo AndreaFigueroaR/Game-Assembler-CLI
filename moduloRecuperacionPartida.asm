@@ -155,7 +155,13 @@ loopLecturaArchivo:
     mov                 rsi,estadisticasGuardadas
     call                inicializarVector
     mov                 [estadisticasGuardadas],rsi
-    jmp                 finArchivo
+;   Si llegué acá, entonces ya inicialice todas las variables guardadas. Las guardo en los registros.
+    mov                 r8,infoOcasGuardada
+    mov                 r9,infoZorroGuardada
+    mov                 r10,jugadorActualGuardado
+    mov                 r11,rotacionTableroGuardada
+    mov                 r12,estadoPartidaGuardado
+    mov                 r13,estadisticasGuardadas
 continuarLeyendo:
     inc                 byte[lineasLeidasArchivo]
     jmp                 loopLecturaArchivo
