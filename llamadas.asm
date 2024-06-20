@@ -6,6 +6,8 @@ extern fopen
 extern fgets
 extern fclose
 extern recuperacionPartida
+extern procesarComando
+extern strcmp
 
 section     .data
     cmd_clear       db  "clear",0
