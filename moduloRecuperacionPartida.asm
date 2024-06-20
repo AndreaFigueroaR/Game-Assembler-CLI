@@ -41,8 +41,9 @@ section     .data
 section     .bss   
     respuesta                   resb 50             ; Si la respuesta es 1 quiere recuperar la ultima partida guardada. Si no, 0.
     idArchivo                   resq 1
-    contenidoLineaArchivo       resb 100
     lineasLeidasArchivo         resb 1
+    contenidoLineaArchivo       resb 100
+    caracterLineaArchivo        resb 2
 
     infoOcasGuardada            times 18 resq 2
     infoZorroGuardada           times 3 resq 1
@@ -56,14 +57,14 @@ recuperacionPartida:
 ;   Pregunto si se quiere recuperar la última partida guardada.
     mov                 rdi,pregunta
     mPuts           
-    mov                 rdi,respuesta
-    mGets           
 
     mov                 rdi,respuesta
-    mAtoi           
-    mov                 rdi,rax
+    mGets
 
-    cmp                 rdi,0
+    mov                 rdi,respuesta
+    mAtoi
+
+    cmp                 rax,0
     je                  inicializarVariablesEstandar
     jmp                 inicializarVariablesGuardadas
 inicializarVariablesEstandar:
@@ -103,70 +104,64 @@ loopLecturaArchivo:
     jne                 leerSimboloOcas
     mov                 rdi,contenidoLineaArchivo
     call                eliminarCaracterSaltoLinea
-    mov                 qword[infoZorro],rax
+    mov                 [infoZorroGuardada],rax
     jmp                 continuarLeyendo
     leerSimboloOcas:
     cmp                 byte[lineasLeidasArchivo],1
     jne                 leerCantidadOcasVivas
     mov                 rdi,contenidoLineaArchivo
     call                eliminarCaracterSaltoLinea
-    mov                 qword[infoOcas+8],rax
+    mov                 [infoOcasGuardada+8],rax
     jmp                 continuarLeyendo
     leerCantidadOcasVivas:
     cmp                 byte[lineasLeidasArchivo],2
     jne                 leerPosicionesOcas
     mov                 rdi,contenidoLineaArchivo
     call                eliminarCaracterSaltoLinea
-    mAtoi                                                    ; Convierto la cadena a entero
-    mov                 qword[infoOcas],rax
+    call                atoi                                            ; Convierto la cadena a entero
+    mov                 [infoOcasGuardada],rax
     jmp                 continuarLeyendo
     leerPosicionesOcas:
     cmp                 byte[lineasLeidasArchivo],3
     jne                 leerPosicionZorro
-    mov                 rdi,contenidoLineaArchivo
-    lea                 rsi,[infoOcas+16]
+    lea                 rsi,[infoOcasGuardada+16]
     call                inicializarVector
-    mov                 [infoOcas+16],rsi
     jmp                 continuarLeyendo
     leerPosicionZorro:
     cmp                 byte[lineasLeidasArchivo],4
     jne                 leerJugadorActual
-    mov                 rdi,contenidoLineaArchivo
-    lea                 rsi,[infoZorro+8]
+    lea                 rsi,[infoZorroGuardada+8]
     call                inicializarVector
-    mov                 [infoZorro+8],rsi
     jmp                 continuarLeyendo
     leerJugadorActual:
     cmp                 byte[lineasLeidasArchivo],5
     jne                 leerRotacionTablero
     mov                 rdi,contenidoLineaArchivo
     call                eliminarCaracterSaltoLinea
-    mAtoi           
-    mov                 qword[jugadorActualGuardado],rax
+    call                atoi           
+    mov                 [jugadorActualGuardado],rax
     jmp                 continuarLeyendo
     leerRotacionTablero:
     cmp                 byte[lineasLeidasArchivo],6
     jne                 leerEstadoPartida
     mov                 rdi,contenidoLineaArchivo
     call                eliminarCaracterSaltoLinea
-    mAtoi
-    mov                 qword[rotacionTableroGuardada],rax
+    call                atoi
+    mov                 [rotacionTableroGuardada],rax
     jmp                 continuarLeyendo
     leerEstadoPartida:
     cmp                 byte[lineasLeidasArchivo],7
     jne                 leerEstadisticas
     mov                 rdi,contenidoLineaArchivo
     call                eliminarCaracterSaltoLinea
-    mAtoi           
-    mov                 qword[estadoPartidaGuardado],rax
+    call                atoi           
+    mov                 [estadoPartidaGuardado],rax
     jmp                 continuarLeyendo
     leerEstadisticas:
     cmp                 byte[lineasLeidasArchivo],8
     jne                 finArchivo
-    mov                 rdi,contenidoLineaArchivo
     mov                 rsi,estadisticasGuardadas
     call                inicializarVector
-    mov                 [estadisticasGuardadas],rsi
 ;   Si llegué acá, entonces ya inicialice todas las variables guardadas. Las guardo en los registros.
     mov                 r8,infoOcasGuardada
     mov                 r9,infoZorroGuardada
@@ -174,11 +169,12 @@ loopLecturaArchivo:
     mov                 r11,rotacionTableroGuardada
     mov                 r12,estadoPartidaGuardado
     mov                 r13,estadisticasGuardadas
+    jmp                 finArchivo
 continuarLeyendo:
     inc                 byte[lineasLeidasArchivo]
     jmp                 loopLecturaArchivo
 finArchivo:
-    mov     rdi,[idArchivo]
+    mov                 rdi,[idArchivo]
     mFClose
 fin:
     ret
@@ -206,25 +202,32 @@ loopContarCaracteres:
 finContarCaracteres:
     ret
 
-; Recibe la direccion a la linea del archivo en el registro rdi y recibe la direccion al vector a inicializar en el rsi.
+; Recibe la direccion al vector a inicializar en el rsi.
 ; Devuelve en el rsi la dirección de memoria al vector inicializado.
 inicializarVector:
-    xor                 rcx,rcx             ; Inicializo el rcx en 0, con él recorro la linea
-    xor                 r8,r8               ; Inicializo el r8 en 0, con él recorro el vector de posicion del Zorro.
-    mov                 r9,rdi
+    xor                 rcx,rcx                                 ; Inicializo el rcx en 0, con él recorro la linea
+    xor                 r8,r8                                   ; Inicializo el r8 en 0, con él recorro el vector de posicion del Zorro.
 loopRecorrerLinea:
-    cmp                 byte[r9+rcx],10     ; Comparo el caracter actual con el \n (10 en ASCII)
+    cmp                 byte[contenidoLineaArchivo+rcx],10      ; Comparo el caracter actual con el \n (10 en ASCII)
     je                  finLinea
-    cmp                 byte[r9+rcx],32     ; Comparo el caracter actual con el espacio (32 en ASCII)
+    cmp                 byte[contenidoLineaArchivo+rcx],32      ; Comparo el caracter actual con el espacio (32 en ASCII)
     je                  avanzarEnLaLinea
-    ; Si llego aca es porque el caracter actual es un numero.
-    lea                 rdi,[r9+rcx]        ; Actualizo rdi con la dirección actual
-    mov                 r10,[r9+rcx+1]      ; Me guardo el siguiente caracter original de la cadena
-    mov                 byte[r9+rcx+1],0    ; Coloco un \0 después del número
-    mAtoi           
-    mov                 qword[rsi+r8],rax
+;   Si llego aca es porque el caracter actual es un numero.
+    mov                 dil,byte[contenidoLineaArchivo+rcx]     ; Actualizo dil con el caracter actual
+    mov                 byte[caracterLineaArchivo],dil          ; Me guardo el caracter actual en caracterLineaArchivo
+    mov                 byte[caracterLineaArchivo+1],0          ; Coloco un \0 después del número
+    mov                 rdi,caracterLineaArchivo
+    
+    push                rcx                                     ; Quiero preservar el contenido de estos registros
+    push                rsi
+    push                r8
+    mAtoi
+    pop                 r8
+    pop                 rsi
+    pop                 rcx
+    
+    mov                 [rsi+r8],rax                            ; Actualizo la posicion del vector con el nuevo dato
     add                 r8,8
-    mov                 [r9+rcx+1],r10      ; Restauro el espacio original
 avanzarEnLaLinea:
     inc                 rcx
     jmp                 loopRecorrerLinea
