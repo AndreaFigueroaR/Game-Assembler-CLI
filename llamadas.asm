@@ -5,6 +5,7 @@ extern printf
 extern fopen
 extern fgets
 extern fclose
+extern recuperacionPartida
 
 section     .data
     cmd_clear       db  "clear",0
@@ -19,7 +20,7 @@ section     .data
 ;     con sus valores estandar.
 %macro recuperacionPartida 6
     sub     rsp,8
-    call    preguntarRecuperarPartida ; deja en orden las inicializaciones en los registros: r8, r9, r10, r11, r12, r13
+    call    recuperacionPartida ; deja en orden las inicializaciones en los registros: r8, r9, r10, r11, r12, r13
 
     mov     %1,r8
     mov     %2,r9
