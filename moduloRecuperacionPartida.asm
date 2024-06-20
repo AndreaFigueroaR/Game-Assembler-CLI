@@ -2,6 +2,18 @@
 ; Pregunta al usuario si quiere recuperar una partida guardada. Si no se quiere se inicializan las variables con sus valores estandar. 
 ; Si se quiere entonces verifica que haya un archivo partida.txt guardado con la configuracion del ultimo juego y carga las variables 
 ; con esa configuracion. Si el archivo no existe entonces se inicializan las variables con sus valores estandar.
+; Si el archivo existe, entonces tiene un formato como el del siguiente ejemplo:
+; ------------------------------------------------------------------------
+; X                                                                       <- Simbolo del zorro
+; O                                                                       <- Simbolo de las ocas
+; 17                                                                      <- Cantidad de ocas vivas
+; 1 3 1 4 1 5 2 3 2 4 2 5 3 1 3 2 3 3 3 4 3 5 3 6 3 7 4 1 4 7 5 1 5 7     <- Posiciones de las ocas en pares de fila y columna
+; 5 4                                                                     <- Posicion del Zorro
+; 1                                                                       <- Jugador actual (1 -> Zorro)
+; 0                                                                       <- Rotacion del tablero
+; 0                                                                       <- Estado de la partida (0 -> Partida activa)
+; 0 0 0 0 0 0 0 0                                                         <- Estadisticas
+; ------------------------------------------------------------------------
 %include "llamadas.asm"
 
 global recuperacionPartida
