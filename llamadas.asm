@@ -6,7 +6,6 @@ extern fopen
 extern fgets
 extern fclose
 extern recuperacionPartida
-extern imprimirTablero
 
 section     .data
     cmd_clear       db  "clear",0
@@ -15,9 +14,9 @@ section     .data
 ;NUESTRAS MACROS CON LLAMADAS A RUTINAS EXTERNAS
 ;*****************************************************************************
 
-;Pre: recibe las direcciones de memoria de las variables del juego para inicializar en el siguiente orden: infoOcas, infoZorro, 
+;Pre: Recibe las direcciones de memoria de las variables del juego para inicializar en el siguiente orden: infoOcas, infoZorro, 
 ;     jugadorActual, rotacionTablero, estadoPartida, estadisticas
-;Pos: recupera la ultima partida guardada si el usuario quiere y ademas esta existe. Sino crea una nueva inicializando las variables
+;Pos: Recupera la ultima partida guardada si el usuario quiere y ademas esta existe. Sino crea una nueva inicializando las variables
 ;     con sus valores estandar.
 %macro mRecuperacionPartida 6
     sub     rsp,8
@@ -32,30 +31,71 @@ section     .data
     mov     %6,r13
 %endmacro
 
-;requirimiento 3
+;Pre: Recibe las direcciones de memoria para modificar: infoOcas, infoZorro, rotacionTablero
+;Pos: Pregunta si se quiere personalizar cada uno de los elementos que contienen las direcciones recibidas.
+;     Si el usuario decide cambiar alguno se cambia, si no se deja como está.
 %macro personalizarPartida 3
-    ;Pre: Recibe las direcciones de memoria para modificar: infoOcas, infoZorro, rotacionTablero
-    ;Post: pregunta si se quiere customizar cada uno de los elementos que contienen las direcciones recibidas
-    ;      si el usuario decide cambiar alguno se cambia, si no se deja como està
-
-    mov RDI, %1
-    mov RSI, %2
-    mov RDX, %3
-
     sub     rsp,8
-    call    ;;;;;
+    call    ;;;;
     add     rsp,8
 %endmacro
-%macro imprimirTabla 3
-    ;Pre: Recibe las direcciones de memoria de la informaciòn a imprimir en el tablero: infoOcas, infoZorro, rotacionTablero
-    ;Post: Imprime el tablero de acuerdo a la rotacion indicada con la respectiva informaciòn de cada personaje
 
-    mov     RDI,%1      ;dirInfoOcas
-    mov     RSI,%2      ;dirInfoZorro
-    mov     RDX,[%3]    ;rotacion
-    
+; Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, rotacionTablero
+; Pos: Imprime por pantalla la tabla del juego con la información de las variables.
+%macro imprimirTabla 3
     sub     rsp,8
-    call    imprimirTablero
+    call    ;;;;
+    add     rsp,8
+%endmacro
+
+; Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, comando, jugadorActual, estadisticas.
+; Pos: Actualiza las variables según el comando ingresado por el usuario.
+%macro realizarJugada 5
+    sub     rsp,8
+    call    ;;;;
+    add     rsp,8
+%endmacro
+
+; Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, jugadorActual, estadoPartida.
+; Pos: Actualiza el estado del juego según el movimiento realizado.
+%macro resultadoJuego 4
+    sub     rsp,8
+    call    ;;;;
+    add     rsp,8
+%endmacro
+
+; Pre: Recibe la dirección de memoria de la variable estadoPartida.
+; Pos: Imprime por pantalla el mensaje de fin del juego según el estado final del juego.
+%macro imprimirMsgFinJuego 1
+    sub     rsp,8
+    call    ;;;;
+    add     rsp,8
+%endmacro
+
+; Pre: Recibe la dirección de memoria de la variable estadisticas.
+; Pos: Imprime por pantalla las estadisticas finales de los movimientos del zorro.
+%macro mostrarEstadisticas 1
+    sub     rsp,8
+    call    ;;;;
+    add     rsp,8
+%endmacro
+
+;Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, jugadorActual, rotacionTablero, 
+;     estadoPartida, estadisticas.
+;Pos: Guarda la partida guardando los datos de las variables en un archivo partida.txt. Si el archivo no existe,
+;     lo crea, si no lo sobreescribe. 
+%macro mGuardarPartida 6
+    sub     rsp,8
+    call    ;;;;
+    add     rsp,8
+%endmacro
+
+;Pre: Recibe las direcciones de memoria de las variables de infoZorro, de la posicion anterior del zorro y 
+;     de la posicion nueva.
+;Pos: Actualiza los datos de las estadisticas segun las posiciones recibidas.
+%macro mActualizarEstadisticas 3
+    sub     rsp,8
+    call    ;;;;
     add     rsp,8
 %endmacro
 
