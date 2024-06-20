@@ -17,19 +17,19 @@ section .bss
 section .text
 main:
 ;   INICIALIZACIÓN DEL JUEGO
-    mRecuperacionPartida    infoOcas, infoZorro, jugadorActual, rotacionTablero, estadoPartida, estadisticas
-    personalizarPartida     infoOcas, infoZorro, rotacionTablero
+    mRecuperacionPartida    infoOcas,               infoZorro,          jugadorActual,      rotacionTablero,    estadoPartida,  estadisticas
+    personalizarPartida     infoOcas,               infoZorro,          rotacionTablero
 
 continuarJugando:
     mClear
-    imprimirTabla           infoOcas, infoZorro, rotacionTablero
-    mProcesarComando        qword[jugadorActual], coordenadasOrigen, coordenadasDestino, estadoPartida, infoZorro, infoOcas
-    cmp                     qword[estadoPartida],3
+    imprimirTabla           infoOcas,               infoZorro,          rotacionTablero
+    mProcesarComando        qword[jugadorActual],   coordenadasOrigen,  coordenadasDestino, estadoPartida,      infoZorro,      infoOcas
+    cmp                     qword[estadoPartida],   3
     je                      partidaInterrumpida 
-    realizarJugada          infoOcas, infoZorro, coordenadasOrigen, coordenadasDestino, jugadorActual, estadisticas
+    realizarJugada          infoOcas,               infoZorro,          coordenadasOrigen,  coordenadasDestino, jugadorActual
     ;mActualizarEstadisticas                     ;realizarJugada dejarà la posicion anterior del jugador en turno en coordenadasOrigen y a donde se moviò en coordenadasDestino
-    resultadoJuego          infoOcas, infoZorro, jugadorActual, estadoPartida
-    cmp                     byte[estadoPartida],0
+    resultadoJuego          infoOcas,               infoZorro,          jugadorActual,      estadoPartida
+    cmp                     qword[estadoPartida],    0
     je                      continuarJugando
 
 partidaFinalizada:

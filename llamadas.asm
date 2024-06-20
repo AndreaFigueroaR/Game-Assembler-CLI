@@ -81,7 +81,7 @@ section     .data
 %endmacro
 
 ; Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, jugadorActual, estadoPartida.
-; Pos: Actualiza el estado del juego según el movimiento realizado.
+; Pos: Actualiza el estado del juego según si el zorro esta acorralado o si ya murieron 12 ocas
 %macro resultadoJuego 4
     sub     rsp,8
     call    ;;;;
