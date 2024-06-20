@@ -6,6 +6,7 @@ extern fopen
 extern fgets
 extern fclose
 extern recuperacionPartida
+extern imprimirTablero
 
 section     .data
     cmd_clear       db  "clear",0
@@ -54,7 +55,7 @@ section     .data
     mov     RDX,%3    ;rotacion
     
     sub     rsp,8
-    call    ;imprimirJuego
+    call    imprimirTablero
     add     rsp,8
 %endmacro
 
