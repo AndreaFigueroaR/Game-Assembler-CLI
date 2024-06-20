@@ -16,7 +16,7 @@ section .bss
 section .text
 main:
 ;   INICIALIZACIÓN DEL JUEGO
-    recuperacionPartida     infoOcas, infoZorro, jugadorActual, rotacionTablero, estadoPartida, estadisticas
+    mRecuperacionPartida    infoOcas, infoZorro, jugadorActual, rotacionTablero, estadoPartida, estadisticas
     personalizarPartida     infoOcas, infoZorro, rotacionTablero
 
 continuarJugando:
