@@ -78,8 +78,6 @@ section     .data
     ubiCol          db  "   A B C D E F G",0
     formatoUbiFil   db  "%hhi ",0
     ubiFil          dq  1
-    ;adicionales       
-    msjFinMostrarEstado    db "FIN ESTADO",0
 
 section     .bss   
     infoOcas                    times 0 resb            
@@ -91,7 +89,7 @@ section     .bss
         posicionZorro           times   1   resq    2
     rotacionTablero             resq    1   ;0ª->1,270ª->2,90ª->-1,180ª->-2
         
-    ;auxiliares de impresion
+    ;auxiliares de impresion y copia de datos
     esPar               resq    1   ;0 si es par, 1 si es impar
     punteroSimb         resq    1   ;4 bytes para un puntero
     desplazVector       resq    1
