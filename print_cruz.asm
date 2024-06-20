@@ -5,8 +5,6 @@ extern puts
 
 
 section     .data
-    llega           db  "llega",0
-    formPares       db  "(%lli,%lli)",0  
     ;movimientos en la matriz
     despl           dq  0
     fil             dq  1
@@ -19,7 +17,6 @@ section     .data
     ubiCol          db  "   A B C D E F G",0
     formatoUbiFil   db  "%hhi ",0
     ubiFil          dq  1
-    seguridad       dq  17
 
 section     .bss   
     infoOcas                    times 0 resb            
@@ -38,7 +35,6 @@ section     .bss
     cantElemVector      resq    1
     dirBaseVector       resq    1
     dirDestinoVector    resq    1
-
 section     .text
 
 imprimirTablero:
