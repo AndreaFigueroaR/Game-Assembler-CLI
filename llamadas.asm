@@ -18,7 +18,7 @@ section     .data
 ;     jugadorActual, rotacionTablero, estadoPartida, estadisticas
 ;Pos: recupera la ultima partida guardada si el usuario quiere y ademas esta existe. Sino crea una nueva inicializando las variables
 ;     con sus valores estandar.
-%macro recuperacionPartida 6
+%macro mRecuperacionPartida 6
     sub     rsp,8
     call    recuperacionPartida ; deja en orden las inicializaciones en los registros: r8, r9, r10, r11, r12, r13
 
