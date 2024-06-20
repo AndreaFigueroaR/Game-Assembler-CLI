@@ -26,7 +26,7 @@ section     .bss
     infoZorro                   times 0 resb 
         simboloZorro            resq    1
         posicionZorro           times   1   resq    2
-    rotacionTablero             resq    1   ;0ª->1,270ª->2,90ª->-1,180ª->-2
+    rotacionTablero             resq    1   ;0º->0,90º->1,180ª->2,270º->3 (en sentido horario)
         
     ;auxiliares de impresion
     esPar               resq    1   ;0 si es par, 1 si es impar
