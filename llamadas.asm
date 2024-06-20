@@ -2,6 +2,9 @@ llamadas.asm
 extern puts
 extern system
 extern printf 
+extern fopen
+extern fgets
+extern fclose
 
 section     .data
     cmd_clear       db  "clear",0
@@ -85,5 +88,23 @@ section     .data
     mov     rdi,cmd_clear
     sub     rsp,8
     call    system
+    add     rsp,8
+%endmacro
+
+%macro mFOpen 0
+    sub     rsp,8
+    call    fopen
+    add     rsp,8
+%endmacro
+
+%macro mFGets 0
+    sub     rsp,8
+    call    fgets
+    add     rsp,8
+%endmacro
+
+%macro mFClose 0
+    sub     rsp,8
+    call    fclose
     add     rsp,8
 %endmacro
