@@ -21,6 +21,7 @@ section     .data
 %macro mRecuperacionPartida 6
     sub     rsp,8
     call    recuperacionPartida ; deja en orden las inicializaciones en los registros: r8, r9, r10, r11, r12, r13
+    add     rsp,8
 
     mov     %1,r8
     mov     %2,r9
