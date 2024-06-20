@@ -167,3 +167,9 @@ section     .data
     call    fclose
     add     rsp,8
 %endmacro
+
+%macro mStrcmp 0
+    sub     rsp,8
+    call    strcmp
+    add     rsp,8
+%endmacro
