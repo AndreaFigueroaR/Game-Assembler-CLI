@@ -75,6 +75,33 @@ ret
 
 ;_________________RUTINAS INTERNAS_________________________
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+rotarPosiciones:
+    ;calculo Opciones (digamos del zorro)
+    mov     r9,0
+    mov     r10,[posicionZorro+r9]  ;fil
+    add     r9,8
+    mov     r11,[posicionZorro+r9]  ;col
+    sub     r9,8
+
+    cmp     qword[rotacionTablero],0
+    je      finRotacion
+    mov     rcx,[rotacionTablero]
+
+    _starLoop:
+    mov     r12,r11
+    mov     r11,8
+    sub     r11,r10
+    mov     r10,r12
+    loop    _starLoop
+
+    finRotacion:
+    imul    r10,2
+    imul    r11,2
+    mov     [posicionZorro+r9],r10
+    add     r9,8
+    mov     [posicionZorro+r9],r11
+    ret
+
 convertirACruz:
     cmp     qword[fil],11
     jg      arribaOAbajo
