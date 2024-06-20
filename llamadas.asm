@@ -53,19 +53,25 @@ section     .data
 ; Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, comando, jugadorActual, estadisticas.
 ; Pos: Actualiza las variables según el comando ingresado por el usuario.
 %macro realizarJugada 5
+    mov RDI, %1;
+    mov RSI, %2
+    mov RDX, %3
+    mov RCX, %4
+    mov R8,  %5
+    
     sub     rsp,8
     call    ;;;;
     add     rsp,8
 %endmacro
-; Pre: Recibe el jugadorActual, la direccion donde realizar jugada necesita las coordenadas de origen y destino, la direccion de estadoPartida, la direccion donde esta la infoZorro, la direccion donde esta la infoOcas.
-; Post: Lee entrada, valida que sean coordenadas adecuadas para el juagadorActual o que sea el comenado para interrumpir la partida (si sì-> se modifica esa flag)
+; Pre: Recibe el jugadorActual, las direcciones donde guardar las coordenadas de origen y destino, la direccion de estadoPartida, la direccion donde esta la infoZorro, la direccion donde esta la infoOcas.
+; Post: Lee entrada, valida que sean coordenadas adecuadas para el juagadorActual o que sea el comenado para interrumpir la partida (si sì-> se modifica el estadoPartida)
 ;       guarda las coordenadas en las direcciones brindadas.
 %macro mProcesarComando 6
 
     mov RDI, %1;->jugador activo (solo la uso de lectura, ya que realizarJugada se encarga de editarlo)
     mov RSI, %2;->dirOrigen
     mov RDX, %3;->dirDestino 
-    mov RCX, %4;-> dirEstadoJuego (la edito si se interrumpe el juego)
+    mov RCX, %4;->dirEstadoPartida (la edito si se interrumpe el juego)
     mov R8,  %5;->dirInfoZorro
     mov R9,  %6;->dirInfoOcas
 
