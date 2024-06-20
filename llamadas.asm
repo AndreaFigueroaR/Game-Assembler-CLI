@@ -52,7 +52,7 @@ section     .data
 
     mov     RDI,%1      ;dirInfoOcas
     mov     RSI,%2      ;dirInfoZorro
-    mov     RDX,%3    ;rotacion
+    mov     RDX,[%3]    ;rotacion
     
     sub     rsp,8
     call    imprimirTablero
