@@ -1,4 +1,4 @@
-%include "macros_cruz.asm"
+%include "macrosCruz.asm"
 global imprimirTablero
 extern printf
 extern puts
