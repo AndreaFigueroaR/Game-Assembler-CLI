@@ -80,23 +80,23 @@ macrosProcesarComando.asm
     ;reemplazo 
     mov qword[R8],1
     cmp al, 'A'
-    je %%endMacro
+    je %%finMacro
     mov qword[R8],2
     cmp al, 'B'
-    je %%endMacro
+    je %%finMacro
     mov qword[R8],3
     cmp al, 'C'
-    je %%endMacro
+    je %%finMacro
     mov qword[R8],4
     cmp al, 'D'
-    je %%endMacro
+    je %%finMacro
     mov qword[R8],5
     cmp al, 'E'
-    je %%endMacro
+    je %%finMacro
     mov qword[R8],6
     cmp al, 'F'
-    je %%endMacro
+    je %%finMacro
     mov qword[R8],7
-%%endMacro:
+%%finMacro:
 
 %endmacro
