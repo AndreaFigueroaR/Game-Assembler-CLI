@@ -26,7 +26,7 @@ extern fgets
 extern fclose
 
 section     .data
-    infoOcas                    dq                  0,                                          ; cantidadOcasVivas
+    infoOcas                    dq                  17,                                         ; cantidadOcasVivas
                                 dq                  "O",                                        ; simboloOcas
                                 dq                  1, 3, 1, 4, 1, 5                            ; Ocas de la fila 1 (en las columnas 3, 4 y 5)
                                 dq                  2, 3, 2, 4, 2, 5                            ; Ocas de la fila 2 (en las columnas 3, 4 y 5)
@@ -35,7 +35,7 @@ section     .data
                                 dq                  5, 1, 5, 7                                  ; Ocas de la fila 5 (en las columnas 1 y 7)
     infoZorro                   dq                  "X",                                        ; simboloZorro
                                 dq                  5, 4                                        ; Zorro en la fila 5 y columna 4
-    jugadorActual               dq                  0                                           ; Jugador actual -> Zorro
+    jugadorActual               dq                  1                                           ; Jugador actual -> Zorro
     rotacionTablero             dq                  0
     estadoPartida               dq                  0                                           ; Partida activa
     estadisticas                dq                  0, 0, 0, 0, 0, 0, 0, 0                      ; Cantidad de movimientos en cada direccion inicializadas en 0
@@ -50,7 +50,7 @@ section     .bss
     idArchivo                   resq 1
     lineasLeidasArchivo         resb 1
     contenidoLineaArchivo       resb 100
-    caracterLineaArchivo        resb 2
+    caracterLineaArchivo        resq 2
 
     infoOcasGuardada            times 18 resq 2
     infoZorroGuardada           times 3 resq 1
@@ -95,6 +95,7 @@ inicializarVariablesEstandar:
     mov                 r11,rotacionTablero
     mov                 r12,estadoPartida
     mov                 r13,estadisticas
+    call                actualizarVariables
     jmp                 fin
 inicializarVariablesGuardadas:
 ;   Abro el archivo partida.txt
@@ -190,6 +191,12 @@ continuarLeyendo:
 finArchivo:
     mov                 rdi,[idArchivo]
     mFClose
+    mov                 r8,infoOcasGuardada
+    mov                 r9,infoZorroGuardada
+    mov                 r10,jugadorActualGuardado
+    mov                 r11,rotacionTableroGuardada
+    mov                 r12,estadoPartidaGuardado
+    mov                 r13,estadisticasGuardadas
     call                actualizarVariables
 fin:
     ret
@@ -229,8 +236,8 @@ loopRecorrerLinea:
     je                  avanzarEnLaLinea
 ;   Si llego aca es porque el caracter actual es un numero.
     mov                 dil,byte[contenidoLineaArchivo+rcx]     ; Actualizo dil con el caracter actual
-    mov                 byte[caracterLineaArchivo],dil          ; Me guardo el caracter actual en caracterLineaArchivo
-    mov                 byte[caracterLineaArchivo+1],0          ; Coloco un \0 después del número
+    mov                 [caracterLineaArchivo],dil              ; Me guardo el caracter actual en caracterLineaArchivo
+    mov                 qword[caracterLineaArchivo+8],0              ; Coloco un \0 después del número
     mov                 rdi,caracterLineaArchivo
     
     push                rcx                                     ; Quiero preservar el contenido de estos registros
@@ -249,63 +256,62 @@ avanzarEnLaLinea:
 finLinea:
     ret
 
-; Actualiza las variables originales segun las guardadas tras recorrer el archivo.
+; Actualiza las variables originales segun las guardadas como direcciones de memoria en los registros r8, r9, r10, r11, r12 y r13.
 actualizarVariables:
 ;   Copio infoOcas
     xor                 rcx,rcx                                 ; Inicializo el rcx en 0, con él cuento las iteraciones del loop.
-    xor                 r8,r8                                   ; Inicializo el r8 en 0. Auxiliar para avanzar en el vector.
+    xor                 rsi,rsi                                 ; Inicializo el rsi en 0. Auxiliar para avanzar en el vector.
 loopCopiarInfoOcas:
     cmp                 rcx,36                                  ; 18 * 2 qwords = 36 qwords
     jge                 finLoopCopiarInfoOcas
 
     mov                 rdi,[dirInfoOcas]
-    mov                 rax,[infoOcasGuardada+r8]
-    mov                 [rdi+r8],rax
-
+    mov                 rax,[r8+rsi]
+    mov                 [rdi+rsi],rax
     inc                 rcx
-    add                 r8,8
+    add                 rsi,8
     jmp                 loopCopiarInfoOcas
 finLoopCopiarInfoOcas:
 ;   Copio infoZorro
     xor                 rcx,rcx
-    xor                 r8,r8
+    xor                 rsi,rsi
 loopCopiarInfoZorro:
     cmp                 rcx,3                                   ; 3 * 1 qwords = 3 qwords
     jge                 finLoopCopiarInfoZorro
 
     mov                 rdi,[dirInfoZorro]
-    mov                 rax,[infoZorroGuardada+r8]
-    mov                 [rdi+r8],rax
+    mov                 rax,[r9+rsi]
+    mov                 [rdi+rsi],rax
 
     inc                 rcx
-    add                 r8,8
+    add                 rsi,8
     jmp                 loopCopiarInfoZorro
 finLoopCopiarInfoZorro:
 ;   Copio jugadorActual
     mov                 rdi,[dirJugadorActual]
-    mov                 rax,[jugadorActualGuardado]
+    mov                 rax,[r10]
     mov                 [rdi],rax
 ;   Copio rotacionTablero
     mov                 rdi,[dirRotacionTablero]
-    mov                 rax,[rotacionTableroGuardada]
+    mov                 rax,[r11]
     mov                 [rdi],rax
 ;   Copio estadoPartida
     mov                 rdi,[dirEstadoPartida]
-    mov                 rax,[estadoPartidaGuardado]
+    mov                 rax,[r12]
     mov                 [rdi],rax
 ;   Copio estadisticas
     xor                 rcx,rcx
-    xor                 r8,r8
+    xor                 rsi,rsi
 loopCopiarEstadisticas:
     cmp                 rcx,8                                   ; 8 * 1 qwords = 8 qwords
     jge                 finLoopCopiarEstadisticas
 
     mov                 rdi,[dirEstadisticas]
-    mov                 rax,[estadisticasGuardadas+r8]
-    mov                 [rdi+r8],rax
+    mov                 rax,[r13+rsi]
+    mov                 [rdi+rsi],rax
 
     inc                 rcx
-    add                 r8,8
+    add                 rsi,8
     jmp                 loopCopiarEstadisticas
 finLoopCopiarEstadisticas:
     ret
