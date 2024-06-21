@@ -4,7 +4,7 @@ global main
 extern system
 extern recuperacionPartida
 extern personalizarPartida
-extern imprimirTabla
+extern imprimirTablero
 extern procesarComando
 extern realizarJugada
 extern resultadoJuego
