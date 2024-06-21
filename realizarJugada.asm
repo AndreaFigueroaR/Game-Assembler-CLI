@@ -43,9 +43,13 @@ realizarJugada:
     jmp                     ejecutarMovimiento
     cambiarPosOcas:
     buscarOcaPorCoordenadas coordenadasOrigen ;->
-		mov rax,[dirPosicionesOcas]
-		add rax,[desplazVector]
-		copiarVector 2,coordenadasDestino,rax
+    mov                     rax,[dirPosicionesOcas]
+	add                     rax,[desplazVector]
+	copiarVector            2,coordenadasDestino,rax
+    
+
+
+    
     ;necesito encontrar la direcciòn de la posiciòn de la oca que tiene  la misma posicion que coordenadas origen y a esa direcciòn llevarme la coordenada destino
     ejecutarMovimiento:
     ;se actualiza la info del jugador actual en base del las coordenadas copiadas
