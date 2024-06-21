@@ -41,7 +41,7 @@ continuarJugando:
     mProcesarComando        qword[jugadorActual],   coordenadasOrigen,  coordenadasDestino, estadoPartida,      infoZorro,      infoOcas
     cmp                     qword[estadoPartida],   3
     je                      partidaInterrumpida 
-    mRealizarJugada          infoOcas,               posicionZorro,     coordenadasOrigen,  coordenadasDestino, jugadorActual
+    mRealizarJugada          infoOcas,               posicionZorro,     infoCoordenadas,    jugadorActual,      estadisticas
     ;mActualizarEstadisticas                     ;realizarJugada dejarà la posicion anterior del jugador en turno en coordenadasOrigen y a donde se moviò en coordenadasDestino
     resultadoJuego          infoOcas,               infoZorro,          jugadorActual,      estadoPartida
     cmp                     qword[estadoPartida],    0
