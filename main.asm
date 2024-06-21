@@ -7,6 +7,7 @@ extern personalizarPartida
 extern imprimirTablero
 extern procesarComando
 extern realizarJugada
+extern actualizarEstadisticas
 extern resultadoJuego
 extern mostrarEstadisticas
 extern guardarPartida
@@ -35,14 +36,22 @@ main:
     mRecuperacionPartida    infoOcas,               infoZorro,          jugadorActual,      rotacionTablero,    estadoPartida,  estadisticas
     personalizarPartida     infoOcas,               infoZorro,          rotacionTablero
 
+    mov rdi,0
+
 continuarJugando:
     mClear
     imprimirTabla           infoOcas,               infoZorro,          rotacionTablero
     mProcesarComando        qword[jugadorActual],   coordenadasOrigen,  coordenadasDestino, estadoPartida,      infoZorro,      infoOcas
     cmp                     qword[estadoPartida],   3
     je                      partidaInterrumpida 
-    mRealizarJugada          infoOcas,               posicionZorro,     infoCoordenadas,    jugadorActual,      estadisticas
-    ;mActualizarEstadisticas                     ;realizarJugada dejarà la posicion anterior del jugador en turno en coordenadasOrigen y a donde se moviò en coordenadasDestino
+    mRealizarJugada         infoOcas,               posicionZorro,      infoCoordenadas,     jugadorActual,      estadisticas
+    
+    mov                     rax,[jugadorActual]
+    cmp                     rax,1
+    jne                     continuar
+    mActualizarEstadisticas estadisticas,           coordenadasOrigen,  coordenadasDestino
+    
+    continuar:
     resultadoJuego          infoOcas,               infoZorro,          jugadorActual,      estadoPartida
     cmp                     qword[estadoPartida],    0
     je                      continuarJugando
@@ -50,9 +59,9 @@ continuarJugando:
 partidaFinalizada:
     mClear    
     imprimirMsgFinJuego     estadoPartida
-    mostrarEstadisticas     estadisticas
+    mMostrarEstadisticas     estadisticas
     ret
+    
 partidaInterrumpida:
-    mGuardarPartida
+    mGuardarPartida         infoOcas,               infoZorro,          jugadorActual,      rotacionTablero,    estadoPartida,  estadisticas
     ret
-
