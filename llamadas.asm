@@ -1,14 +1,3 @@
-llamadas.asm
-extern puts
-extern system
-extern printf 
-extern fopen
-extern fgets
-extern fclose
-extern recuperacionPartida
-extern procesarComando
-extern strcmp
-
 section     .data
     cmd_clear       db  "clear",0
 
@@ -21,16 +10,16 @@ section     .data
 ;Pos: Recupera la ultima partida guardada si el usuario quiere y ademas esta existe. Sino crea una nueva inicializando las variables
 ;     con sus valores estandar.
 %macro mRecuperacionPartida 6
+    mov     r8,%1
+    mov     r9,%2
+    mov     r10,%3
+    mov     r11,%4
+    mov     r12,%5
+    mov     r13,%6
+    
     sub     rsp,8
-    call    recuperacionPartida ; deja en orden las inicializaciones en los registros: r8, r9, r10, r11, r12, r13
+    call    recuperacionPartida
     add     rsp,8
-
-    mov     %1,r8
-    mov     %2,r9
-    mov     %3,r10
-    mov     %4,r11
-    mov     %5,r12
-    mov     %6,r13
 %endmacro
 
 ;Pre: Recibe las direcciones de memoria para modificar: infoOcas, infoZorro, rotacionTablero
