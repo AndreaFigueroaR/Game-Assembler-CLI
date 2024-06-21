@@ -228,6 +228,7 @@ coincidirZorro:
 ;__________________________________________________________
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 coincidirOcas:
+    ;PRE: rcx inicializado con la cantidad de ocas vivas. DesplazaVector inicializado en 0
     ;POST: si la posicion actual es la de alguna OCA, cambia el simbolo
     mov                 rax,[desplazVector]
     mov                 r9,[posicionesOcas+rax]
@@ -239,7 +240,7 @@ coincidirOcas:
     cmp                 [col],r9
     jne                 siguienteOca            ;si la columna es diferente, siguiente oca
     cambiarSimbA        simboloOcas
-    jmp                 finCoincidirOcas
+    jmp                 finCoincidirOcas        ;hay coincidencia
     siguienteOca:
         add                 qword[desplazVector],16 ;analiza de a pares
     loop    coincidirOcas   
