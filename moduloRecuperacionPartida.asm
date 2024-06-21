@@ -40,13 +40,14 @@ section     .data
     estadoPartida               dq                  0                                           ; Partida activa
     estadisticas                dq                  0, 0, 0, 0, 0, 0, 0, 0                      ; Cantidad de movimientos en cada direccion inicializadas en 0
 
-    pregunta                    db                  "¿Quiere recuperar la última partida guardada? Ingrese 1 si sí o 0 si no:",0
+    pregunta                    db                  "¿Quiere recuperar la última partida guardada? Ingrese S si sí o N si no:",0
     nombreArchivo               db                  "partida.txt",0
     modoApertura                db                  "r",0
     msgErrorArchivo             db                  "Hubo un error al abrir el archivo y no se pudo cargar la partida guardada. Se creará una nueva partida.",0
+    msgErrorInputInvalido       db                  "El comando ingresado fue inválido. Si quiere recuperar la última partida guardada ingrese S, si no N:",0
 
 section     .bss   
-    respuesta                   resb 50             ; Si la respuesta es 1 quiere recuperar la ultima partida guardada. Si no, 0.
+    input                       resq 1              ; Si el input es S quiere recuperar la ultima partida guardada. Si no, N.
     idArchivo                   resq 1
     lineasLeidasArchivo         resb 1
     contenidoLineaArchivo       resb 100
@@ -78,16 +79,19 @@ recuperacionPartida:
 ;   Pregunto si se quiere recuperar la última partida guardada.
     mov                 rdi,pregunta
     mPuts           
-
-    mov                 rdi,respuesta
+cargarInput:
+    mov                 rdi,input
     mGets
 
-    mov                 rdi,respuesta
-    mAtoi
-
-    cmp                 rax,0
+    cmp                 qword[input],'N'
     je                  inicializarVariablesEstandar
-    jmp                 inicializarVariablesGuardadas
+
+    cmp                 qword[input],'S'
+    je                  inicializarVariablesGuardadas
+
+    mov                 rdi,msgErrorInputInvalido
+    mPuts
+    jmp                 cargarInput
 inicializarVariablesEstandar:
     mov                 r8,infoOcas
     mov                 r9,infoZorro
