@@ -8,10 +8,10 @@ extern imprimirTablero
 extern procesarComando
 extern realizarJugada
 extern resultadoJuego
-extern imprimirMsgFinJuego
 extern mostrarEstadisticas
 extern guardarPartida
 extern sscanf
+extern puts
 ; despues fijarnos que los extern coincidan con los nombres de las rutinas externas usadas
 
 section .data
@@ -48,6 +48,7 @@ continuarJugando:
     je                      continuarJugando
 
 partidaFinalizada:
+    mClear    
     imprimirMsgFinJuego     estadoPartida
     mostrarEstadisticas     estadisticas
     ret
