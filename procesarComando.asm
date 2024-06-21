@@ -30,66 +30,57 @@ section     .bss
 section     .text
 
 procesarComando:
+    mov [jugadorActual],        RDI
+    mov [dirPosicionOrigen],    RSI
+    mov [dirPosicionDestino],   RDX
+    mov [dirEstadoPartida],     RCX
+    mov [dirInfoZorro],         R8
+    mov [dirInfoOcas],          R9
 
-    salvarParametros:
-        mov [jugadorActual],        RDI
-        mov [dirPosicionOrigen],    RSI
-        mov [dirPosicionDestino],   RDX
-        mov [dirEstadoPartida],     RCX
-        mov [dirInfoZorro],         R8
-        mov [dirInfoOcas],          R9
+lecturaInput:
 
-    lecturaInput:
+    ;muestro de quien es el turno:
+    mov RDI,mensajePedirMovZorro
+    cmp qword[jugadorActual],0
+    je mostrarTurno
+    mov RDI,mensajePedirMovOca
+    mostrarTurno:
+    mPuts
 
-        ;muestro de quien es el turno:
-        mov RDI,mensajePedirMovZorro
-        cmp qword[jugadorActual],0
-        je mostrarTurno
-        mov RDI,mensajePedirMovOca
-        mostrarTurno:
-        mPuts
+    mov RDI,                input
+    mGets
 
-        mov RDI,                input
-        mGets
+validacionInterrupcion:
+    mov RDI,                input
+    mov RSI,                comandoInterrupcion
+    mStrcmp
+    cmp EAX,                0
+    jne                     validarFormatoMovimiento
+    mov RAX,                [dirEstadoJuego]
+    mov qword[RAX],         3              ;cambio estadoPartida
 
-    validacionInterrupcion:
-        mov RDI,                input
-        mov RSI,                comandoInterrupcion
-        mStrcmp
-        cmp EAX,                0
-        jne                     validarFormatoMovimiento
-        mov RAX,                [dirEstadoJuego]
-        mov qword[RAX],         3              ;cambio estadoPartida
+    apruebaValidacionTotal  ;pues era una interrupcion
 
-        apruebaValidacionTotal  ;pues era una interrupcion
-
-    validarFormatoMovimiento:
-        ;bifurco dependiendo del jugador actual
-        cmp qword[jugadorActual],0
-        je movimientoZorro
+validarFormatoMovimiento:
+    cmp qword[jugadorActual],   0
+    je  movimientoZorro
+    movimientoOca:
         
-        movimientoOca:
         ;si falla alguna de las siguientes pruebas -> se lleva a finValidacion con la validacion en 'N'
         ;prueba 1.- al convertir el input al NumChar->NumChar se deben convertir exitosamente 4 variables
+        mov     R8,     [dirPosicionOrigen]
+        add     R8,     8
+        mov     R9,     [dirPosicionDestino]
+        add     R9,     8
+        movParametros   input,  formatoMovimientoOca,   qword[dirPosicionOrigen],   R8,     qword[dirPosicionDestino],  R9
+        mSscanf
+        cmp     EAX,    4
+        jne     finValidacion
 
-        mov R8,[dirPosicionOrigen]
-        add R8,8
-        mov R9,[dirPosicionDestino]
-        add R9,8
-        movimientoParametros    input, formatoMovimientoOca, qword[dirPosicionOrigen], R8, qword[dirPosicionDestino],R9
-        mSscaf
-        cmp EAX,4
-        jne finValidacion;;;si es que no se convirtieron 4 valores entonces salto de una vez al fin de la validacion
+        chequearPosicionEnTabla [dirPosicionOrigen];Le estoy pasando la direccion donde inicia el vector
+        chequearPosicionEnTabla dirPosicionDestino
 
-
-        ;prueba 2.- sabiendo que ya tengo las valores de origen y destino ahora tengo que corroborar que ni las letras, ni numeros se salgan de rango:
-        ;voy primero con los numeros
-        dirConValorEnRango [dirPosicionOrigen],1,7
-        dirConValorEnRango [dirPosicionDestino],1,7
-        ;ahora voy con las letras
-        mov R8,[dirPosicionOrigen]
-        add R8,8
-        dirConValorEnRango R8
+        
 
 
         ;si llega hasta aqui es que pasò la validacion del formato de movimiento de una oca
@@ -97,17 +88,17 @@ procesarComando:
         jmp validacionLogicaMovOca;se continuan con màs validaciones
         
         
-        movimientoZorro:
+    movimientoZorro:
 
 
-        jmp validacionLogicaMovZorro
+    jmp validacionLogicaMovZorro
 
-    validacionLogicaMovOca:
+validacionLogicaMovOca:
 
-    validacionLogicaMovZorro:
+validacionLogicaMovZorro:
 
 finValidacion:
-    cmp byte[inputValido],'N'
-    je lecturaInput
+    cmp byte[inputValido],  'N'
+    je  lecturaInput
     ret
 
