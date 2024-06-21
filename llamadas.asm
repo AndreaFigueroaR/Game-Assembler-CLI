@@ -1,5 +1,7 @@
 section     .data
     cmd_clear       db  "clear",0
+    msgGanoZorro        db          "PARTIDA TERMINADA: El zorro es el ganador!",0
+    msgGanaronOcas      db          "PARTIDA TERMINADA: Las ocas son las ganadoras!",0
 
 ;*****************************************************************************
 ;NUESTRAS MACROS CON LLAMADAS A RUTINAS EXTERNAS
@@ -85,9 +87,17 @@ section     .data
 ; Pre: Recibe la dirección de memoria de la variable estadoPartida.
 ; Pos: Imprime por pantalla el mensaje de fin del juego según el estado final del juego.
 %macro imprimirMsgFinJuego 1
-    sub     rsp,8
-    call    ;;;;
-    add     rsp,8
+    mov     rdi,%1              ; Copio la direccion de estadoPartida al rdi
+    mov     rsi,[rdi]           ; Copio el contenido de estadoPartida al rsi
+
+    cmp     rsi,1
+    jne     ganaronOcas
+    mov     rdi,msgGanoZorro
+    jmp     fin
+ganaronOcas:
+    mov     rdi,msgGanaronOcas
+fin:
+    mPuts
 %endmacro
 
 ; Pre: Recibe la dirección de memoria de la variable estadisticas.
