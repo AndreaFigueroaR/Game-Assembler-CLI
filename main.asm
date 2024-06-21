@@ -11,6 +11,7 @@ extern resultadoJuego
 extern imprimirMsgFinJuego
 extern mostrarEstadisticas
 extern guardarPartida
+extern sscanf
 ; despues fijarnos que los extern coincidan con los nombres de las rutinas externas usadas
 
 section .data
