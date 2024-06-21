@@ -92,9 +92,11 @@ section     .data
 
 ; Pre: Recibe la dirección de memoria de la variable estadisticas.
 ; Pos: Imprime por pantalla las estadisticas finales de los movimientos del zorro.
-%macro mostrarEstadisticas 1
+%macro mMostrarEstadisticas 1
+    mov     r8,%1
+
     sub     rsp,8
-    call    ;;;;
+    call    mostrarEstadisticas
     add     rsp,8
 %endmacro
 
@@ -108,12 +110,15 @@ section     .data
     add     rsp,8
 %endmacro
 
-;Pre: Recibe las direcciones de memoria de las variables de infoZorro, de la posicion anterior del zorro y 
-;     de la posicion nueva.
-;Pos: Actualiza los datos de las estadisticas segun las posiciones recibidas.
+;Pre: Recibe las direcciones de memoria de las variables estadisticas, coordOrigenZorro y coordDestinoZorro.
+;Pos: Actualiza los datos de las estadisticas segun la posicion anterior del zorro y la nueva.
 %macro mActualizarEstadisticas 3
+    mov     r8,%1
+    mov     r9,%2
+    mov     r10,%3
+    
     sub     rsp,8
-    call    ;;;;
+    call    actualizarEstadisticas
     add     rsp,8
 %endmacro
 
