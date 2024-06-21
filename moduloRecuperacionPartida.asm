@@ -12,11 +12,18 @@
 ; 1                                                                       <- Jugador actual (1 -> Zorro)
 ; 0                                                                       <- Rotacion del tablero
 ; 0                                                                       <- Estado de la partida (0 -> Partida activa)
-; 0 0 0 0 0 0 0 0                                                         <- Estadisticas
+; 0 0 0 0 0 0 0 0                                                         <- Estadisticas (termina con salto de linea)
+;
 ; ------------------------------------------------------------------------
 %include "llamadas.asm"
 
 global recuperacionPartida
+extern puts
+extern gets
+extern atoi
+extern fopen
+extern fgets
+extern fclose
 
 section     .data
     infoOcas                    dq                  0,                                          ; cantidadOcasVivas
@@ -52,8 +59,22 @@ section     .bss
     estadoPartidaGuardado       resq 1
     estadisticasGuardadas       times 8 resq 1
 
+    dirInfoOcas                 resq 1
+    dirInfoZorro                resq 1
+    dirJugadorActual            resq 1
+    dirRotacionTablero          resq 1
+    dirEstadoPartida            resq 1
+    dirEstadisticas             resq 1
+
 section     .text
 recuperacionPartida:
+    mov                 [dirInfoOcas],r8
+    mov                 [dirInfoZorro],r9
+    mov                 [dirJugadorActual],r10
+    mov                 [dirRotacionTablero],r11
+    mov                 [dirEstadoPartida],r12
+    mov                 [dirEstadisticas],r13
+
 ;   Pregunto si se quiere recuperar la última partida guardada.
     mov                 rdi,pregunta
     mPuts           
@@ -161,14 +182,7 @@ loopLecturaArchivo:
     cmp                 byte[lineasLeidasArchivo],8
     jne                 finArchivo
     mov                 rsi,estadisticasGuardadas
-    call                inicializarVector
-;   Si llegué acá, entonces ya inicialice todas las variables guardadas. Las guardo en los registros.
-    mov                 r8,infoOcasGuardada
-    mov                 r9,infoZorroGuardada
-    mov                 r10,jugadorActualGuardado
-    mov                 r11,rotacionTableroGuardada
-    mov                 r12,estadoPartidaGuardado
-    mov                 r13,estadisticasGuardadas
+    call                inicializarVector    
     jmp                 finArchivo
 continuarLeyendo:
     inc                 byte[lineasLeidasArchivo]
@@ -176,6 +190,7 @@ continuarLeyendo:
 finArchivo:
     mov                 rdi,[idArchivo]
     mFClose
+    call                actualizarVariables
 fin:
     ret
 
@@ -186,15 +201,15 @@ fin:
 ; Deja el resultado en el rax.
 eliminarCaracterSaltoLinea:
     call                contarCaracteres
-    mov                 byte[rdi+rcx],0     ; Reemplazar '\n' con un carácter nulo
+    mov                 byte[rdi+rcx],0                         ; Reemplazar '\n' con un carácter nulo
     mov                 rax,[rdi]
     ret
 
 ; Cuenta los caracteres de una cadena cuya direccion de memoria se encuentra guardada en el registro rdi y guarda el resultado en el rcx.
 contarCaracteres:
-    xor                 rcx,rcx             ; Inicializo el rcx en 0
+    xor                 rcx,rcx                                 ; Inicializo el rcx en 0
 loopContarCaracteres:
-    cmp                 byte[rdi+rcx],10    ; Comparo el caracter actual con el \n (10 en ASCII)
+    cmp                 byte[rdi+rcx],10                        ; Comparo el caracter actual con el \n (10 en ASCII)
     je                  finContarCaracteres
 
     inc                 rcx
@@ -206,7 +221,7 @@ finContarCaracteres:
 ; Devuelve en el rsi la dirección de memoria al vector inicializado.
 inicializarVector:
     xor                 rcx,rcx                                 ; Inicializo el rcx en 0, con él recorro la linea
-    xor                 r8,r8                                   ; Inicializo el r8 en 0, con él recorro el vector de posicion del Zorro.
+    xor                 r8,r8                                   ; Inicializo el r8 en 0. Auxiliar para avanzar en el vector.
 loopRecorrerLinea:
     cmp                 byte[contenidoLineaArchivo+rcx],10      ; Comparo el caracter actual con el \n (10 en ASCII)
     je                  finLinea
@@ -232,4 +247,65 @@ avanzarEnLaLinea:
     inc                 rcx
     jmp                 loopRecorrerLinea
 finLinea:
+    ret
+
+; Actualiza las variables originales segun las guardadas tras recorrer el archivo.
+actualizarVariables:
+;   Copio infoOcas
+    xor                 rcx,rcx                                 ; Inicializo el rcx en 0, con él cuento las iteraciones del loop.
+    xor                 r8,r8                                   ; Inicializo el r8 en 0. Auxiliar para avanzar en el vector.
+loopCopiarInfoOcas:
+    cmp                 rcx,36                                  ; 18 * 2 qwords = 36 qwords
+    jge                 finLoopCopiarInfoOcas
+
+    mov                 rdi,[dirInfoOcas]
+    mov                 rax,[infoOcasGuardada+r8]
+    mov                 [rdi+r8],rax
+
+    inc                 rcx
+    add                 r8,8
+    jmp                 loopCopiarInfoOcas
+finLoopCopiarInfoOcas:
+;   Copio infoZorro
+    xor                 rcx,rcx
+    xor                 r8,r8
+loopCopiarInfoZorro:
+    cmp                 rcx,3                                   ; 3 * 1 qwords = 3 qwords
+    jge                 finLoopCopiarInfoZorro
+
+    mov                 rdi,[dirInfoZorro]
+    mov                 rax,[infoZorroGuardada+r8]
+    mov                 [rdi+r8],rax
+
+    inc                 rcx
+    add                 r8,8
+    jmp                 loopCopiarInfoZorro
+finLoopCopiarInfoZorro:
+;   Copio jugadorActual
+    mov                 rdi,[dirJugadorActual]
+    mov                 rax,[jugadorActualGuardado]
+    mov                 [rdi],rax
+;   Copio rotacionTablero
+    mov                 rdi,[dirRotacionTablero]
+    mov                 rax,[rotacionTableroGuardada]
+    mov                 [rdi],rax
+;   Copio estadoPartida
+    mov                 rdi,[dirEstadoPartida]
+    mov                 rax,[estadoPartidaGuardado]
+    mov                 [rdi],rax
+;   Copio estadisticas
+    xor                 rcx,rcx
+    xor                 r8,r8
+loopCopiarEstadisticas:
+    cmp                 rcx,8                                   ; 8 * 1 qwords = 8 qwords
+    jge                 finLoopCopiarEstadisticas
+
+    mov                 rdi,[dirEstadisticas]
+    mov                 rax,[estadisticasGuardadas+r8]
+    mov                 [rdi+r8],rax
+
+    inc                 rcx
+    add                 r8,8
+    jmp                 loopCopiarEstadisticas
+finLoopCopiarEstadisticas:
     ret
