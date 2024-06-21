@@ -40,24 +40,31 @@
     add     rsp,8
 %endmacro
 
-%macro mostrarUbiFilYActualizar 0
-    ;PRE: ubiFil debe ser la fila actual
-    ;POST: muestra ubiFil y lo incrementa
-    mov     rdi,formatoUbiFil
-    mov     rsi,[ubiFil]
+%macro  mostrarUbicaciones 0
+    ;POST: muestra la ubicacion horizontal e iniciliza la primer etiqueta vertical
     sub     rsp,8
-    call    printf
+    call    mostrarUbiHorizontal
     add     rsp,8
-    inc     qword[ubiFil]
+    sub     rsp,8
+    call    inicializarUbiV
+    add     rsp,8
 %endmacro
 
-%macro mostrarUbiCol 0
-    mov             rdi,ubiCol
-    ponerPuts
-    cambiarSimbA    espacio     ;espacio adicional para mostrar ubiFil al lateral
-    mostrarSimb                 ;doble espacio para separar el tablero de ubiFil
-    mostrarSimb 
+%macro actulizarIndicesMostrarUbiV 0
+    ;POST: actualiza los inidces y muetras (si es necesario) la ubicaciòn lateral (Sea letra numero o espacio)
+    sub                 rsp,8
+    call                actIndexMostrarUbiV
+    add                 rsp,8
 %endmacro
+
+%macro tripleEspacio 0
+    ;POST:muestra 3 espacios seguidos
+    cambiarSimbA    espacio
+    mostrarSimb
+    mostrarSimb
+    mostrarSimb
+%endmacro 
+
 
 %macro guardarEstadoJuego 0
     ;POST: guardar todos los vectores recibidos por registros RDI y RSI
@@ -98,5 +105,4 @@
     sub     rsp,8
     call    rotarPosicionesOcas
     add     rsp,8
-
 %endmacro
