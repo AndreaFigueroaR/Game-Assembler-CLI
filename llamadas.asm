@@ -44,7 +44,7 @@ section     .data
 
 ; Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, comando, jugadorActual, estadisticas.
 ; Pos: Actualiza las variables según el comando ingresado por el usuario.
-%macro realizarJugada 5
+%macro mRealizarJugada 5
     mov RDI, %1;
     mov RSI, %2
     mov RDX, %3
@@ -52,7 +52,7 @@ section     .data
     mov R8,  %5
     
     sub     rsp,8
-    call    ;;;;
+    call    realizarJugada
     add     rsp,8
 %endmacro
 
