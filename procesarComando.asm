@@ -20,16 +20,18 @@ section     .bss
     input                       resb 20;reservo 20 bytes para la entrada del imput
     ;PARAMETROS SALVADOS
     jugadorActual               resq 1; Valor del jugador actual. 0 -> turno del zorro, 1 -> turno de las ocas.
-    dirPosicionOrigen           resq 1;donde dejarà las coordenadas de origen
-    dirPosicionDestino          resq 1;donde dejarà las coordenadas de destino
+    dirPosicionOrigen           resq 1; donde dejarà las coordenadas de origen
+    dirPosicionDestino          resq 1; donde dejarà las coordenadas de destino
     dirEstadoPartida            resq 1 
     dirInfoZorro                resq 1
-    dirInfoOcas                 resq 1
+    dirInfoOcas                 resq 1; infoOcas es un vector de la forma:
+    ;                                   [cantidadOcasVivas, simboloOcas, posFilOca1, posColOca1, ..., posFilOcaN, posColOcaN], donde 0 <= N <= 17
 
 
 section     .text
 
 procesarComando:
+    
     mov [jugadorActual],        RDI
     mov [dirPosicionOrigen],    RSI
     mov [dirPosicionDestino],   RDX
@@ -39,7 +41,6 @@ procesarComando:
 
 lecturaInput:
 
-    ;muestro de quien es el turno:
     mov RDI,mensajePedirMovZorro
     cmp qword[jugadorActual],0
     je mostrarTurno
@@ -57,48 +58,79 @@ validacionInterrupcion:
     cmp EAX,                0
     jne                     validarFormatoMovimiento
     mov RAX,                [dirEstadoJuego]
-    mov qword[RAX],         3              ;cambio estadoPartida
+    mov qword[RAX],         3
 
-    apruebaValidacionTotal  ;pues era una interrupcion
+    apruebaValidacionTotal  
 
 validarFormatoMovimiento:
-    cmp qword[jugadorActual],   0
-    je  movimientoZorro
+    cmp         qword[jugadorActual],   0
+    je          movimientoZorro
+
     movimientoOca:
-        
-        ;si falla alguna de las siguientes pruebas -> se lleva a finValidacion con la validacion en 'N'
-        ;prueba 1.- al convertir el input al NumChar->NumChar se deben convertir exitosamente 4 variables
-        mov     R8,     [dirPosicionOrigen]
+        mov     R8,             [dirPosicionOrigen]
         add     R8,     8
-        mov     R9,     [dirPosicionDestino]
+        mov     R9,             [dirPosicionDestino]
         add     R9,     8
-        movParametros   input,  formatoMovimientoOca,   qword[dirPosicionOrigen],   R8,     qword[dirPosicionDestino],  R9
+        movSeisParametros       input,  formatoMovimientoOca,   qword[dirPosicionOrigen],   R8,     qword[dirPosicionDestino],  R9
         mSscanf
         cmp     EAX,    4
         jne     finValidacion
 
-        chequearPosicionEnTabla [dirPosicionOrigen];Le estoy pasando la direccion donde inicia el vector
-        chequearPosicionEnTabla dirPosicionDestino
+        chequearPosicionEnTabla [dirPosicionOrigen]
+        chequearPosicionEnTabla [dirPosicionDestino]
 
-        
-
-
-        ;si llega hasta aqui es que pasò la validacion del formato de movimiento de una oca
-        ;y sè que los datos guardados en las variables deben ser los numeros posibles dentro del tablero
-        jmp validacionLogicaMovOca;se continuan con màs validaciones
-        
-        
+        jmp validacionLogicaMovOca
     movimientoZorro:
+        mov     R9,             [dirPosicionDestino]
+        add     R9,     8
+        movCuatroParametros     input,  formatoMovimientoOca,   qword[dirPosicionDestino],  R9
+        mSscanf
+        cmp     EAX,    2
+        jne     finValidacion
 
-
-    jmp validacionLogicaMovZorro
+        chequearPosicionEnTabla [dirPosicionDestino]
+        jmp     validacionLogicaMovZorro
 
 validacionLogicaMovOca:
+    traducirLetra   [dirPosicionOrigen]
+    traducirLetra   [dirPosicionDestino]
+    ;1.-verificar que hay una oca con las mismas coordenadas de origen
+    mov     RSI,    [dirInfoOcas]
+    mov     RDI,    RSI                 ;RDI contiene la direccion donde esta el numero (qword) de ocas vivas
+    add     RSI,    16                  ;RSI contiene la direccion de inicio del vector
+    
+    mov     R8,     [dirPosicionOrigen]
+    mov     R9,     [R8]                ;R9 contiene X buscado
+    mov     R10,    [R8+8]              ;R10 contiene Y buscado    
+    buscarOcasEnPosicion    RSI,    qword[RDI],     R9,     R10,    1
+
+    cmp RAX,1
+    jne finValidacion
+    
+    ;2.-validar que hayan cero personajes en la posicion destino
+    ;ocas
+    mov     RDI,    [dirInfoOcas]              
+    mov     R8,     [dirPosicionDestino]
+    mov     R9,     [R8]                ;R9 contiene X buscado
+    mov     R10,    [R8+8]              ;R10 contiene Y buscado 
+    buscarOcaEnPosicion     RSI,    qword[RDI],     R9,     R10,    1
+    cmp RAX,0
+    jne finValidacion
+
+    validarAnvance:;se trata de ver que la oca solo se estè moviendo de
 
 validacionLogicaMovZorro:
+    traducirLetra [dirPosicionDestino]
+    ;no olvidar iniciarlizar posicionOrigen con la posicion que indica el vector de info del zorro
+
 
 finValidacion:
-    cmp byte[inputValido],  'N'
-    je  lecturaInput
+    cmp     byte[inputValido],      'N'
+    je      fallaValidacion
     ret
+
+fallaValidacion:
+    mov     RDI,    mensajeInputInvalido
+    mPuts
+    jmp     lecturaInput
 
