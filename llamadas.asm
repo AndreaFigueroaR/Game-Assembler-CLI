@@ -1,5 +1,5 @@
 section     .data
-    cmd_clear       db  "clear",0
+    cmd_clear           db          "clear",0
     msgGanoZorro        db          "PARTIDA TERMINADA: El zorro es el ganador!",0
     msgGanaronOcas      db          "PARTIDA TERMINADA: Las ocas son las ganadoras!",0
 
@@ -111,12 +111,19 @@ fin:
 %endmacro
 
 ;Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, jugadorActual, rotacionTablero, 
-;     estadoPartida, estadisticas.
+;     estadoPartida y estadisticas.
 ;Pos: Guarda la partida guardando los datos de las variables en un archivo partida.txt. Si el archivo no existe,
-;     lo crea, si no lo sobreescribe. 
+;     lo crea, sino lo sobreescribe. 
 %macro mGuardarPartida 6
+    mov     r8,%1
+    mov     r9,%2
+    mov     r10,%3
+    mov     r11,%4
+    mov     r12,%5
+    mov     r13,%6
+    
     sub     rsp,8
-    call    ;;;;
+    call    guardarPartida
     add     rsp,8
 %endmacro
 
@@ -139,7 +146,7 @@ fin:
 %macro mPuts 0
     sub     rsp,8
     call    puts
-    add     rsp,8 
+    add     rsp,8
 %endmacro
 
 %macro mGets 0
@@ -160,6 +167,12 @@ fin:
     add     rsp,8
 %endmacro
 
+%macro mSprintf 0
+    sub     rsp,8
+    call    sprintf
+    add     rsp,8
+%endmacro
+
 %macro mClear 0
     mov     rdi,cmd_clear
     sub     rsp,8
@@ -176,6 +189,12 @@ fin:
 %macro mFGets 0
     sub     rsp,8
     call    fgets
+    add     rsp,8
+%endmacro
+
+%macro mFPuts 0
+    sub     rsp,8
+    call    fputs
     add     rsp,8
 %endmacro
 
