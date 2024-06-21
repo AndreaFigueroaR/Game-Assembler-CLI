@@ -10,13 +10,10 @@ section     .data
     fil             dq  1
     col             dq  1
     ;impresiòn del tablero
-    formato         db  "%s",0
-    pared           dw  "#"
-    salto           dw  10
-    espacio         dw  " "
-    ubiCol          db  "   A B C D E F G",0
-    formatoUbiFil   db  "%hhi ",0
-    ubiFil          dq  1
+    formato             db  "%s",0
+    pared               dw  "#"
+    salto               dw  10
+    espacio             dw  " "
 
 section     .bss   
     infoOcas                    times 0 resb            
@@ -26,29 +23,26 @@ section     .bss
     infoZorro                   times 0 resb 
         simboloZorro            resq    1
         posicionZorro           times   1   resq    2
-    rotacionTablero             resq    1   ;0º->0,90º->1,180ª->2,270º->3 (en sentido horario)
+    rotacionTablero             resq    1   ;0ª->0,90ª->1,180ª->2,270ª->3
         
     ;auxiliares de impresion
     esPar               resq    1   ;0 si es par, 1 si es impar
-    punteroSimb         resq    1   ;4 bytes para un puntero
+    punteroSimb         resq    1   
     desplazVector       resq    1
     cantElemVector      resq    1
     dirBaseVector       resq    1
     dirDestinoVector    resq    1
-section     .text
+    etiquetaUbicacion   resb    1
 
+section     .text
 imprimirTablero:
     guardarEstadoJuego
     rotarPoscionesPersonajes
-    mostrarUbiCol
+    mostrarUbicaciones
 _mostrarSimbSiguiente:
     cmp                 qword[despl],225    ;tamaño real 15
     je                  fin
-
-    sub                 rsp,8
-    call                actualizarIndicesMostrarUbiFil
-    add                 rsp,8
-
+    actulizarIndicesMostrarUbiV
     cambiarSimbA        espacio
     esPar?              fil
     ;si es fila impar=>cambia a pared y quizás a espacio
@@ -76,7 +70,6 @@ fin:
     cambiarSimbA        salto
     mostrarSimb
 ret
-
 
 ;_________________RUTINAS INTERNAS_________________________
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -150,41 +143,50 @@ convertirACruz:
     jmp             esPreciso  
 ;__________________________________________________________
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-actualizarIndicesMostrarUbiFil:
-
+actIndexMostrarUbiV:
+    ;POST: actualiza fil y col, si es nueva fila muestra o espacio o la etiqueta de esa fila para el usuario (lateral izquierdo).
     cmp             qword[col],16;cmp si reinicia col (tamaño real 15)
     jne             actualizarFil
     mov             qword[col],1
     actualizarFil:
     imul            r8,qword[fil],15
     cmp             r8,[despl]
-    jne             finIndices
+    jne             finActualizarIndices  ;Si no son iguales no es una nueva fila
     inc             qword[fil]
     cambiarSimbA    salto
     mostrarSimb
 
     sub     rsp,8
-    call    imprimirUbiFil
+    call    mostrarLateralIzquierdo
     add     rsp,8
-    finIndices:
+    finActualizarIndices:
     ret
+
 ;__________________________________________________________
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-imprimirUbiFil:
-    ;POST: muestra la etiqueta de la fila 
-    cmp             qword[col],1
-    jne             regresarUbiFil
+mostrarLateralIzquierdo:
+    ;POST: muestra la etiqueta vertical estando en una nueva fila (o espacio o una ubicaciòn)
     esPar?          fil
     cmp             qword[esPar],0        
-    jne             imprimirEspacio     ;si es impar muestra espacio
-    mostrarUbiFilYActualizar            ;si es par muestra ubiFil y actualiza
-    jmp             regresarUbiFil
-
-    imprimirEspacio:
+    je              mostrarUbiV                 ;si es impar muestra espacio
+    tripleEspacio
+    ret   
+    mostrarUbiV:                                ;si es par muestra ubiV y actualiza
     cambiarSimbA    espacio
     mostrarSimb
-    mostrarSimb                ;doble espacio para separar el tablero de ubiFil
-    regresarUbiFil:
+    cambiarSimbA    etiquetaUbicacion
+    mostrarSimb
+    cambiarSimbA    espacio     
+    mostrarSimb
+    cmp             qword[rotacionTablero],0    ;avanza o retrocede dependiendo de la rotaciòn
+    je              avanzarV
+    cmp             qword[rotacionTablero],1
+    je              avanzarV
+    dec             word[etiquetaUbicacion]
+    jmp             finUbiV
+    avanzarV:
+    inc             word[etiquetaUbicacion]
+    finUbiV:
     ret
 ;__________________________________________________________
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -242,4 +244,59 @@ coincidirOcas:
         add                 qword[desplazVector],16 ;analiza de a pares
     loop    coincidirOcas   
     finCoincidirOcas:
+    ret
+;__________________________________________________________
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+mostrarUbiHorizontal:
+    ;POST: muestra las teiquetas horizonatales para ej jugador 
+    mov             qword[desplazVector],7
+    tripleEspacio                   ;espacio adicional para mostrar ubiV y separarlo de ubiV
+    mov             byte[etiquetaUbicacion],"A"
+    cmp             qword[rotacionTablero],0
+    je              mostrarH
+    mov             byte[etiquetaUbicacion],"7"
+    cmp             qword[rotacionTablero],1
+    je              mostrarH
+    mov             byte[etiquetaUbicacion],"G"
+    cmp             qword[rotacionTablero],2
+    je              mostrarH
+    mov             byte[etiquetaUbicacion],"1"
+    mostrarH:
+    cmp             qword[desplazVector],0
+    je              finUbiH
+    dec             qword[desplazVector]
+    cambiarSimbA    espacio
+    mostrarSimb     ;espacio entre casilla y casilla
+    cambiarSimbA    etiquetaUbicacion
+    mostrarSimb
+    cmp             qword[rotacionTablero],0
+    je              avanzarH
+    cmp             qword[rotacionTablero],3
+    je              avanzarH
+    ;en otro caso, retrocede
+    dec             word[etiquetaUbicacion]
+    jmp             mostrarH
+    avanzarH:
+    inc             word[etiquetaUbicacion]
+    jmp             mostrarH
+    finUbiH:
+    cambiarSimbA    salto
+    mostrarSimb
+    tripleEspacio
+    ret
+;__________________________________________________________
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+inicializarUbiV:  
+    ;POST: Inicializa la primera ubicaciòn lateral izquierda para el usuario 
+    mov             byte[etiquetaUbicacion],"1"
+    cmp             qword[rotacionTablero],0
+    je              finInicializarubiV
+    mov             byte[etiquetaUbicacion],"A"
+    cmp             qword[rotacionTablero],1
+    je              finInicializarubiV
+    mov             byte[etiquetaUbicacion],"7"
+    cmp             qword[rotacionTablero],2
+    je              finInicializarubiV
+    mov             byte[etiquetaUbicacion],"G"
+    finInicializarubiV:
     ret
