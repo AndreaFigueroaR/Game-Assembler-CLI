@@ -1,6 +1,17 @@
 %include "llamadas.asm"
 
 global main
+extern system
+extern recuperacionPartida
+extern personalizarPartida
+extern imprimirTabla
+extern procesarComando
+extern realizarJugada
+extern resultadoJuego
+extern imprimirMsgFinJuego
+extern mostrarEstadisticas
+extern guardarPartida
+; despues fijarnos que los extern coincidan con los nombres de las rutinas externas usadas
 
 section .data
     
