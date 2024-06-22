@@ -115,11 +115,22 @@
 ;POST: deja las flags para que je salte si es que hay una posiciòn libre dado un paso en la direcciòn indicada por el versor desde la posicison indicada en coordenadas origen
 %macro calcularPosiblePosZorroEnUnSentido 0
     sumarVersorACoordenadasOrigen
-    ;verificarPosEncruz              ;<- verifica que la coordenada de origen estè en la cruz si no està la cambia por cualquier posiciòn de oca viva (la primera en todo caso)
+    corregirCasoFueraTablero
     buscarOcaPorCoordenadas         coordenadasOrigen
     imul                            r8,qword[cantidadOcasVivas],16
     cmp                             r8,[desplazVector]          ;si son iguales=>posiciòn libre 
 %endmacro 
+
+;PRE:
+;POST: si debe cambiar un caso fuera del tablero, lo hace. Si no, no 
+%macro corregirCasoFueraTablero 0
+    verificarPosEncruz              coordenadasOrigen
+    cmp                             rax,1
+    je                              %%finCorregir
+    mov                             r10,[dirPosicionesOcas]
+    copiarVector                    2,r10,coordenadasOrigen
+    %%finCorregir:
+%endmacro
 
 ;PRE: recibe solo coordenadas formadas con 1,0 o -1
 ;POST: deja las flags para je salte si se encontrò una posiciòn libre en la direcciòn indicada (desde la posiciòn actual del zorro)
