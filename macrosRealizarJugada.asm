@@ -57,7 +57,6 @@
     copiarVector            2,coordenadasDestino,rax
 %endmacro
  
-
 %macro salvarCoordenadas 2
     ;PRE:recibe las direcciones que se van a salvar
     ;POST: las guarda en filAux y colAux (respectivamente)
@@ -89,11 +88,6 @@
     mov                 [r10],r11
 %endmacro 
 
-%macro estadoGanaZorro 0
-    mov     rdi,[dirEstadoPartida]
-    mov     qword[rdi],1
-%endmacro
-
 %macro definirSaltoYSentidoMovida 0
     ;POST: setea el sentido de la jugada y si es que es salto o no
     salvarCoordenadas           filDestino,colDestino
@@ -102,3 +96,34 @@
     add         rsp,8
     recuperarCoordenadas        filDestino,colDestino
 %endmacro 
+
+%macro calcularPosiblePosZorroEnUnSentido 0
+    sumarVersorACoordenadasOrigen
+    verificarPosEncruz              ;<- verifica que la coordenada de origen estè en la cruz si no està la cambia por cualquier posiciòn de oca viva (la primera en todo caso)
+    buscarOcaPorCoordenadas         coordenadasOrigen
+    imul                            r8,qword[cantidadOcasVivas],16
+    cmp                             r8,[desplazVector]          ;si son iguales=>posiciòn libre 
+%endmacro 
+
+%macro buscarPosLibreEndireccion 2
+    ;PRE: recibe solo coordenadas formadas con 1,0 o -1
+    ;POST: deja las flags para je salte si se encontrò una posiciòn libre en la direcciòn indicada
+    mov             qword[filVersor],%1
+    mov             qword[colVersor],%2
+    sub             rsp,8
+    call            zorroAcorraladoUnVersor
+    add             rsp,8
+    cmp             qword[haySgtMovida],1
+%endmacro
+
+%macro estadoTerminaPartida 1
+    ;Pre: recibe el còdigo del ganador: 1 ganò el zorro, 2 ganaron las ocas
+    mov     rdi,[dirEstadoPartida]
+    mov     qword[rdi],%1
+%endmacro
+
+%macro mZorroAcorralado? 0
+    sub         rsp,8
+    call        zorroAcorraladoTotalemente
+    add         rsp,8
+%endmacro
