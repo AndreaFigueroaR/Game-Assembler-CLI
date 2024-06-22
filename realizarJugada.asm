@@ -1,7 +1,3 @@
-;se tiene que cambiar el estado(posicion) de la oca o del zorro que se moviò
-;si se movio el zorro se debe ver si se comio alguna oca, si sì se setea como que no se cambia de turno, luego al inicio de cada
-;luego se tiene que verificar que se halla acabado el turno del jugador actual (si son ocas siempre dura solo un turno, si es el zorro se debe verificar una )
-
 %include "llamadas.asm"
 %include "macrosRealizarJugada.asm"
 
@@ -53,11 +49,17 @@ realizarJugada:
     cambiarPosOca:
     modificarPosOca 
     cambiarJugador:         
-    ;llamamos a estadisticas y actualizamos jugadorActual:       
-        ;si murioOca==0 -> cambiamos de jugadorActual al opuesto
-        ;si  murioOca!=0 -> se deja el jugadorActual
+    cmp                     qword[esSalto],0        ;0 si no es salto (no muriò oca)
+    jne                      finJugada               ;si muriò una oca, se repite turno
 
-    ;fin
+    mov                     rax,[dirJugadorActual]  ;<-contiene la direcciòn del jugador actual
+    mov                     rcx,[rax]               ;<-contiene al jugador actual
+    mov                     rbx,1
+    sub                     rbx,[rcx]               ;<-contiene al jugador contrario
+    mov                     [rax],rbx               ;<-se cambia al jugador Actual
+finJugada:
+    ret
+    
 ;__________________________________________________________
 ;**********************************************************
 ;                   RUTINAS INTERNAS
