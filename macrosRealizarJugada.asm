@@ -97,6 +97,75 @@
     recuperarCoordenadas        filDestino,colDestino
 %endmacro 
 
+%macro coordenadasDentroCuadrado 1
+    mov R10,%1
+    cmp qword[R10],     1
+    jl  %%fuera
+
+    cmp qword[R10+8],   1
+    jl %%fuera
+    
+    cmp qword[R10],     7
+    jg  %%fuera
+
+    cmp qword[R10+8],   7
+    jg %%fuera
+    mov RAX,1
+%%fuera:
+    mov RAX,0
+%endmacro
+
+%macro colProhididasPorFila 2
+    ;pre: Recibe nun numero de fila sensible y la direccion de las coordenadas a validar
+    ;post: Deja en RAX un 1 si es que estaba en rango y un cero si no estaba en rango
+    mov     RAX,            1;inicia como si sì estuviese en la cruz
+
+    mov     R10,            %2;contiene la direccion de la tupla
+    cmp     qword[R10],     %1;contiene un numero de fila sensible
+    jne     %%fin
+    
+    add     R10,            8;para tener la direccion de la columna
+
+    cmp     qword[R10],     1
+    je      %%fueraCruz
+    cmp     qword[R10],     2 
+    je      %%fueraCruz
+    cmp     qword[R10],     6
+    je      %%fueraCruz
+    cmp     qword[R10],     7 
+    je      %%fueraCruz
+    
+%%fueraCruz:
+    mov RAX,0
+
+%%fin:
+%endmacro
+%macro verificarPosEncruz 1
+;Pre: Recibe la direccion donde inicia la tupla con las coordenadas x e Y
+;Post:si la coordenada de origen esta en la cruz deja 1 en el rax si no està deja 0
+    coordenadasDentroCuadrado %1
+    cmp RAX, 0
+    je %%fuera
+
+    colProhididasPorFila 1,%1
+    cmp RAX,0
+    je %%fuera
+    colProhididasPorFila 2,%1
+    cmp RAX,0
+    je %%fuera
+    colProhididasPorFila 6,%1
+    cmp RAX,0
+    je %%fuera
+    colProhididasPorFila 7,%1
+    cmp RAX,0
+    je %%fuera
+
+    mov RAX,1
+    jmp %%fin
+%%fuera:
+    mov RAX,0
+%%fin:
+%endmacro
 %macro calcularPosiblePosZorroEnUnSentido 0
     sumarVersorACoordenadasOrigen
     verificarPosEncruz              ;<- verifica que la coordenada de origen estè en la cruz si no està la cambia por cualquier posiciòn de oca viva (la primera en todo caso)

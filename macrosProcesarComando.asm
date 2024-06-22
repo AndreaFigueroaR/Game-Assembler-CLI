@@ -150,7 +150,7 @@ macrosProcesarComando.asm
 %macro colProhididasPorFila 2
     mov     R10,            %2
     cmp     qword[R10],     %1
-    jne %%passComparation
+    jne %%fin
     ;contiene la fila indicada
     mov     RAX,            %2
     add     RAX,            8
@@ -162,7 +162,7 @@ macrosProcesarComando.asm
     je      finValidacion
     cmp     byte[RAX],      'G'
     je      finValidacion
-%%passComparation:
+%%fin:
 %endmacro
 
 ;tendria que recibir la direccion donde inicia el vector de posicion(origen o destino)
