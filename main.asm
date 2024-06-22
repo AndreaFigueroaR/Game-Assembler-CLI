@@ -44,7 +44,7 @@ continuarJugando:
     mProcesarComando        qword[jugadorActual],   coordenadasOrigen,  coordenadasDestino, estadoPartida,      infoZorro,      infoOcas
     cmp                     qword[estadoPartida],   3
     je                      partidaInterrumpida 
-    mRealizarJugada         infoOcas,               posicionZorro,      infoCoordenadas,     jugadorActual,      estadisticas
+    mRealizarJugada         infoOcas,               posicionZorro,      infoCoordenadas,     jugadorActual
     
     mov                     rax,[jugadorActual]
     cmp                     rax,1
