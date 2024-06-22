@@ -41,32 +41,34 @@ section     .bss
 section .text
 realizarJugada:
     guardarDatos
-    cmp                     qword[juagadorActual],0 ;->0 si es turno del zorro
-    jne                     cambiarPosOca           ;->si es oca, se cambia su posiciòn y se analiza si es que se acorralò al zorro 
-    modificarPosZorro                               ;->si es zorro, se cambia su posicion, se mata a la oca y se consulta si es se mataron a 12 ocas 
-    ejecutarMovimiento:
+    cmp                     qword[juagadorActual],0     ;->0 si es turno del zorro
+    jne                     cambiarPosOca               ;->si es oca, se cambia su posiciòn y se analiza si es que se acorralò al zorro 
+    modificarPosZorro                                   ;->si es zorro, se cambia su posicion, se mata a la oca y se consulta si es se mataron a 12 ocas 
     definirSaltoYSentidoMovida
     cmp                     qword[esSalto],0            ;->1 se come a una oca
-    je                      preguntarZorroAcorralado    ;->si no se come oca se pregunta si quedò acorralado
+    je                      cambiarJugador              ;->si no se come oca se pregunta si quedò acorralado
     mMatarOca                                           ;->si se mata oca se pregunta si zorro victorioso
     jmp                     preguntarZorroVictorioso
+
     cambiarPosOca:
     modificarPosOca         
     jmp                     preguntarZorroAcorralado
 
     preguntarZorroVictorioso:                 
     cmp                     qword[cantidadOcasVivas],5      ;<- 17-12 ocas
-    jne                     preguntarZorroAcorralado
-    estadoGanaZorro
-    jmp                      finJugada
-    preguntarZorroAcorralado:                 ;aqui se llega si es que fue turno de la oca, si es que fue turno del zorro 
-    ;si la consulta es sì =>estadoGananOcas=>finJugada
-    ;si la consulta es no =>cambiarJugador=>finJugada
+    jne                     finJugada
+    estadoTerminaPartida    1                               ;<-1 ganò el zorro, 2 ganaron las ocas
+    jmp                     finJugada
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    preguntarZorroAcorralado:
+    mZorroAcorralado?
+    mov                     rdx,[dirEstadoPartida]
+    cmp                     [rdx],0
+    jne                     finJugada
+
     cambiarJugador:
     cmp                     qword[esSalto],0        ;0 si no es salto (no muriò oca)
-    jne                      finJugada               ;si muriò una oca, se repite turno
+    jne                     finJugada               ;si muriò una oca, se repite turno
 
     mov                     rax,[dirJugadorActual]  ;<-contiene la direcciòn del jugador actual
     mov                     rcx,[rax]               ;<-contiene al jugador actual
@@ -75,80 +77,49 @@ realizarJugada:
     mov                     [rax],rbx               ;<-se cambia al jugador Actual
 finJugada:
     ret
-    
-
 
 ;__________________________________________________________
 ;**********************************************************
 ;                   RUTINAS INTERNAS
 ;__________________________________________________________
 ;**********************************************************
-;           ZORRO ACORRALADO
-;           zorro acorralado en todas las direcciones
-
-;           ZORRO ACORRALADO en una direcciòn 
-;se la direcciòn filAux,colAux = versor
-;si la posiciòn= (versor + posZorro ) està libre=> 
-
 zorroAcorraladoTotalemente:
-    mov             qword[filVersor],1
-    mov             qword[colVersor],1
-    sub             rsp,8
-    call            zorroAcorraladoUnVersor
-    add             rsp,8
-    cmp             qword[haySgtMovida],1
-    je              zorroEsLibre
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    mov             qword[filVersor],1
-    mov             qword[colVersor],0
-    sub             rsp,8
-    call            zorroAcorraladoUnVersor
-    add             rsp,8
-    cmp             qword[haySgtMovida],1
-    je              zorroEsLibre
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    mov             qword[filVersor],1
-    mov             qword[colVersor],1
-    sub             rsp,8
-    call            zorroAcorraladoUnVersor
-    add             rsp,8
-    cmp             qword[haySgtMovida],1
-    je              zorroEsLibre
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    mov             qword[filVersor],1
-    mov             qword[colVersor],1
-    sub             rsp,8
-    call            zorroAcorraladoUnVersor
-    add             rsp,8
-    cmp             qword[haySgtMovida],1
-    je              zorroEsLibre
+    buscarPosLibreEndireccion   1,1
+    je                          zorroEsLibre
+    buscarPosLibreEndireccion   1,0
+    je                          zorroEsLibre
+    buscarPosLibreEndireccion   1,-1
+    je                          zorroEsLibre
+    buscarPosLibreEndireccion   -1,1
+    je                          zorroEsLibre
 
+    buscarPosLibreEndireccion   -1,0
+    je                          zorroEsLibre
+    buscarPosLibreEndireccion   -1,-1
+    je                          zorroEsLibre
+    buscarPosLibreEndireccion   0,1
+    je                          zorroEsLibre
+    buscarPosLibreEndireccion   0,-1
+    je                          zorroEsLibre
+
+    estadoTerminaPartida        2
     zorroEsLibre:
     ret
-
-
-zorroAcorraladoUnVersor:    
-    ;PRE: versor tiene una direcciòn a la que se puede mover el zorro (solo puede tenero coordenadas 1,0 o -1)
+;__________________________________________________________
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+zorroAcorraladoUnVersor:
     mov                             rdx,[dirPosicionZorro]
     copiarVector                    2,rdx,coordenadasOrigen
-    sumarVersorACoordenadasOrigen
-    ;tengo en coordenadas origen la suma de la posiciòn del zorro y el versor probandose
-    buscarOcaPorCoordenadas         coordenadasOrigen
-    ;si no se encontrò oca, el desplazamiento es 16*cantidadOcasVivas
-    imul                            r8,qword[cantidadOcasVivas],16
-    cmp                             r8,[desplazVector]          ;si son iguales=>posiciòn libre 
+    calcularPosiblePosZorroEnUnSentido      ;<-al final compara, si hay posiciòn libre (flag equal indica si es una pos libre)
     je                              hayMovPosible
-    ;veo si puedo comer
-    sumarVersorACoordenadasOrigen                               ;ahora tengo en coordenadas origen la posiciòn donde deberìa poder moverme 
-    buscarOcaPorCoordenadas         coordenadasOrigen
-    imul                            r8,qword[cantidadOcasVivas],16
-    cmp                             r8,[desplazVector]
-    je                              hayMovPosible               ;si son iguales=>posiciòn libre
-    ret                                                         ;si no hay siguiente movida, no se cambia nada 
+    calcularPosiblePosZorroEnUnSentido
+    je                              hayMovPosible
+    ret
     hayMovPosible:
     mov                             qword[haySgtMovida],1
     ret
-
+;__________________________________________________________
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 matarOca:
     ;sumo el sentido de la jugada (a la posicion origen) y busca una oca con esa posiciòn
     mov                 rax,[sentidoFila]
@@ -264,8 +235,3 @@ analizarMovida:
     mov     qword[esSalto],1
     finAnalizarMovida:
     ret
-; posSinOca:
-;     ;PRE: iniciliza en coordenadasAux la posiciòn que se quiere buscar 
-;     buscarOcaPorCoordenadas   coordenadasAux
-;     imul                r8,qword[cantidadOcasVivas],16
-;     cmp                 [desplazVector],r8
