@@ -4,7 +4,7 @@
 global realizarJugada
 section     .data
     esSalto                 dq      0;->0 no es salto, 1 es salto
-
+    
 section     .bss
     ;por dato
     jugadorActual           resq    1   ;0 -> turno zorro, 1 -> turno ocas.
@@ -21,6 +21,7 @@ section     .bss
     dirPosicionesOcas       resq        ;[posFilOca1, posColOca1, ..., posFilOcaN, posColOcaN]
     dirPosicionZorro        resq    1
     dirJugadorActual        resq    1
+    dirEstadoPartida        resq    1    ;0 -> partidaActiva, 1 ->ganó el Zorro, 2 -> ganaron las ocas, 3 -> partida interrumpida
       
     ;auxiliares
     sentidoJugada           times   0    
@@ -33,21 +34,34 @@ section     .bss
     coordenadasAux          times   0   
         filAux                  resq    1
         colAux                  resq    1
-section     .text
+
+section .text
 realizarJugada:
     guardarDatos
     cmp                     qword[juagadorActual],0 ;->0 si es turno del zorro
-    jne                     cambiarPosOca
-    modificarPosZorro       
+    jne                     cambiarPosOca           ;->si es oca, se cambia su posiciòn y se analiza si es que se acorralò al zorro 
+    modificarPosZorro                               ;->si es zorro, se cambia su posicion, se mata a la oca y se consulta si es se mataron a 12 ocas 
     ejecutarMovimiento:
     definirSaltoYSentidoMovida
-    cmp                     qword[esSalto],0
-    je                      cambiarJugador
-    mMatarOca
-    jmp                     cambiarJugador
+    cmp                     qword[esSalto],0            ;->1 se come a una oca
+    je                      preguntarZorroAcorralado    ;->si no se come oca se pregunta si quedò acorralado
+    mMatarOca                                           ;->si se mata oca se pregunta si zorro victorioso
+    jmp                     preguntarZorroVictorioso
     cambiarPosOca:
-    modificarPosOca 
-    cambiarJugador:         
+    modificarPosOca         
+    jmp                     preguntarZorroAcorralado
+
+    preguntarZorroVictorioso:                 
+    cmp                     qword[cantidadOcasVivas],5      ;<- 17-12 ocas
+    jne                     preguntarZorroAcorralado
+    estadoGanaZorro
+    jmp                      finJugada
+    preguntarZorroAcorralado:                 ;aqui se llega si es que fue turno de la oca, si es que fue turno del zorro 
+    ;si la consulta es sì =>estadoGananOcas=>finJugada
+    ;si la consulta es no =>cambiarJugador=>finJugada
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    cambiarJugador:
     cmp                     qword[esSalto],0        ;0 si no es salto (no muriò oca)
     jne                      finJugada               ;si muriò una oca, se repite turno
 
@@ -59,11 +73,22 @@ realizarJugada:
 finJugada:
     ret
     
+
+
 ;__________________________________________________________
 ;**********************************************************
 ;                   RUTINAS INTERNAS
 ;__________________________________________________________
 ;**********************************************************
+;           ZORRO ACORRALADO
+;           zorro acorralado en todas las direcciones
+
+;           ZORRO ACORRALADO en una direcciòn 
+;se la direcciòn filAux,colAux = versor
+;si la posiciòn= (versor + posZorro ) està libre=> 
+
+
+
 matarOca:
     ;sumo el sentido de la jugada (a la posicion origen) y busca una oca con esa posiciòn
     mov                 rax,[sentidoFila]
@@ -72,18 +97,19 @@ matarOca:
     add                 [colOrigen],rax
     ;ahora coordenadas origen tiene la posicion de la oca que busco eliminar 
     buscarOcaPorCoordenadas coordenadasOrigen
-    ;desplazVector me dice què oca matar >:)
+    ;desplazVector me dice què oca matar
     mov                 rax,[dirPosicionesOcas]
     add                 rax,[desplazVector]
-    ;busco direcciòn de la ultima oca viva
-    dec                 qword[cantidadOcasVivas]        ;mato una oca
+    excluirOca                                          ;mato una oca (en el juego y en la copia resto 1 a la cantidad de ocas vivas)
     imul                r8,qword[cantidadOcasVivas],16  ;cada coordenada ocupa 16 bytes (tengo desplazamiento hasta la ùltima viva)
     add                 r8,[dirPosicionesOcas]          ;tengo la direcciòn de la ultima oca viva          
-    copiarVector        2,r8,rax   
+    copiarVector        2,r8,rax                        ;piso la posiciòn de la oca que querìa matar con la ultima viva 
     ret
 ;__________________________________________________________
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 buscarOca:
+    ;PRE: rcx inicializada con la cantidad de ocas vivas 
+    ;POST: deja en desplaz vector el desplazamiento hasta la posiciòn de la oca buscada. Si la oca no se encontrò, el desplazamiento es cantOcasVivas*16
     ;si ya la encontrè no sigo buscando=>el desplazamiento me dirà la direcciòn que le tengo que mnadar a copiar vector
     mov             r8,[desplazVector]
     mov             r9,[dirPosicionesOcas+r8];->tengo la fila
@@ -178,3 +204,8 @@ analizarMovida:
     mov     qword[esSalto],1
     finAnalizarMovida:
     ret
+; posSinOca:
+;     ;PRE: iniciliza en coordenadasAux la posiciòn que se quiere buscar 
+;     buscarOcaPorCoordenadas   coordenadasAux
+;     imul                r8,qword[cantidadOcasVivas],16
+;     cmp                 [desplazVector],r8
