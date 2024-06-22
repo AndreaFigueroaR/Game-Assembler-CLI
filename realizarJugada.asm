@@ -4,7 +4,7 @@
 global realizarJugada
 section     .data
     esSalto                 dq      0;->0 no es salto, 1 es salto
-    
+    haySgtMovida            dq      0;->0 no hay sgtMovida, 1 hay sgtMovida
 section     .bss
     ;por dato
     jugadorActual           resq    1   ;0 -> turno zorro, 1 -> turno ocas.
@@ -32,8 +32,11 @@ section     .bss
     dirBaseVector                   resq    1
     dirDestinoVector                resq    1
     coordenadasAux          times   0   
-        filAux                  resq    1
-        colAux                  resq    1
+        filAux                      resq    1
+        colAux                      resq    1
+    versor                  times   0      
+        filVersor                   resq    1
+        colVersor                   resq    1
 
 section .text
 realizarJugada:
@@ -44,7 +47,7 @@ realizarJugada:
     ejecutarMovimiento:
     definirSaltoYSentidoMovida
     cmp                     qword[esSalto],0            ;->1 se come a una oca
-    je                      cambiarJugador    ;->si no se come oca se pregunta si quedò acorralado
+    je                      preguntarZorroAcorralado    ;->si no se come oca se pregunta si quedò acorralado
     mMatarOca                                           ;->si se mata oca se pregunta si zorro victorioso
     jmp                     preguntarZorroVictorioso
     cambiarPosOca:
@@ -53,7 +56,7 @@ realizarJugada:
 
     preguntarZorroVictorioso:                 
     cmp                     qword[cantidadOcasVivas],5      ;<- 17-12 ocas
-    jne                     finJugada;tanto si ganó o no, al haber comido repite turno
+    jne                     preguntarZorroAcorralado
     estadoGanaZorro
     jmp                      finJugada
     preguntarZorroAcorralado:                 ;aqui se llega si es que fue turno de la oca, si es que fue turno del zorro 
@@ -87,7 +90,64 @@ finJugada:
 ;se la direcciòn filAux,colAux = versor
 ;si la posiciòn= (versor + posZorro ) està libre=> 
 
+zorroAcorraladoTotalemente:
+    mov             qword[filVersor],1
+    mov             qword[colVersor],1
+    sub             rsp,8
+    call            zorroAcorraladoUnVersor
+    add             rsp,8
+    cmp             qword[haySgtMovida],1
+    je              zorroEsLibre
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    mov             qword[filVersor],1
+    mov             qword[colVersor],0
+    sub             rsp,8
+    call            zorroAcorraladoUnVersor
+    add             rsp,8
+    cmp             qword[haySgtMovida],1
+    je              zorroEsLibre
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    mov             qword[filVersor],1
+    mov             qword[colVersor],1
+    sub             rsp,8
+    call            zorroAcorraladoUnVersor
+    add             rsp,8
+    cmp             qword[haySgtMovida],1
+    je              zorroEsLibre
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    mov             qword[filVersor],1
+    mov             qword[colVersor],1
+    sub             rsp,8
+    call            zorroAcorraladoUnVersor
+    add             rsp,8
+    cmp             qword[haySgtMovida],1
+    je              zorroEsLibre
 
+    zorroEsLibre:
+    ret
+
+
+zorroAcorraladoUnVersor:    
+    ;PRE: versor tiene una direcciòn a la que se puede mover el zorro (solo puede tenero coordenadas 1,0 o -1)
+    mov                             rdx,[dirPosicionZorro]
+    copiarVector                    2,rdx,coordenadasOrigen
+    sumarVersorACoordenadasOrigen
+    ;tengo en coordenadas origen la suma de la posiciòn del zorro y el versor probandose
+    buscarOcaPorCoordenadas         coordenadasOrigen
+    ;si no se encontrò oca, el desplazamiento es 16*cantidadOcasVivas
+    imul                            r8,qword[cantidadOcasVivas],16
+    cmp                             r8,[desplazVector]          ;si son iguales=>posiciòn libre 
+    je                              hayMovPosible
+    ;veo si puedo comer
+    sumarVersorACoordenadasOrigen                               ;ahora tengo en coordenadas origen la posiciòn donde deberìa poder moverme 
+    buscarOcaPorCoordenadas         coordenadasOrigen
+    imul                            r8,qword[cantidadOcasVivas],16
+    cmp                             r8,[desplazVector]
+    je                              hayMovPosible               ;si son iguales=>posiciòn libre
+    ret                                                         ;si no hay siguiente movida, no se cambia nada 
+    hayMovPosible:
+    mov                             qword[haySgtMovida],1
+    ret
 
 matarOca:
     ;sumo el sentido de la jugada (a la posicion origen) y busca una oca con esa posiciòn
