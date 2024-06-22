@@ -18,30 +18,31 @@ section     .bss
     cantidadOcasVivas       resq    1
     ;punteros
     dirCantidadOcasVivas    resq    1   
-    dirPosicionesOcas       resq        ;[posFilOca1, posColOca1, ..., posFilOcaN, posColOcaN]
+    dirPosicionesOcas       resq    1    ;[posFilOca1, posColOca1, ..., posFilOcaN, posColOcaN]
     dirPosicionZorro        resq    1
     dirJugadorActual        resq    1
     dirEstadoPartida        resq    1    ;0 -> partidaActiva, 1 ->ganó el Zorro, 2 -> ganaron las ocas, 3 -> partida interrumpida
       
     ;auxiliares
-    sentidoJugada           times   0    
+    sentidoJugada           times 0 resb
         sentidoFila                 resq    1   ;0 si es es en la misma fila, 1 si en una fila superior, -1 para fila inferior
         sentidoColumna              resq    1   ;0 si es es en la misma columna, 1 si en una columna superior, -1 para columna inferior
     desplazVector                   resq    1
     cantElemVector                  resq    1
     dirBaseVector                   resq    1
     dirDestinoVector                resq    1
-    coordenadasAux          times   0   
+    coordenadasAux          times 0 resb
         filAux                      resq    1
         colAux                      resq    1
-    versor                  times   0      
+    versor                  times 0 resb     
         filVersor                   resq    1
         colVersor                   resq    1
 
 section .text
+
 realizarJugada:
     guardarDatos
-    cmp                     qword[juagadorActual],0     ;->0 si es turno del zorro
+    cmp                     qword[jugadorActual],0      ;->0 si es turno del zorro
     jne                     cambiarPosOca               ;->si es oca, se cambia su posiciòn y se analiza si es que se acorralò al zorro 
     modificarPosZorro                                   ;->si es zorro, se cambia su posicion, se mata a la oca y se consulta si es se mataron a 12 ocas 
     definirSaltoYSentidoMovida
@@ -110,9 +111,9 @@ zorroAcorraladoTotalemente:
 zorroAcorraladoUnVersor:
     mov                             rdx,[dirPosicionZorro]
     copiarVector                    2,rdx,coordenadasOrigen
-    calcularPosiblePosZorroEnUnSentido      ;<-al final compara, si hay posiciòn libre (flag equal indica si es una pos libre)
+    calcularPosiblePosZorroEnUnSentido                      ;<-(flag equal indica si es una pos libre)
     je                              hayMovPosible
-    calcularPosiblePosZorroEnUnSentido
+    calcularPosiblePosZorroEnUnSentido                      ;<-(flag equal indica si es una pos libre)
     je                              hayMovPosible
     ret
     hayMovPosible:
@@ -156,7 +157,7 @@ buscarOca:
     jmp             ocaEncontrada
     sgtOca:
     add             qword[desplazVector],16;->compara de a pares
-    loop buscarOca:
+    loop buscarOca
     ocaEncontrada:
     ret
 ;__________________________________________________________
