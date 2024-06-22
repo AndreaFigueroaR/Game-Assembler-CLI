@@ -43,8 +43,8 @@ macrosProcesarComando.asm
     ;   RSI    -> DirInfoCoordenadas
     ;   RDX    -> DirEstadisticas
     ;   RCX    -> DirEstadoPartida
-    ;   R8     -> DirInfoZorro
-    ;   R9     -> DirInfoOcas
+    ;   R8     -> DirInfoOcasYZorro
+    ;   R9     -> DirRotacion
     ;Post: Guarda localmente los datos y punteros
     mov [jugadorActual],        RDI
     mov [dirPosicionOrigen],    RSI
@@ -52,8 +52,10 @@ macrosProcesarComando.asm
     mov [dirPosicionDestino],   RSI
     mov [dirEstadisticas],      RDX 
     mov [dirEstadoPartida],     RCX
+    mov [dirInfoOcas],          R8
+    add R8,                     288
     mov [dirInfoZorro],         R8
-    mov [dirInfoOcas],          R9
+    mov [dirRotacion],          R9
     
 %endmacro
 

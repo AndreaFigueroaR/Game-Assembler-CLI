@@ -5,7 +5,7 @@
 global procesarComando
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;                             INICIALIZACION DATOS
+;                             INICIALIZACIÓN DATOS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 section     .data
     ;mensajes salida
@@ -42,9 +42,10 @@ section     .bss
     dirInfoZorro                resq    1
     dirInfoOcas                 resq    1              
     dirEstadisticas             resq    1
+    dirRotacion                 resq    1
      
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;                             CODIGO FUENTE
+;                             CÓDIGO FUENTE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 section     .text
 
@@ -66,8 +67,8 @@ validarGuardarPartida:
     compararInput                   comandoGuardar
     cmp     EAX,                    0
     jne     validarFormatoMovimiento
-    ;LLAMADA A GUARDAR ESTADISTICAS
-    ;mActualizarEstadisticas [dirEstadisticas],;dirCoordOrigenZorro y dirCoordDestinoZorro? hay dif si envio punteros a las coordenadas de origen y de destino (del jugador actual)?
+    ;llamada a guardar estadisticas 
+    mGuardarPartida     [dirInfoOcas],  [dirInfoZorro], jugadorActual, [dirRotacion], [dirEstadoPartida], [dirEstadisticas]
     jmp     pedirInput
 
 validarFormatoMovimiento:

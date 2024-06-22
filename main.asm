@@ -41,7 +41,7 @@ main:
 continuarJugando:
     mClear
     imprimirTabla           infoOcas,               infoZorro,          rotacionTablero
-    mProcesarComando        qword[jugadorActual],   infoCoordenadas,    estadisticas,       estadoPartida,      infoZorro,      infoOcas
+    mProcesarComando        qword[jugadorActual],   infoCoordenadas,    estadisticas,       estadoPartida,      infoOcas,       rotacionTablero  
     cmp                     qword[estadoPartida],   3
     je                      partidaInterrumpida 
     mRealizarJugada         infoOcas,               posicionZorro,      infoCoordenadas,    jugadorActual
