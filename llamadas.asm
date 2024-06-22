@@ -44,15 +44,14 @@ section     .data
     add     rsp,8
 %endmacro
 
-; Pre: Recibe las direcciones de memoria de las variables infoOcas, posicionZorro, infoCoordenadas, jugadorActual, EstadoPartida.
+; Pre: Recibe las direcciones de memoria de las variables infoOcas, posicionZorro, infoCoordenadas, jugadorActual, estadisticas.
 ; Pos: Actualiza las variables según el comando ingresado por el usuario.
-%macro mRealizarJugada 5
+%macro mRealizarJugada 4
 
     mov     RDI, %1;->infoOcas
     mov     RSI, %2;->posicionZorro
     mov     RDX, %3;->infoCoordenadas
     mov     RCX, %4;->jugadorActual
-    mov     R8,  %5;->estadoPartida
     
     sub     rsp,8
     call    realizarJugada
@@ -64,18 +63,26 @@ section     .data
 ;       guarda las coordenadas en las direcciones brindadas.
 %macro mProcesarComando 6
 
-    mov RDI,    %1;->jugador activo (solo la uso de lectura, ya que realizarJugada se encarga de editarlo)
-    mov RSI,    %2;->dirOrigen
-    mov RDX,    %3;->dirDestino 
+    mov RDI,    %1;->jugadorActual (solo la uso de lectura, ya que realizarJugada se encarga de editarlo)
+    mov RSI,    %2;->dirInfoCoordenadas
+    mov RDX,    %3;->dirEstadisticas
     mov RCX,    %4;->dirEstadoPartida (la edito si se interrumpe el juego)
     mov R8,     %5;->dirInfoZorro
     mov R9,     %6;->dirInfoOcas
+
 
     sub RSP,    8
     call        procesarComando
     add RSP,    8
 %endmacro
 
+; Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, jugadorActual, estadoPartida.
+; Pos: Actualiza el estado del juego según si el zorro esta acorralado o si ya murieron 12 ocas
+%macro resultadoJuego 4
+    sub     rsp,8
+    call    ;;;;
+    add     rsp,8
+%endmacro
 
 ; Pre: Recibe la dirección de memoria de la variable estadoPartida.
 ; Pos: Imprime por pantalla el mensaje de fin del juego según el estado final del juego.

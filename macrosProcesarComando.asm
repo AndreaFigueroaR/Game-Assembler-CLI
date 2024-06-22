@@ -3,15 +3,28 @@ macrosProcesarComando.asm
 ; MACROS PARA VALIDACION DE DATOS
 ;*****************************************************************************
 %macro guardarParametros 0
+    ;Pre: Se dejaron en los resgistros RDI,RSI,... los siguientes punteros y datos 
+        ;RDI    ->jugadorActual
+        ;RSI    ->dirInfoCoordenadas
+        ;RDX    ->dirEstadisticas
+        ;RCX    ->dirEstadoPartida
+        ;R8     ->dirInfoZorro
+        ;R9     ->dirInfoOcas
+    ;Post: Guarda localmente los datos y punteros
     mov [jugadorActual],        RDI
     mov [dirPosicionOrigen],    RSI
-    mov [dirPosicionDestino],   RDX
+    add RSI,                    16
+    mov [dirPosicionDestino],   RSI
+    mov [dirEstadisticas],      RDX 
     mov [dirEstadoPartida],     RCX
     mov [dirInfoZorro],         R8
     mov [dirInfoOcas],          R9
+    
 %endmacro
 
 %macro pedirMovimiento 0
+    ;Pre: Segun el jugador actual muestra un mensaje antes de pedir el movimiento actual
+    ;Post:
     mov     RDI,            mensajePedirMovZorro
     cmp     qword[jugadorActual],   0
     je      %%imprimir
@@ -231,7 +244,6 @@ macrosProcesarComando.asm
 %endmacro
 
 %macro sinOcasEnDestino 0
-;MAL deberia de pasarle de primer parametro la Dirección de la matriz donde inicien las ocas
     mov RSI,            qword[dirInfoOcas];
     add RSI,            16
     buscarCoincidenciaCoordenadas   RSI,    qword[n_ocas],    qword[x_destino],    qword[y_destino],    1
@@ -240,7 +252,6 @@ macrosProcesarComando.asm
 %endmacro
 
 %macro sinZorroEnDestino 0
-    ;deberia de fijarse que la 
     mov RSI,            qword[dirInfoZorro]
     add RSI,            8
     buscarCoincidenciaCoordenadas   RSI,    1,    qword[x_destino],    qword[y_destino],    1
