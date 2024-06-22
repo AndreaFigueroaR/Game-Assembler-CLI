@@ -66,8 +66,8 @@ validarGuardarPartida:
     compararInput                   comandoGuardar
     cmp     EAX,                    0
     jne     validarFormatoMovimiento
-    ;LLAMADA A ACTUALIZAR ESTADISTICAS
-    mActualizarEstadisticas [dirEstadisticas],;coordOrigenZorro y coordDestinoZorro??
+    ;LLAMADA A GUARDAR ESTADISTICAS
+    ;mActualizarEstadisticas [dirEstadisticas],;dirCoordOrigenZorro y dirCoordDestinoZorro? hay dif si envio punteros a las coordenadas de origen y de destino (del jugador actual)?
     jmp     pedirInput
 
 validarFormatoMovimiento:
