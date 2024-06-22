@@ -166,6 +166,7 @@
     mov RAX,0
 %%fin:
 %endmacro
+
 %macro calcularPosiblePosZorroEnUnSentido 0
     sumarVersorACoordenadasOrigen
     verificarPosEncruz              ;<- verifica que la coordenada de origen estè en la cruz si no està la cambia por cualquier posiciòn de oca viva (la primera en todo caso)
