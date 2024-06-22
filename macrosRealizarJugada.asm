@@ -1,5 +1,6 @@
 
 %macro copiarVector 3
+    ;n,source,destination
     ;PRE: recibe el tamaño a copiar, la dir del vector DE DONDE se copiarà, y dir del vector DONDE se copiarà 
     mov         qword[cantElemVector],%1
     mov         [dirBaseVector],%2
@@ -9,6 +10,13 @@
     call        guardarVector
     add         rsp,8
 %endmacro
+
+%macro sumarVersorACoordenadasOrigen 0
+    mov             r8,[filVersor]
+    add             [filOrigen],r8
+    mov             r8,[colVersor]
+    add             [colVersor],r8
+%endmacro 
 
 %macro  guardarDatos 0
     mov     [dirEstadoPartida],     r8
