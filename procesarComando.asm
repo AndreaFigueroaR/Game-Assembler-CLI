@@ -1,7 +1,6 @@
 %include "llamadas.asm"
 %include "macrosProcesarComando.asm"
 
-;tildes Á, É,Í,Ó,Ú á,é,í,ó,ú
 global procesarComando
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
