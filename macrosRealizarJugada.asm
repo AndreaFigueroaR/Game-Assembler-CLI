@@ -11,6 +11,7 @@
 %endmacro
 
 %macro  guardarDatos 0
+    mov     [dirEstadoPartida],     r8
     mov     [dirPosicionZorro],     rsi
     mov     [dirCantidadOcasVivas], rdi
     mov     r10,                    [rdi]
@@ -26,7 +27,7 @@
 %endmacro
 
 %macro buscarOcaPorCoordenadas 1
-    ;PRE: Recibe el rotulo de la posicion que se quiere buscar. Ejem: buscarOcaPorCoordenadas coordenadasOrigen
+    ;PRE: Recibe el rotulo de la posicion que se quiere buscar. Ejem: buscarOcaPorCoordenadas coordenadasOrigen, esta no puede ser las coordenadas auxiliares 
     ;POST:Deja en desplazVector el desplazamiento desde el inicio del vector
     mov                 rcx,[cantidadOcasVivas]
     mov                 qword[desplazVector],0
@@ -47,21 +48,7 @@
     mov                     rax,[dirPosicionZorro]
     copiarVector            2,coordenadasDestino,rax
 %endmacro
-
-%macro obtenerPosZorro
-    ;POST: deja en coordenadas coordenadasAux la posiciòn del zorro
-    mov                     rax,[dirPosicionZorro]
-    copiarVector            2,rax,coordenadasAux
-%endmacro 
-
-%macro definirSaltoYSentidoMovida 0
-    ;POST: setea el sentido de la jugada y si es que es salto o no
-    salvarCoordenadas           filDestino,colDestino
-    sub         rsp,8
-    call        analizarMovida
-    add         rsp,8
-    recuperarCoordenadas        filDestino,colDestino
-%endmacro 
+ 
 
 %macro salvarCoordenadas 2
     ;PRE:recibe las direcciones que se van a salvar
@@ -86,3 +73,24 @@
     add     rsp,8
     recuperarCoordenadas    filOrigen,colOrigen
 %endmacro
+
+%macro excluirOca 0
+    dec                 qword[cantidadOcasVivas]
+    mov                 r11,[cantidadOcasVivas]
+    mov                 r10,[dirCantidadOcasVivas]
+    mov                 [r10],r11
+%endmacro 
+
+%macro estadoGanaZorro 0
+    mov     rdi,[dirEstadoPartida]
+    mov     qword[rdi],1
+%endmacro
+
+%macro definirSaltoYSentidoMovida 0
+    ;POST: setea el sentido de la jugada y si es que es salto o no
+    salvarCoordenadas           filDestino,colDestino
+    sub         rsp,8
+    call        analizarMovida
+    add         rsp,8
+    recuperarCoordenadas        filDestino,colDestino
+%endmacro 
