@@ -33,7 +33,7 @@ section     .bss
     coordenadasAux          times   0   
         filAux                  resq    1
         colAux                  resq    1
-
+section     .text
 realizarJugada:
     guardarDatos
     cmp                     qword[juagadorActual],0 ;->0 si es turno del zorro
