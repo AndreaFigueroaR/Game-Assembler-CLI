@@ -1,22 +1,6 @@
 %include "llamadas.asm"
 %include "macrosProcesarComando.asm"
 
-extern system
-extern recuperacionPartida
-extern personalizarPartida
-extern imprimirTablero
-
-extern realizarJugada
-extern actualizarEstadisticas
-extern resultadoJuego
-extern mostrarEstadisticas
-extern guardarPartida
-extern sscanf
-extern puts
-extern printf
-extern gets
-extern strcmp
-
 global procesarComando
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
