@@ -53,7 +53,7 @@ realizarJugada:
 
     preguntarZorroVictorioso:                 
     cmp                     qword[cantidadOcasVivas],5      ;<- 17-12 ocas
-    jne                     preguntarZorroAcorralado
+    jne                     cambiarJugador
     estadoGanaZorro
     jmp                      finJugada
     preguntarZorroAcorralado:                 ;aqui se llega si es que fue turno de la oca, si es que fue turno del zorro 
