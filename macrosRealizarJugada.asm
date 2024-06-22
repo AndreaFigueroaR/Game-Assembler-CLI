@@ -2,7 +2,7 @@
 ;POST: copia la cantidad de elementos indicados del vector que se recibiò en el segundo vector recibido
 %macro copiarVector 3
     mov         qword[cantElemVector],%1
-    mov         [dirBaseVector],%2
+    mov         qword[dirBaseVector],%2
     mov         qword[dirDestinoVector],%3
 
     sub         rsp,8

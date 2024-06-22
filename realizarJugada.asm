@@ -64,7 +64,7 @@ realizarJugada:
     preguntarZorroAcorralado:
     mZorroAcorralado?
     mov                     rdx,[dirEstadoPartida]
-    cmp                     [rdx],0
+    cmp                     qword[rdx],0
     jne                     finJugada
 
     cambiarJugador:
