@@ -59,17 +59,15 @@ section     .data
 %endmacro
 
 ; Pre: Recibe el jugadorActual, las direcciones donde guardar las coordenadas de origen y destino, la direccion de estadoPartida, la direccion donde esta la infoZorro, la direccion donde esta la infoOcas.
-; Post: Lee entrada, valida que sean coordenadas adecuadas para el juagadorActual o que sea el comenado para interrumpir la partida (si sì-> se modifica el estadoPartida)
-;       guarda las coordenadas en las direcciones brindadas.
+; Post: Recibe input hasta que sea una acción válida: coordenadas adecuadas para el juagadorActual o comandos para interrumpir o guardar la partida, si lee comando para interrumpir la partida cambia el estado de la partida, si es un movimiento valido deja inicializadas las coordenadas.
 %macro mProcesarComando 6
 
-    mov RDI,    %1;->jugadorActual (solo la uso de lectura, ya que realizarJugada se encarga de editarlo)
+    mov RDI,    %1;->jugadorActual
     mov RSI,    %2;->dirInfoCoordenadas
     mov RDX,    %3;->dirEstadisticas
-    mov RCX,    %4;->dirEstadoPartida (la edito si se interrumpe el juego)
+    mov RCX,    %4;->dirEstadoPartida 
     mov R8,     %5;->dirInfoZorro
     mov R9,     %6;->dirInfoOcas
-
 
     sub RSP,    8
     call        procesarComando

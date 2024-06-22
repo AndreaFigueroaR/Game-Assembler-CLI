@@ -1,15 +1,50 @@
 macrosProcesarComando.asm
 ;*****************************************************************************
+; MACROS CON OPERACIONES AUXILIARES PARA VALIDAR LOS DATOS
+;*****************************************************************************
+%macro movSeisParametros 6
+    mov RDI,    %1
+    mov RSI,    %2;
+    mov RDX,    %3;
+    mov RCX,    %4;
+    mov R8,     %5;
+    mov R9,     %6;
+%endmacro
+
+%macro movCuatroParametros 4
+    mov RDI,    %1
+    mov RSI,    %2;
+    mov RDX,    %3;
+    mov RCX,    %4;
+%endmacro
+
+%macro calcularDistancia 2
+    ;Pre: recibe dos números
+    mov                 RAX,                %1
+    mov                 RBX,                %2
+    sub                 RAX,                RBX
+    test                rax,                RAX
+    jge                 %%fin    
+    neg                 RAX
+%%fin:
+%endmacro
+
+%macro puntoMedio 2
+    mov                 rax, %1
+    add rax, %2
+    shr rax, 1        ; Dividir la suma por 2 quitando un digito a la representacion binaria
+%endmacro
+;*****************************************************************************
 ; MACROS PARA VALIDACION DE DATOS
 ;*****************************************************************************
 %macro guardarParametros 0
     ;Pre: Se dejaron en los resgistros RDI,RSI,... los siguientes punteros y datos 
-        ;RDI    ->jugadorActual
-        ;RSI    ->dirInfoCoordenadas
-        ;RDX    ->dirEstadisticas
-        ;RCX    ->dirEstadoPartida
-        ;R8     ->dirInfoZorro
-        ;R9     ->dirInfoOcas
+    ;   RDI    -> jugadorActual
+    ;   RSI    -> DirInfoCoordenadas
+    ;   RDX    -> DirEstadisticas
+    ;   RCX    -> DirEstadoPartida
+    ;   R8     -> DirInfoZorro
+    ;   R9     -> DirInfoOcas
     ;Post: Guarda localmente los datos y punteros
     mov [jugadorActual],        RDI
     mov [dirPosicionOrigen],    RSI
@@ -23,48 +58,31 @@ macrosProcesarComando.asm
 %endmacro
 
 %macro pedirMovimiento 0
-    ;Pre: Segun el jugador actual muestra un mensaje antes de pedir el movimiento actual
-    ;Post:
+    ;Post: Segun el jugador actual muestra un mensaje antes de pedir el movimiento actual
     mov     RDI,            mensajePedirMovZorro
     cmp     qword[jugadorActual],   0
     je      %%imprimir
     mov     RDI,            mensajePedirMovOca
-
 %%imprimir:
     mPrintf
     mov     RDI,            input
     mGets
 %endmacro
 
+;bien usado
 %macro compararInput 1
-;lleva a cabo el strcmp y deja en el RAX el resultado de la comparacion
-;recibe la direccion del comando con quien se debe comparar
+;Pre: recibe la direccion del comando con quien se debe comparar
     mov     RDI,            input
     mov     RSI,            %1
     mStrcmp
 %endmacro
-
-
 
 %macro apruebaValidacionTotal 0
     mov byte[inputValido],  'S'
     jmp finValidacion
 %endmacro
 
-%macro movSeisParametros 6
-    mov RDI,    %1
-    mov RSI,    %2;
-    mov RDX,    %3;
-    mov RCX,    %4;
-    mov R8,     %5;
-    mov R9,     %6;
-%endmacro
-%macro movCuatroParametros 4
-    mov RDI,    %1
-    mov RSI,    %2;
-    mov RDX,    %3;
-    mov RCX,    %4;
-%endmacro
+
 %macro setParametrosScanOrigenYDestino 0
     mov     R8,     [dirPosicionOrigen]
     add     R8,     8
@@ -164,8 +182,7 @@ macrosProcesarComando.asm
     mov R8,%1
     add R8,8
 
-    mov al,byte[R8];muevo el char a al
-    ;reemplazo 
+    mov al, byte[R8]
     mov qword[R8],1
     cmp al, 'A'
     je %%finMacro
@@ -188,7 +205,7 @@ macrosProcesarComando.asm
 %%finMacro:
 
 %endmacro
-;probado
+
 %macro buscarCoincidenciaCoordenadas 5
 ;DEJA LOS RESULTADOS DE LA CUENTA EN EL RAX Y EL INDICE DE COINCIDENCIA EN R8
     ; %1 -> Dirección de la matriz(vector de tuplas)
@@ -260,17 +277,6 @@ macrosProcesarComando.asm
 
 %endmacro
 
-%macro calcularDistancia 2
-    ; Pre: recibe  %1 - primer número, %2 - segundo número
-    ;Post: Calcula la distancia y deja el resultado en el registro RAX
-    mov                 RAX,                %1
-    mov                 RBX,                %2
-    sub                 RAX,                RBX
-    test                rax,                RAX
-    jge                 %%fin    
-    neg                 RAX
-%%fin:
-%endmacro
 %macro movimientoAdelanteOCostado 0
     ;movimiento en el eje X: debe ser una posicion adelante
     mov                 RAX,                [x_destino]
@@ -298,11 +304,6 @@ macrosProcesarComando.asm
     je                  %%fin
     jmp                 finValidacion
 %%fin:
-%endmacro
-%macro puntoMedio 2
-    mov                 rax, %1
-    add rax, %2
-    shr rax, 1        ; Dividir la suma por 2 quitando un digito a la representacion binaria
 %endmacro
 
 %macro movimientoSimpleOSalto 0
