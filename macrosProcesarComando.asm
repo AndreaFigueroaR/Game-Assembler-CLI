@@ -18,7 +18,7 @@ macrosProcesarComando.asm
     mov     RDI,            mensajePedirMovOca
 
 %%imprimir:
-    mPuts
+    mPrintf
     mov     RDI,            input
     mGets
 %endmacro
@@ -52,7 +52,7 @@ macrosProcesarComando.asm
     mov RDX,    %3;
     mov RCX,    %4;
 %endmacro
-%macro setParametrosScanCuatroDatos 0
+%macro setParametrosScanOrigenYDestino 0
     mov     R8,     [dirPosicionOrigen]
     add     R8,     8
     mov     R9,     [dirPosicionDestino]
@@ -60,13 +60,23 @@ macrosProcesarComando.asm
     movSeisParametros       input,  formatoMovimientoOca,   qword[dirPosicionOrigen],   R8,     qword[dirPosicionDestino],  R9
 %endmacro
 
-%macro setParametrosScanDosDatos 0
+%macro setParametrosScanDestino 0
     mov     R9,             [dirPosicionDestino]
     add     R9,     8
     movCuatroParametros     input,  formatoMovimientoOca,   qword[dirPosicionDestino],  R9
 %macro 
 
-%macro guardarDatosOrigen 0
+
+%macro actualizarPunteroOrigen 0
+    mov RAX, [dirInfoZorro]
+    mov RBX, [RAX+8];->RBX contiene la posFilZorro
+    mov RDX, [RAX+16];->RDX contiene la posColZorro
+    
+    mov RDI, [dirPosicionOrigen];->RDI tiene la direccion de coordenadasOrigen
+    mov [RDI],RBX
+    mov [RDI+8],RDX
+%endmacro
+%macro guardarDatosOrigenYDestino 0
 ;inicializa en memoria los valores de las coordenadas de origen X e Y
     mov     R8,             [dirPosicionOrigen]
     mov     R9,             [R8]    
@@ -174,23 +184,23 @@ macrosProcesarComando.asm
     ; %4 -> Y a buscar
     ; %5 -> para parar al encontrar la primera coincidencia 0->no, 1->si
 
-    mov RSI, %1            ; Dirección base en RSI
-    mov RCX, %2            ; Contador con el número de ocas
-    mov RBX, %3            ; X a buscar en RBX
-    mov R15, %4            ; Y a buscar en R15
-    mov R14, %5            ; 0 contar todas la apariciones, 1 hasta encontrar la primera
+    mov RSI, %1
+    mov RCX, %2
+    mov RBX, %3
+    mov R15, %4
+    mov R14, %5
 
-    xor RDI, RDI           ; Inicializo el indice actual (i) en RDI
-    xor RAX, RAX           ; Contador de coincidencias en RAX
-    mov R8, -1             ; Inicializa R8 con -1 para manejar la primera coincidencia
+    xor RDI, RDI
+    xor RAX, RAX
+    mov R8, -1
 
 %%siguienteTupla:
-    cmp RCX, 0             
-    je  %%fin              
+    cmp     RCX,    0 
+    je      %%fin              
 
-    imul    R12,    RDI,    16      ; r12= i*16
-    mov     R9,     [RSI + R12]     ; Carga X_i en R9
-    mov     R11,    [RSI + R12 + 8] ; Carga Y_i en R11
+    imul    R12,    RDI,    16      
+    mov     R9,     [RSI + R12]
+    mov     R11,    [RSI + R12 + 8]
 
     cmp     R9,     RBX 
     jne     %%noIgual
@@ -213,64 +223,96 @@ macrosProcesarComando.asm
 %endmacro
 
 %macro unaOcaEnOrigen 0
-    mov RSI,                qword[dirInfoOcas];
-    add RSI,                16
+    mov RSI,            qword[dirInfoOcas]
+    add RSI,            16
     buscarCoincidenciaCoordenadas    RSI,    qword[n_ocas],     qword[x_origen],     qword[y_origen],    1
-    cmp RAX,                1
+    cmp RAX,            1
     jne finValidacion
 %endmacro
 
 %macro sinOcasEnDestino 0
 ;MAL deberia de pasarle de primer parametro la Dirección de la matriz donde inicien las ocas
-    mov RSI,                qword[dirInfoOcas];
-    add RSI,                16
-    buscarCoincidenciaCoordenadas   RSI,    qword[n_ocas],     qword[x_destino],     qword[y_destino],    1
-    cmp RAX,                0
+    mov RSI,            qword[dirInfoOcas];
+    add RSI,            16
+    buscarCoincidenciaCoordenadas   RSI,    qword[n_ocas],    qword[x_destino],    qword[y_destino],    1
+    cmp RAX,            0
     jne finValidacion
 %endmacro
 
 %macro sinZorroEnDestino 0
     ;deberia de fijarse que la 
-    mov RSI,                qword[dirInfoZorro]
-    add RSI,                8
-    buscarCoincidenciaCoordenadas   RSI,            1,         qword[x_destino],     qword[y_destino],    1
+    mov RSI,            qword[dirInfoZorro]
+    add RSI,            8
+    buscarCoincidenciaCoordenadas   RSI,    1,    qword[x_destino],    qword[y_destino],    1
     cmp RAX, 0
     jne finValidacion
 
 %endmacro
-;%macro validarDifUno 2
-;recibe los contenidos de X_Dest y de X_Or
-;    mov RAX,%1
-;    mov RBX,%2
-;    sub RAX,RBX
-;    cmp RAX,1
-;    ;deja el resultado de la comparacion de la diferencia en el registro con las flags
-;%endmacro
 
+%macro calcularDistancia 2
+    ; Pre: recibe  %1 - primer número, %2 - segundo número
+    ;Post: Calcula la distancia y deja el resultado en el registro RAX
+    mov                 RAX,                %1
+    mov                 RBX,                %2
+    sub                 RAX,                RBX
+    test                rax,                RAX
+    jge                 %%fin    
+    neg                 RAX
+%%fin:
+%endmacro
 %macro movimientoAdelanteOCostado 0
-;suponiendo que se mueve adelante
-    mov RAX, [x_destino]
-    cmp RAX, [x_origen]
-    je %%validarMovCostado
-    ;si no son iguales entonces debe suceder que la resta del destino menos el de origen sea solo 1 
-    ;necesito quitarle a RAX (que tiene el X de destino) 
-    sub RAX,[x_origen]
-    cmp RAX,1
-    jne finValidacion
-    ;si la diferenciasi fue de uno ahora debo comparar las coordenadas Y
-    mov RAX, [y_destino]
-    cmp RAX, [y_origen]
-    jne finValidacion
+    ;movimiento en el eje X: debe ser una posicion adelante
+    mov                 RAX,                [x_destino]
+    cmp                 RAX,                [x_origen]
+    je                  %%validarMovCostado
+    sub                 RAX,                [x_origen]
+    cmp                 RAX,                1
+    jne                 finValidacion
+    ;si la diferencia si fue de uno ahora debo comparar las coordenadas Y
+    mov                 RAX,                [y_destino]
+    cmp                 RAX,                [y_origen]
+    jne                 finValidacion
     apruebaValidacionTotal
 %%validarMovCostado:
-    mov RAX, [y_destino]
-    sub RAX, [y_origen];la resta entre y destino menos y origen esta en el rax
-    cmp RAX,1
-    jne %%izquierda
-    ;si es que no son iguales -> salteo la aprovacionel movimiento si es valido
+    calcularDistancia   [y_destino],        [y_origen]
+    cmp                 RAX,                1
+    jne                 finValidacion
     apruebaValidacionTotal
-%%izquierda:
-    cmp RAX,-1
-    jne finValidacion
+%endmacro
+%macro distanciaCeroODos 2
+    calcularDistancia   %1,                 %2
+    cmp                 RAX,                2
+    je                  %%fin
+    cmp                 RAX,                0
+    je                  %%fin
+    jmp                 finValidacion
+%%fin:
+%endmacro
+%macro puntoMedio 2
+    mov                 rax, %1
+    add rax, %2
+    shr rax, 1        ; Dividir la suma por 2 quitando un digito a la representacion binaria
+%endmacro
+
+%macro movimientoSimpleOSalto 0
+    calcularDistancia   qword[x_destino],   qword[x_origen]
+    cmp                 RAX,                1
+    jg                  %%validarSalto
+    calcularDistancia   qword[y_destino],   qword[y_origen]
+    cmp                 RAX,                1
+    jg                  %%validarSalto
+    apruebaValidacionTotal
+%%validarSalto:
+    distanciaCeroODos   qword[x_destino],   qword[x_origen]
+    distanciaCeroODos   qword[y_destino],   qword[y_origen]
+    puntoMedio          qword[x_destino],   qword[x_origen]
+    mov                 R8,                 RAX
+    puntoMedio          qword[y_destino],   qword[y_origen]
+    mov                 R9,                 RAX
+    mov                 RSI,                qword[dirInfoOcas];
+    add                 RSI,                16
+    buscarCoincidenciaCoordenadas           RSI,    qword[n_ocas],     R8,     R9,    1
+    cmp                 RAX,                1
+    jne                 finValidacion
     apruebaValidacionTotal
 %endmacro
