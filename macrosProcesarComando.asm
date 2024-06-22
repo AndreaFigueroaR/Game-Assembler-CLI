@@ -1,4 +1,3 @@
-macrosProcesarComando.asm
 ;*****************************************************************************
 ; MACROS CON OPERACIONES AUXILIARES PARA VALIDAR LOS DATOS
 ;*****************************************************************************
@@ -97,7 +96,7 @@ macrosProcesarComando.asm
     mov     R9,             [dirPosicionDestino]
     add     R9,     8
     movCuatroParametros     input,  formatoMovimientoOca,   qword[dirPosicionDestino],  R9
-%macro 
+%endmacro 
 
 
 %macro actualizarPunteroOrigen 0

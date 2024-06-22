@@ -13,6 +13,10 @@ extern mostrarEstadisticas
 extern guardarPartida
 extern sscanf
 extern puts
+extern printf
+extern gets
+extern strcmp
+
 ; despues fijarnos que los extern coincidan con los nombres de las rutinas externas usadas
 
 section .data
