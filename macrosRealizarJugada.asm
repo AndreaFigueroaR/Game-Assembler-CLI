@@ -10,10 +10,8 @@
     add         rsp,8
 %endmacro
 
-
 %macro  guardarDatos 0
     mov     [dirPosicionZorro],     rsi
-    mov     [dirEstadisticas],      r8
     mov     [dirCantidadOcasVivas], rdi
     mov     r10,                    [rdi]
     mov     [cantidadOcasVivas],    r10
