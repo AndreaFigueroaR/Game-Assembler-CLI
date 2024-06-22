@@ -8,8 +8,8 @@
     sub         rsp,8
     call        guardarVector
     add         rsp,8
-
 %endmacro
+
 
 %macro  guardarDatos 0
     mov     [dirPosicionZorro],     rsi
@@ -32,8 +32,59 @@
     ;POST:Deja en desplazVector el desplazamiento desde el inicio del vector
     mov                 rcx,[cantidadOcasVivas]
     mov                 qword[desplazVector],0
-    copiarVector        2,%1,coordenadasBuscadas
+    copiarVector        2,%1,coordenadasAux
     sub                 rsp,8
     call                buscarOca
     add                 rsp,8
+%endmacro
+
+%macro modificarPosOca 0
+    buscarOcaPorCoordenadas coordenadasOrigen
+    mov                     rax,[dirPosicionesOcas]
+	add                     rax,[desplazVector]
+	copiarVector            2,coordenadasDestino,rax
+%endmacro 
+
+%macro modificarPosZorro 0
+    mov                     rax,[dirPosicionZorro]
+    copiarVector            2,coordenadasDestino,rax
+%endmacro
+
+%macro obtenerPosZorro
+    ;POST: deja en coordenadas coordenadasAux la posiciòn del zorro
+    mov                     rax,[dirPosicionZorro]
+    copiarVector            2,rax,coordenadasAux
+%endmacro 
+
+%macro definirSaltoYSentidoMovida 0
+    ;POST: setea el sentido de la jugada y si es que es salto o no
+    salvarCoordenadas           filDestino,colDestino
+    sub         rsp,8
+    call        analizarMovida
+    add         rsp,8
+    recuperarCoordenadas        filDestino,colDestino
+%endmacro 
+
+%macro salvarCoordenadas 2
+    ;PRE:recibe las direcciones que se van a salvar
+    ;POST: las guarda en filAux y colAux (respectivamente)
+    mov     r8,[%1]
+    mov     [filAux],r8
+    mov     r8,[%2]
+    mov     [colAux],r8
+%endmacro
+
+%macro recuperarCoordenadas 2
+    mov     r8,[filAux]
+    mov     [%1],r8
+    mov     r8,[colAux]
+    mov     [%1],r8
+%endmacro
+
+%macro mMatarOca 0
+    salvarCoordenadas       filOrigen,colOrigen
+    sub     rsp,8
+    call    matarOca
+    add     rsp,8
+    recuperarCoordenadas    filOrigen,colOrigen
 %endmacro
