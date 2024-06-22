@@ -44,7 +44,7 @@ realizarJugada:
     ejecutarMovimiento:
     definirSaltoYSentidoMovida
     cmp                     qword[esSalto],0            ;->1 se come a una oca
-    je                      preguntarZorroAcorralado    ;->si no se come oca se pregunta si quedò acorralado
+    je                      cambiarJugador    ;->si no se come oca se pregunta si quedò acorralado
     mMatarOca                                           ;->si se mata oca se pregunta si zorro victorioso
     jmp                     preguntarZorroVictorioso
     cambiarPosOca:
