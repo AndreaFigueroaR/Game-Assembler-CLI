@@ -3,7 +3,7 @@
 
 global realizarJugada
 section     .data
-    esSalto             dq      0;->0 no es salto, 1 es salto
+    esSalto                 dq      0;->0 no es salto, 1 es salto
 
 section     .bss
     ;por dato
@@ -21,7 +21,6 @@ section     .bss
     dirPosicionesOcas       resq        ;[posFilOca1, posColOca1, ..., posFilOcaN, posColOcaN]
     dirPosicionZorro        resq    1
     dirJugadorActual        resq    1
-    dirEstadisticas         resq    1
       
     ;auxiliares
     sentidoJugada           times   0    
@@ -66,7 +65,7 @@ finJugada:
 ;__________________________________________________________
 ;**********************************************************
 matarOca:
-;sumo el sentido de la jugada (a la posicion origen) y busca una oca con esa posiciòn
+    ;sumo el sentido de la jugada (a la posicion origen) y busca una oca con esa posiciòn
     mov                 rax,[sentidoFila]
     add                 [filOrigen],rax
     mov                 rax,[sentidoColumna]
