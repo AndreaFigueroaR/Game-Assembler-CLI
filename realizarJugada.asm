@@ -1,5 +1,5 @@
 %include "llamadas.asm"
-%include "macrosRealizarJugada.asm"
+%include "macros.asm"
 
 global realizarJugada
 section     .data
