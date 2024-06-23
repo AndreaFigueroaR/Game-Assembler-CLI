@@ -43,10 +43,14 @@ section     .bss
 ;Pos: Pregunta si se quiere personalizar cada uno de los elementos que contienen las direcciones recibidas.
 ;     Si el usuario decide cambiar alguno se cambia, si no se deja como está.
 %macro personalizarPartida 3
+    mov     rdi,%1
+    mov     rsi,%2
+    mov     rcx,%3
     sub     rsp,8
-    call    ;;;;
+    call    personalizarPartida
     add     rsp,8
 %endmacro
+
 
 ; Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, rotacionTablero
 ; Pos: Imprime por pantalla la tabla del juego con la información de las variables.
