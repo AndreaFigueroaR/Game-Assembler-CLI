@@ -60,7 +60,7 @@ section     .bss
 %endmacro
 
 ; Pre: Recibe las direcciones de memoria de las variables infoOcas, posicionZorro, infoCoordenadas, jugadorActual, estadisticas.
-; Pos: Actualiza las variables según el comando ingresado por el usuario.
+; Pos: Actualiza las variables según el comando ingresado por el usuario. Actualiza el estado del juego según si el zorro esta acorralado o si ya murieron 12 ocas
 %macro mRealizarJugada 4
 
     mov     RDI, %1;->infoOcas
@@ -89,13 +89,6 @@ section     .bss
     add RSP,    8
 %endmacro
 
-; Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, jugadorActual, estadoPartida.
-; Pos: Actualiza el estado del juego según si el zorro esta acorralado o si ya murieron 12 ocas
-%macro resultadoJuego 4
-    sub     rsp,8
-    call    ;;;;
-    add     rsp,8
-%endmacro
 
 ; Pre: Recibe la dirección de memoria de la variable estadoPartida.
 ; Pos: Imprime por pantalla el mensaje de fin del juego según el estado final del juego.
