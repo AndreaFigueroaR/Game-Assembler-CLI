@@ -1,4 +1,4 @@
-%include "llamadas.asm"
+%include "macros.asm"
 
 global main
 extern system
@@ -48,7 +48,6 @@ continuarJugando:
     mProcesarComando        qword[jugadorActual],   infoCoordenadas,    estadisticas,       estadoPartida,      infoOcas,       rotacionTablero  
     cmp                     qword[estadoPartida],   3
     je                      partidaInterrumpida 
-    mRealizarJugada         infoOcas,               posicionZorro,      infoCoordenadas,    jugadorActual
     
     mov                     rax,[jugadorActual]
     cmp                     rax,1
@@ -56,6 +55,7 @@ continuarJugando:
     mActualizarEstadisticas estadisticas,           coordenadasOrigen,  coordenadasDestino
     
     continuar:
+    mRealizarJugada         infoOcas,               posicionZorro,      infoCoordenadas,    jugadorActual
     cmp                     qword[estadoPartida],    0
     je                      continuarJugando
 
