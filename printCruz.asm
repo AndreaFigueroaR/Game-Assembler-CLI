@@ -1,4 +1,5 @@
-%include "macrosCruz.asm"
+%include "llamadas.asm"
+
 global imprimirTablero
 extern printf
 extern puts
