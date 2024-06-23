@@ -1,33 +1,9 @@
-
-%macro mCustomizar 0
-    sub     rsp,8
-    call    customizar
-    add     rsp,8
-%endmacro
-
-%macro mPuts 0
-    sub     rsp,8
-    call    puts
-    add     rsp,8
-%endmacro
-
-%macro mPrintf 0
-    sub     rsp,8
-    call    printf
-    add     rsp,8
-%endmacro
-
-%macro mGets 0
-    sub     rsp,8
-    call    gets  
-    add     rsp,8
-%endmacro
+%include macros.asm
 
 global  personalizarPartida
 extern  puts
-extern  gets
 extern  printf
-extern  customizar
+extern gets
 
 section     .data
     inicio		db	"Personalizar",0

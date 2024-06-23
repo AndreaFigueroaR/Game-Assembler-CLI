@@ -44,7 +44,7 @@ section     .bss
 ;     Si el usuario decide cambiar alguno se cambia, si no se deja como está.
 %macro personalizarPartida 3
     sub     rsp,8
-    call    ;;;;
+    call    personalizarPartida
     add     rsp,8
 %endmacro
 
@@ -88,7 +88,6 @@ section     .bss
     call        procesarComando
     add RSP,    8
 %endmacro
-
 
 ; Pre: Recibe la dirección de memoria de la variable estadoPartida.
 ; Pos: Imprime por pantalla el mensaje de fin del juego según el estado final del juego.

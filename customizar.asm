@@ -1,38 +1,5 @@
-%macro mPrintf 0
-    sub     rsp,8
-    call    printf
-    add     rsp,8
-%endmacro
+%include macros.asm
 
-%macro mAtoi 0
-    sub     rsp,8
-    call    atoi
-    add     rsp,8
-%endmacro
-
-%macro mValidarChar 0
-    sub     rsp,8
-    ;call    validarChar
-    add     rsp,8
-%endmacro
-
-%macro mValidarOrientacion 0
-    sub     rsp,8
-    call    validarOrientacion
-    add     rsp,8
-%endmacro
-
-%macro mPuts 0
-    sub     rsp,8
-    call    puts
-    add     rsp,8
-%endmacro
-
-%macro mGets 0
-    sub     rsp,8
-    call    gets  
-    add     rsp,8
-%endmacro
 
 global customizar
 extern  puts
@@ -126,3 +93,73 @@ control:
     mov     [rax],rsi
 
     ret
+
+;_________________RUTINAS INTERNAS_________________________
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; en esta rutina externa nos encargamos de validar que lo ingresado lo consideremos
+; un simbolo valido para customizar ambos personajes
+; caracteres alfabetico
+
+ValidarChar:
+	mov		al,[rsi] ; la esi apunta a la direccion donde se almacena el simbolo a chequear
+
+; a charlar que caracteres ASCII tomamos como validos
+	cmp 	al, 'A'
+	jl 	NoValido
+	
+	cmp 	al, 'Z'
+	jle 	Valido
+
+	cmp 	al, 'a'
+	jl 	NoValido
+	
+	cmp 	al, 'z'
+	jle  	Valido
+
+NoValido:
+	mov		rdi,msgError
+	mov 	rdi,'2'
+	jmp 	FIN
+
+Valido:	
+	mov	rdi, '1'
+
+FIN:
+	ret
+
+
+; En esta rutina nos encargamos de validar que lo ingresado cumpla con las condiciones dadas
+; sobre el dato para asi correr el juego, en este caso tomamos como valida la orientacion si ingresa
+; 0 -> default, la concentracion de ocas se encuentra en el cuadrante de arriba
+; 1 -> la concentracion de ocas se encuentra en el cuadrante de la derecha
+; 2 -> la concentracion de ocas se encuentra en el cuandrante inferior
+; 3 -> la concentraicon de ocas se encuentra en el cuadrante izquierdo
+
+validarOrientacion:
+Validar:
+	mov		rax,[rsi] ; la esi apunta a la direccion de memoria donde se encuentra el simbolo a validar
+
+	cmp 	rax,0
+	je 	    Valido
+	
+	cmp 	rax,1
+	je   	Valido
+
+	cmp 	rax,2
+	je   	Valido
+	
+	cmp 	rax,3
+	je  	Valido
+
+NoValido:
+	mov		rdi,msg
+	mPuts
+	mov 	rdi,'2'
+	jmp 	FIN
+
+Valido:	
+	mov	    rdi,'1'
+
+FIN:
+	ret

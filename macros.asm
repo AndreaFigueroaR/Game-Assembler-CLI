@@ -377,7 +377,6 @@ finImprimirMsgFinJuego:
     jmp finValidacion
 %endmacro
 
-
 %macro setParametrosScanOrigenYDestino 0
     mov     R8,     [dirPosicionOrigen]
     add     R8,     8
@@ -391,7 +390,6 @@ finImprimirMsgFinJuego:
     add     R9,     8
     movCuatroParametros     input,  formatoMovimientoOca,   qword[dirPosicionDestino],  R9
 %endmacro 
-
 
 %macro actualizarPunteroOrigen 0
     mov RAX, [dirInfoZorro]
@@ -739,7 +737,6 @@ finImprimirMsgFinJuego:
     recuperarCoordenadas        filDestino,colDestino
 %endmacro 
 
-
 ;PRE: versor inicializado con la direcciòn en la que se quiere buscar una posiciòn libre para el zorro,
 ;coordenadas origen contiene la posiciòn desde la que se busca dar un paso (ya sea buscando desde la posicion del zorro o un paso en la misma dircciòn)
 ;POST: deja las flags para que je salte si es que hay una posiciòn libre dado un paso en la direcciòn indicada por el versor desde la posicison indicada en coordenadas origen
@@ -857,6 +854,19 @@ finColProhididasPorFila:
     mov RAX,0
 finVerificarPosEncruz:
 %endmacro
+
+;******************************************************************************************************************
+; MACROS PARA PERSONALIZAR PARTIDA
+;******************************************************************************************************************
+;Pre: Recibe las direcciones de memoria para modificar infoOcas, infoZorro, rotacionTablero en los registros
+; rsi, rdi, rcx respectivamente.
+;Pos: Pregunta por cada elemento a personalizar.
+%macro mCustomizar 0
+    sub     rsp,8
+    call    customizar
+    add     rsp,8
+%endmacro
+
 
 ;******************************************************************************************************************
 ; AUXILIARES
