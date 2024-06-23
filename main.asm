@@ -40,8 +40,6 @@ main:
     mRecuperacionPartida    infoOcas,               infoZorro,          jugadorActual,      rotacionTablero,    estadoPartida,  estadisticas
     personalizarPartida     infoOcas,               infoZorro,          rotacionTablero
 
-    mov rdi,0
-
 continuarJugando:
     mClear
     imprimirTabla           infoOcas,               infoZorro,          rotacionTablero
