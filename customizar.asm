@@ -110,18 +110,14 @@ SolicitarOrientacion:
 
 	mov     esi,orientacion
     mValidarOrientacion
-    ;mov     rdi,formatNum
-    ;mov     rsi,orientacion
-    ;mPrintf
+
 
     cmp     rdi, '2'
     je     SolicitarOrientacion
 control:
-    mov     rsi,[orientacion]
     mov     rax,[dirZorro]
     mov     rsi,[SimboloZorro]
     mov     [rax],rsi
-    mov     rax,[dirOca]
     mov     rsi,[SimboloOca]
     mov     rdi,[dirOca]
     mov     [rdi + 8],rsi
