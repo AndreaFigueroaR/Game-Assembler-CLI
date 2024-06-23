@@ -51,7 +51,7 @@ ChequeoZorro:
     cmp     rdi, '2'
     je     SolicitarParaZorro
 	
-; se podria generalizar en otra rutina para no repetir
+; nos tomamos la libertad de que existe la posibilidad de que el zorro y la oca tengan el mismo simbolo 
 SolicitarParaOca:
     mov     rdi, msgOca
     mPrintf
@@ -73,9 +73,9 @@ SolicitarOrientacion:
     mGets
     mov     rdi,orientacion
     mAtoi
-    mov     [orientacion],rax
-
-	mov     esi,orientacion
+mov     [orientacion],rax
+; ya esta el numero almacenado en la rax luego del atoi que es la memoria utilizada para la validacion
+; mov     esi,orientacion
     jmp	    ValidarOrientacion
 
 
@@ -102,6 +102,7 @@ control:
 ; caracteres alfabetico
 
 ValidarChar:
+; linea innecesaria antes de llamar a la subrutina interna muevo al 'al' el simbolo
 	mov		al,[rsi] ; la esi apunta a la direccion donde se almacena el simbolo a chequear
 
 ; a charlar que caracteres ASCII tomamos como validos
@@ -138,7 +139,8 @@ FIN:
 
 validarOrientacion:
 Validar:
-	mov		rax,[rsi] ; la esi apunta a la direccion de memoria donde se encuentra el simbolo a validar
+	;linea innecesaria ya muevo antes de llamar a la subrutina interna
+	;mov		rax,[rsi] ; la esi apunta a la direccion de memoria donde se encuentra el simbolo a validar
 
 	cmp 	rax,0
 	je 	    Valido
