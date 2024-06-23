@@ -56,7 +56,6 @@ continuarJugando:
     mActualizarEstadisticas estadisticas,           coordenadasOrigen,  coordenadasDestino
     
     continuar:
-    resultadoJuego          infoOcas,               infoZorro,          jugadorActual,      estadoPartida
     cmp                     qword[estadoPartida],    0
     je                      continuarJugando
 
