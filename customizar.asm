@@ -60,7 +60,7 @@ SolicitarParaOca:
     mGets
 	
     mov     rsi,SimboloOca
-    mValidarChar
+    jmp	    ValidarChar
 
     cmp     rdi, '2'
     je     SolicitarParaOca
@@ -76,7 +76,7 @@ SolicitarOrientacion:
     mov     [orientacion],rax
 
 	mov     esi,orientacion
-    mValidarOrientacion
+    jmp	    ValidarOrientacion
 
 
     cmp     rdi, '2'
