@@ -1,4 +1,5 @@
 %include "llamadas.asm"
+%include "macros.asm"
 %include "macrosProcesarComando.asm"
 
 global procesarComando
