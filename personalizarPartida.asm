@@ -17,7 +17,7 @@ section     .bss
     dirZorro		resq	1
     dirOca		resq	1
     dirOrientacion		resq	1
-    respuesta		resb	50
+    respuesta		resb	50 ; reservo 50 bytes ya que como vimos en clase el mgets si se ingresa mas de lo pedido puede pisar otras memorias
     simboloZorro    resq    1
     SimboloOca      resq    1
     orientacion     resq    2
