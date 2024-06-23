@@ -1,7 +1,22 @@
 section     .data
-    cmd_clear           db          "clear",0
-    msgGanoZorro        db          "PARTIDA TERMINADA: El zorro es el ganador!",0
-    msgGanaronOcas      db          "PARTIDA TERMINADA: Las ocas son las ganadoras!",0
+    cmd_clear                   db              "clear",0
+;   Impresión del mensaje de fin del juego
+    msgGanoZorro                db              "PARTIDA TERMINADA: El zorro es el ganador!",0
+    msgGanaronOcas              db              "PARTIDA TERMINADA: Las ocas son las ganadoras!",0
+;   Impresión de estadísticas
+    msgEstadisticas             db              "Estadísticas de los movimientos realizados por el zorro:",0
+    msgEstMovAdelante           db              "Adelante: %d",10,0
+    msgEstMovAtras              db              "Atras: %d",10,0
+    msgEstMovIzq                db              "Izquierda: %d",10,0
+    msgEstMovDer                db              "Derecha: %d",10,0
+    msgEstMovAdelanteIzq        db              "Adelante-Izquierda: %d",10,0
+    msgEstMovAdelanteDer        db              "Adelante-Derecha: %d",10,0
+    msgEstMovAtrasIzq           db              "Atras-Izquierda: %d",10,0
+    msgEstMovAtrasDer           db              "Atras-Derecha: %d",10,0
+    separador                   db              "------------------------------------------------------------",0
+
+section     .bss
+    datoEstadistica             resq 2
 
 ;*****************************************************************************
 ;NUESTRAS MACROS CON LLAMADAS A RUTINAS EXTERNAS
@@ -101,11 +116,43 @@ fin:
 ; Pre: Recibe la dirección de memoria de la variable estadisticas.
 ; Pos: Imprime por pantalla las estadisticas finales de los movimientos del zorro.
 %macro mMostrarEstadisticas 1
-    mov     r8,%1
+    mov             rdi,msgEstadisticas
+    mPuts
+    mov             rdi,separador
+    mPuts
+;   Imprimo estadisticas
+    xor             rbx,rbx                     ; Uso el registro rbx como auxiliar para recorrer el vector ya que printf preserva el contenido de este registro
+    mov             rdi,msgEstMovAdelante
+    imprimirEst     [%1]
+    mov             rdi,msgEstMovAtras
+    imprimirEst     [%1]
+    mov             rdi,msgEstMovIzq
+    imprimirEst     [%1]
+    mov             rdi,msgEstMovDer
+    imprimirEst     [%1]
+    mov             rdi,msgEstMovAdelanteIzq
+    imprimirEst     [%1]
+    mov             rdi,msgEstMovAdelanteDer
+    imprimirEst     [%1]
+    mov             rdi,msgEstMovAtrasIzq
+    imprimirEst     [%1]
+    mov             rdi,msgEstMovAtrasDer
+    imprimirEst     [%1]
 
-    sub     rsp,8
-    call    mostrarEstadisticas
-    add     rsp,8
+    mov             rdi,separador
+    mPuts
+%endmacro
+
+; Pre: Recibe la dirección de memoria de la variable estadisticas.
+; Pos: Imprime por pantalla la estadistica actual.
+%macro imprimirEst 1
+    mov                 rax,[%1]                        ; Me guardo la direccion de memoria a estadisticas.
+    mov                 rsi,[rax+rbx]                   ; Me guardo el dato de la estadistica actual en el rsi.
+    mov                 [datoEstadistica],rsi
+    mov                 qword[datoEstadistica+8],0
+    mov                 rsi,[datoEstadistica]
+    mPrintf
+    add                 rbx,8
 %endmacro
 
 ;Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, jugadorActual, rotacionTablero, 
