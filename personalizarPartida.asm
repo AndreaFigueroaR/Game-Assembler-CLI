@@ -32,7 +32,7 @@ personalizarPartida:
     mov     [dirOca],rsi
 ; almaceno la direccion de la informacion de la rotacion
     mov     [dirOrientacion],rcx
-
+Bucle:
     ; imprimo el mensaje 
     mov     rdi,msg
     mPrintf
