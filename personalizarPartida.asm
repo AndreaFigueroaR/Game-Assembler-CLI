@@ -23,7 +23,7 @@
     add     rsp,8
 %endmacro
 
-global  personalizarJuego
+global  personalizarPartida
 extern  puts
 extern  gets
 extern  printf
@@ -48,16 +48,15 @@ section     .bss
     
 
 section     .text
-personalizarJuego:
-Consulta:
+personalizarPartida:
+
 ; almaceno la direccion de la informacion del zorro
     mov     [dirZorro],rdi
 ; almaceno la direccion de la informacion de la oca
     mov     [dirOca],rsi
 ; almaceno la direccion de la informacion de la rotacion
     mov     [dirOrientacion],rcx
-Bucle:
-    sub     rbx,rbx
+
     ; imprimo el mensaje 
     mov     rdi,msg
     mPrintf
