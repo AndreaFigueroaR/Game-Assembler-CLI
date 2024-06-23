@@ -13,7 +13,7 @@
 ; 0 0 0 0 0 0 0 0                                                         <- Estadisticas (termina con salto de linea)
 ;
 ; ------------------------------------------------------------------------
-%include "llamadas.asm"
+%include "macros.asm"
 
 %macro mEscribirLinea 0
     mov                 rdi,lineaActual
