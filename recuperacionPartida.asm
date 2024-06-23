@@ -15,7 +15,7 @@
 ; 0 0 0 0 0 0 0 0                                                         <- Estadisticas (termina con salto de linea)
 ;
 ; ------------------------------------------------------------------------
-%include "llamadas.asm"
+%include "macros.asm"
 
 global recuperacionPartida
 extern puts
