@@ -1,19 +1,22 @@
-%include "llamadas.asm"
 %include "macros.asm"
-%include "macrosProcesarComando.asm"
 
 global procesarComando
 
+extern sscanf
+extern puts
+extern printf
+extern gets
+extern strcmp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                             INICIALIZACIÓN DATOS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 section     .data
     ;mensajes salida
-    mensajePedirMovOca          db "* MOVIMIENTO DE LA OCA (origen) -> (destino) : ",0
-    mensajePedirMovZorro        db "* MOVIMIENTO DEL ZORRO (destino) : ",0
+    mensajePedirMovOca          db "* MOVIMIENTO DE LA OCA: ",0
+    mensajePedirMovZorro        db "* MOVIMIENTO DEL ZORRO: ",0
     mensajeInputInvalido        db "Error en la instrucción recibida, por favor indique una accción válida.",0
     ;formato entrada
-    formatoMovimientoOca        db "%li%c -> %li%c",0
+    formatoMovimientoOca        db "%li%c->%li%c",0
     formatoMovimientoZorro      db "%li%c",0
     comandoInterrupcion         db "--interrumpir partida", 0
     comandoGuardar              db "--guardar partida",     0
@@ -33,7 +36,7 @@ section     .bss
         x_destino                           resq 1
         y_destino                           resq 1
     n_ocas                      resq    1
-    input                       resb    20
+    input                       resb    50
 
     ;DATOS POR REFERENCIA
     dirPosicionOrigen           resq    1

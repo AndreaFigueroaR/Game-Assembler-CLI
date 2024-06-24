@@ -14,6 +14,8 @@ section     .data
     msgEstMovAtrasIzq           db              "Atras-Izquierda: %d",10,0
     msgEstMovAtrasDer           db              "Atras-Derecha: %d",10,0
     separador                   db              "------------------------------------------------------------",0
+    comandos                    db              "**************COMANDOS********************************************",10,"MOVIMIENTO",10,"  -Para especificar un movimiento indique (independientemente de la rotacion",10,"   elegida) primero la coordenada numèrica seguida de la alfabetica",10,"  -Movimiento de las ocas debe indicar origen->destino",10,"  -Movimiento del zorro solo indica destino",10,"INTERRUPCION",10,"  -Para interrumpir la partida indique (independientemente del jugador ",10,"   actual) : --interrumpir partida",10,"GUARDAR PARTIDA",10,"  -Para guardar el estado actual de la partida (sin interrumpir el juego ",10,"   actual) : --guardar partida",10,"******************************************************************",0
+
 
 section     .bss
     datoEstadistica             resq 2
@@ -91,6 +93,13 @@ section     .bss
     sub RSP,    8
     call        procesarComando
     add RSP,    8
+%endmacro
+
+%macro mMostrarAcciones 0
+    mov RDI,comandos
+    sub RSP,8
+    call puts
+    add rsp,8
 %endmacro
 
 
