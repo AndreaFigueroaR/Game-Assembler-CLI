@@ -4,7 +4,6 @@ global imprimirTablero
 extern printf
 extern puts
 
-
 section     .data
     ;movimientos en la matriz
     despl           dq  0
@@ -17,6 +16,7 @@ section     .data
     espacio             dw  " "
 
 section     .bss   
+    seguridad                   resb    50
     infoOcas                    times 0 resb            
         cantOcasVivas           resq    1
         simboloOcas             resq    1
@@ -29,10 +29,10 @@ section     .bss
     ;auxiliares de impresion
     esPar               resq    1   ;0 si es par, 1 si es impar
     punteroSimb         resq    1   
-    desplazVector       resq    1
-    cantElemVector      resq    1
-    dirBaseVector       resq    1
-    dirDestinoVector    resq    1
+    desplazVectorP      resq    1
+    cantElemVectorP     resq    1
+    dirBaseVectorP      resq    1
+    dirDestinoVectorP   resq    1
     etiquetaUbicacion   resb    1
 
 section     .text
@@ -44,6 +44,7 @@ _mostrarSimbSiguiente:
     cmp                 qword[despl],225    ;tamaño real 15
     je                  fin
     actulizarIndicesMostrarUbiV
+
     cambiarSimbA        espacio
     esPar?              fil
     ;si es fila impar=>cambia a pared y quizás a espacio
@@ -78,10 +79,10 @@ rotarPosicionesOcas:
     ;PRE: dirBaseVectos inicicializada con el ròtulo del vector de posiciones de las ocas. DEsplaz vector inicializado con 0
     ;POST: rota las posiciones de las ocas vivas (y las redimensiona)
     imul    r13,[cantOcasVivas],16
-    cmp     r13,[desplazVector]
+    cmp     r13,[desplazVectorP]
     je      finRotarOcas
 
-    mov     r9,[desplazVector]
+    mov     r9,[desplazVectorP]
     mov     r10,[posicionesOcas+r9]  ;fil
     add     r9,8
     mov     r11,[posicionesOcas+r9]  ;col
@@ -91,7 +92,7 @@ rotarPosicionesOcas:
     call    rotarPosicion
     add     rsp,8
 
-    add     qword[desplazVector],16
+    add     qword[desplazVectorP],16
     jmp     rotarPosicionesOcas
     finRotarOcas:
     ret
@@ -115,7 +116,7 @@ rotarPosicion:
     finRotacion:
     imul    r10,2   ;redimensiòn a tablero real
     imul    r11,2
-    mov     r13,[dirBaseVector]
+    mov     r13,[dirBaseVectorP]
     mov     [r13+r9],r10
     add     r9,8
     mov     [r13+r9],r11    ;guardando posiciòn real
@@ -157,6 +158,7 @@ actIndexMostrarUbiV:
     cambiarSimbA    salto
     mostrarSimb
 
+
     sub     rsp,8
     call    mostrarLateralIzquierdo
     add     rsp,8
@@ -192,22 +194,22 @@ mostrarLateralIzquierdo:
 ;__________________________________________________________
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 guardarVector:
-    ;PRE: cantElemVector, dirBaseVector, dirDestinoVector inicializados
-    mov         qword[desplazVector],0
-    mov         r10,[desplazVector]
-    mov         r9,qword[cantElemVector]
+    ;PRE: cantElemVectorP, dirBaseVector, dirDestinoVector inicializados
+    mov         qword[desplazVectorP],0
+    mov         r10,[desplazVectorP]
+    mov         r9,qword[cantElemVectorP]
     copiarSgt:
-    cmp         qword[cantElemVector],0
+    cmp         qword[cantElemVectorP],0
     je          endCopiado
 
-    mov         r10,[desplazVector]
-    mov         rdi,[dirBaseVector]
+    mov         r10,[desplazVectorP]
+    mov         rdi,[dirBaseVectorP]
     mov         rax,[rdi+r10]
-    mov         rbx,[dirDestinoVector]
+    mov         rbx,[dirDestinoVectorP]
     mov         [rbx+r10],rax
 
-    add         qword[desplazVector],8
-    dec         qword[cantElemVector]
+    add         qword[desplazVectorP],8
+    dec         qword[cantElemVectorP]
     jmp         copiarSgt
     endCopiado:
     ret
@@ -229,9 +231,9 @@ coincidirZorro:
 ;__________________________________________________________
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 coincidirOcas:
-    ;PRE: rcx inicializado con la cantidad de ocas vivas. DesplazaVector inicializado en 0
+    ;PRE: rcx inicializado con la cantidad de ocas vivas. DesplazaVectorP inicializado en 0
     ;POST: si la posicion actual es la de alguna OCA, cambia el simbolo
-    mov                 rax,[desplazVector]
+    mov                 rax,[desplazVectorP]
     mov                 r9,[posicionesOcas+rax]
     add                 rax,8
     cmp                 [fil],r9
@@ -243,7 +245,7 @@ coincidirOcas:
     cambiarSimbA        simboloOcas
     jmp                 finCoincidirOcas        ;hay coincidencia
     siguienteOca:
-        add                 qword[desplazVector],16 ;analiza de a pares
+    add                 qword[desplazVectorP],16 ;analiza de a pares
     loop    coincidirOcas   
     finCoincidirOcas:
     ret
@@ -251,7 +253,7 @@ coincidirOcas:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 mostrarUbiHorizontal:
     ;POST: muestra las teiquetas horizonatales para ej jugador 
-    mov             qword[desplazVector],7
+    mov             qword[desplazVectorP],7
     tripleEspacio                   ;espacio adicional para mostrar ubiV y separarlo de ubiV
     mov             byte[etiquetaUbicacion],"A"
     cmp             qword[rotacionTablero],0
@@ -264,9 +266,9 @@ mostrarUbiHorizontal:
     je              mostrarH
     mov             byte[etiquetaUbicacion],"1"
     mostrarH:
-    cmp             qword[desplazVector],0
+    cmp             qword[desplazVectorP],0
     je              finUbiH
-    dec             qword[desplazVector]
+    dec             qword[desplazVectorP]
     cambiarSimbA    espacio
     mostrarSimb     ;espacio entre casilla y casilla
     cambiarSimbA    etiquetaUbicacion
