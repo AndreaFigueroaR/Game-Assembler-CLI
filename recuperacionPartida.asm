@@ -50,7 +50,7 @@ section     .bss
     input                       resq 1              ; Si el input es S quiere recuperar la ultima partida guardada. Si no, N.
     idArchivo                   resq 1
     lineasLeidasArchivo         resb 1
-    contenidoLineaArchivo       resb 100
+    contenidoLineaArchivo       resb 500
     caracterLineaArchivo        resq 2
 
     infoOcasGuardada            times 18 resq 2
