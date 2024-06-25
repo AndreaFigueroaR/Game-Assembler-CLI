@@ -52,7 +52,7 @@ section     .data
 
 section     .bss   
     idArchivo                   resq 1
-    lineaActual                 resq 50
+    lineaActual                 resb 500
 
     infoOcas                    times 18 resq 2
     infoZorro                   times 3 resq 1
@@ -95,14 +95,14 @@ escribirArchivo:
 ;   ESCRIBO EL SIMBOLO DEL ZORRO
     mov                 rax,[infoZorro]                     ; Me guardo el dato que está en infoZorro (símbolo del zorro)
     mov                 [lineaActual],rax                   ; Me guardo el simbolo del zorro en la linea que voy a escribir
-    mov                 qword[lineaActual+1],10             ; Agrego un salto de linea en el byte siguiente
-    mov                 qword[lineaActual+2],0              ; Agrego un \0 al final
+    mov                 byte[lineaActual+1],10              ; Agrego un salto de linea en el byte siguiente
+    mov                 byte[lineaActual+2],0               ; Agrego un \0 al final
     mEscribirLinea
 ;   ESCRIBO EL SIMBOLO DE LAS OCAS
     mov                 rax,[infoOcas+8]                    ; Me guardo el dato que está en infoOcas+8 (símbolo de las ocas)
     mov                 [lineaActual],rax                   ; Me guardo el simbolo de las ocas en la linea que voy a escribir
-    mov                 qword[lineaActual+1],10             ; Agrego un salto de linea en el byte siguiente
-    mov                 qword[lineaActual+2],0              ; Agrego un \0 al final
+    mov                 byte[lineaActual+1],10              ; Agrego un salto de linea en el byte siguiente
+    mov                 byte[lineaActual+2],0               ; Agrego un \0 al final
     mEscribirLinea
 
 ;   ESCRIBO LA CANTIDAD DE OCAS VIVAS
@@ -115,7 +115,8 @@ escribirArchivo:
     xor                 r13,r13
 loopRecorrerPosicionesOcas:
     mov                 rax,[infoOcas]                      ; Me guardo el dato de la cantidad de ocas vivas
-    sub                 rax,1                               ; Resto 1 a la cantidad de ocas vivas (ya que voy a comparar con el indice en r12)
+    imul                rax,2                               ; Multiplico por 2 ya que escribo pares de filas y columnas
+    sub                 rax,1                               ; Resto 1 para saber si estamos en el ultimo caracter a escribir
     cmp                 rax,r12                             ; Si son iguales significa que me falta escribir la ultima posicion de las ocas
     je                  escribirUltimoCaracterPosicionesOcas
 
