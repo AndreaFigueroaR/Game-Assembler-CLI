@@ -38,7 +38,7 @@ section .text
 main:
 ;   INICIALIZACIÓN DEL JUEGO
     mRecuperacionPartida    infoOcas,               infoZorro,          jugadorActual,      rotacionTablero,    estadoPartida,  estadisticas
-    personalizarPartida     infoOcas,               infoZorro,          rotacionTablero
+    mPersonalizarPartida    infoZorro,              infoOcas,           rotacionTablero
 
 continuarJugando:
     mClear
