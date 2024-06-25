@@ -1,4 +1,4 @@
-%include macros.asm
+%include "macros.asm"
 
 
 global customizar
@@ -11,6 +11,7 @@ extern  validarOrientacion
 
 section     .data
     msgError       db   "El caracter no es valido",0
+    msgOrientacionInvalida      db      "La orientación ingresada no es válida",0
     msgZorro		db	"Ingrese un caracter para representar al zorro (a-z, A-Z): ",0	
     msgOca		db	"Ingrese un caracter para representar a la oca (a-z, A-Z): ",0
     msgOrientacion		db	"Ingrese una orientacion para el tablero (Norte: 0, Este: 1, Sur: 2, Oeste: 3): ",0
@@ -45,7 +46,7 @@ SolicitarParaZorro:
 	mov     al, [SimboloZorro]
 
     mov     esi,SimboloZorro
-	mValidarChar
+	call    validarChar
 
 ChequeoZorro:
     cmp     rdi, '2'
@@ -60,7 +61,7 @@ SolicitarParaOca:
     mGets
 	
     mov     rsi,SimboloOca
-    jmp	    ValidarChar
+    call	    validarChar
 
     cmp     rdi, '2'
     je     SolicitarParaOca
@@ -76,7 +77,7 @@ SolicitarOrientacion:
 mov     [orientacion],rax
 ; ya esta el numero almacenado en la rax luego del atoi que es la memoria utilizada para la validacion
 ; mov     esi,orientacion
-    jmp	    ValidarOrientacion
+    call	  validarOrientacion
 
 
     cmp     rdi, '2'
@@ -85,8 +86,8 @@ control:
     mov     rax,[dirZorro]
     mov     rsi,[SimboloZorro]
     mov     [rax],rsi
-    mov     rsi,[SimboloOca]
     mov     rdi,[dirOca]
+    mov     rsi,[SimboloOca]
     mov     [rdi + 8],rsi
     mov     rax,[dirOrientacion]
     mov     rsi,[orientacion]
@@ -101,32 +102,32 @@ control:
 ; un simbolo valido para customizar ambos personajes
 ; caracteres alfabetico
 
-ValidarChar:
+validarChar:
 ; linea innecesaria antes de llamar a la subrutina interna muevo al 'al' el simbolo
 	mov		al,[rsi] ; la esi apunta a la direccion donde se almacena el simbolo a chequear
 
 ; a charlar que caracteres ASCII tomamos como validos
 	cmp 	al, 'A'
-	jl 	NoValido
+	jl 	    charInvalido
 	
 	cmp 	al, 'Z'
-	jle 	Valido
+	jle 	charValido
 
 	cmp 	al, 'a'
-	jl 	NoValido
+	jl 	    charInvalido
 	
 	cmp 	al, 'z'
-	jle  	Valido
+	jle  	charValido
 
-NoValido:
+charInvalido:
 	mov		rdi,msgError
 	mov 	rdi,'2'
-	jmp 	FIN
+	jmp 	finValidarChar
 
-Valido:	
+charValido:	
 	mov	rdi, '1'
 
-FIN:
+finValidarChar:
 	ret
 
 
@@ -138,30 +139,29 @@ FIN:
 ; 3 -> la concentraicon de ocas se encuentra en el cuadrante izquierdo
 
 validarOrientacion:
-Validar:
 	;linea innecesaria ya muevo antes de llamar a la subrutina interna
 	;mov		rax,[rsi] ; la esi apunta a la direccion de memoria donde se encuentra el simbolo a validar
 
 	cmp 	rax,0
-	je 	    Valido
+	je 	    orientacionValida
 	
 	cmp 	rax,1
-	je   	Valido
+	je   	orientacionValida
 
 	cmp 	rax,2
-	je   	Valido
+	je   	orientacionValida
 	
 	cmp 	rax,3
-	je  	Valido
+	je  	orientacionValida
 
-NoValido:
-	mov		rdi,msg
+;   Orientacion invalida
+	mov		rdi,msgOrientacionInvalida
 	mPuts
 	mov 	rdi,'2'
-	jmp 	FIN
+	jmp 	finValidarOrientacion
 
-Valido:	
+orientacionValida:	
 	mov	    rdi,'1'
 
-FIN:
+finValidarOrientacion:
 	ret
