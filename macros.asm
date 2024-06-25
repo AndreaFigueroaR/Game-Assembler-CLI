@@ -133,36 +133,37 @@ section     .bss
 ;   Imprimo estadisticas
     xor             rbx,rbx                     ; Uso el registro rbx como auxiliar para recorrer el vector ya que printf preserva el contenido de este registro
     mov             RDI,msgEstMovAdelante
-    imprimirEst     [%1]
+    imprimirEst     %1
     mov             RDI,msgEstMovAtras
-    imprimirEst     [%1]
+    imprimirEst     %1
     mov             RDI,msgEstMovIzq
-    imprimirEst     [%1]
+    imprimirEst     %1
     mov             RDI,msgEstMovDer
-    imprimirEst     [%1]
+    imprimirEst     %1
     mov             RDI,msgEstMovAdelanteIzq
-    imprimirEst     [%1]
+    imprimirEst     %1
     mov             RDI,msgEstMovAdelanteDer
-    imprimirEst     [%1]
+    imprimirEst     %1
     mov             RDI,msgEstMovAtrasIzq
-    imprimirEst     [%1]
+    imprimirEst     %1
     mov             RDI,msgEstMovAtrasDer
-    imprimirEst     [%1]
+    imprimirEst     %1
 
     mov             RDI,separador
     mPuts
 %endmacro
 
-; Pre: Recibe la dirección de memoria de la variable estadisticas.
+; Pre: Recibe la dirección de memoria a la direccion de memoria de la variable estadisticas.
 ; Pos: Imprime por pantalla la estadistica actual.
 %macro imprimirEst 1
-    mov     rax,                        [%1]                        ; Me guardo la direccion de memoria a estadisticas.
-    mov     RSI,                        [RAX+RBX]                   ; Me guardo el dato de la estadistica actual en el RSI.
-    mov     [datoEstadistica],          RSI
-    mov     qword[datoEstadistica+8],   0
-    mov     RSI,                        [datoEstadistica]
+    mov     RAX,[%1]                            ; Me guardo la direccion de memoria a la direccion de memoria de estadisticas
+    mov     RAX,[RAX]                           ; Me guardo la direccion de memoria a estadisticas.
+    mov     RSI,[RAX+RBX]                       ; Me guardo el dato de la estadistica actual en el RSI.
+    mov     [datoEstadistica],RSI
+    mov     qword[datoEstadistica+8],0
+    mov     RSI,[datoEstadistica]
     mPrintf
-    add     RBX,                        8
+    add     RBX,8
 %endmacro
 
 ;Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, jugadorActual, rotacionTablero, 
