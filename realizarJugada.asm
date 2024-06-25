@@ -1,4 +1,3 @@
-%include "llamadas.asm"
 %include "macros.asm"
 
 global realizarJugada

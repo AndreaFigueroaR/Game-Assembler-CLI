@@ -65,14 +65,15 @@ section     .bss
     add     rsp,8
 %endmacro
 
-; Pre: Recibe las direcciones de memoria de las variables infoOcas, posicionZorro, infoCoordenadas, jugadorActual, estadisticas.
+; Pre: Recibe las direcciones de memoria de las variables infoOcas, posicionZorro, infoCoordenadas, jugadorActual, estadoPartida.
 ; Pos: Actualiza las variables según el comando ingresado por el usuario. Actualiza el estado del juego según si el zorro esta acorralado o si ya murieron 12 ocas
-%macro mRealizarJugada 4
+%macro mRealizarJugada 5
 
-    mov     RDI, %1;->infoOcas
-    mov     RSI, %2;->posicionZorro
-    mov     RDX, %3;->infoCoordenadas
-    mov     RCX, %4;->jugadorActual
+    mov     RDI, %1;->dirInfoOcas
+    mov     RSI, %2;->dirPosicionZorro
+    mov     RDX, %3;->dirInfoCoordenadas
+    mov     RCX, %4;->dirJugadorActual
+    mov     R8, %5 ;->dirEstadoPartida
     
     sub     rsp,8
     call    realizarJugada
@@ -818,12 +819,12 @@ fueraCoordenadasDentroCuadrado:
 
 ;pre: Recibe nun numero de fila sensible y la direccion de las coordenadas a validar
 ;post: Deja en RAX un 1 si es que estaba en rango y un cero si no estaba en rango
-%macro colProhididasPorFila 2
+%macro colProhididasPorFilaNum 2
     mov     RAX,            1;inicia como si sì estuviese en la cruz
 
     mov     R10,            %2;contiene la direccion de la tupla
     cmp     qword[R10],     %1;contiene un numero de fila sensible
-    jne     finColProhididasPorFila
+    jne     %%fin
     
     add     R10,            8;para tener la direccion de la columna
 
@@ -839,7 +840,7 @@ fueraCoordenadasDentroCuadrado:
 %%fueraCruz:
     mov RAX,0
 
-finColProhididasPorFila:
+%%fin:
 %endmacro
 ;Pre: Recibe la direccion donde inicia la tupla con las coordenadas x e Y
 ;Post:si la coordenada de origen esta en la cruz deja 1 en el rax si no està deja 0
@@ -848,24 +849,24 @@ finColProhididasPorFila:
     cmp RAX, 0
     je %%fuera
 
-    colProhididasPorFila 1,%1
+    colProhididasPorFilaNum 1,%1
     cmp RAX,0
     je %%fuera
-    colProhididasPorFila 2,%1
+    colProhididasPorFilaNum 2,%1
     cmp RAX,0
     je %%fuera
-    colProhididasPorFila 6,%1
+    colProhididasPorFilaNum 6,%1
     cmp RAX,0
     je %%fuera
-    colProhididasPorFila 7,%1
+    colProhididasPorFilaNum 7,%1
     cmp RAX,0
     je %%fuera
 
     mov RAX,1
-    jmp finVerificarPosEncruz
+    jmp %%fin
 %%fuera:
     mov RAX,0
-finVerificarPosEncruz:
+%%fin:
 %endmacro
 
 ;******************************************************************************************************************
