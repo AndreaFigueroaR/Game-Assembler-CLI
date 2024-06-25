@@ -35,7 +35,7 @@ section     .data
                                 dq                  5, 1, 5, 7                                  ; Ocas de la fila 5 (en las columnas 1 y 7)
     infoZorro                   dq                  "X",                                        ; simboloZorro
                                 dq                  5, 4                                        ; Zorro en la fila 5 y columna 4
-    jugadorActual               dq                  1                                           ; Jugador actual -> Zorro
+    jugadorActual               dq                  0                                           ; Jugador actual -> Zorro
     rotacionTablero             dq                  0
     estadoPartida               dq                  0                                           ; Partida activa
     estadisticas                dq                  0, 0, 0, 0, 0, 0, 0, 0                      ; Cantidad de movimientos en cada direccion inicializadas en 0
