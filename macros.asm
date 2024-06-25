@@ -792,18 +792,18 @@ section     .bss
 %macro coordenadasDentroCuadrado 1
     mov R10,%1
     cmp qword[R10],     1
-    jl  fueraCoordenadasDentroCuadrado
+    jl  %%fueraCoordenadasDentroCuadrado
 
     cmp qword[R10+8],   1
-    jl fueraCoordenadasDentroCuadrado
+    jl %%fueraCoordenadasDentroCuadrado
     
     cmp qword[R10],     7
-    jg  fueraCoordenadasDentroCuadrado
+    jg  %%fueraCoordenadasDentroCuadrado
 
     cmp qword[R10+8],   7
-    jg fueraCoordenadasDentroCuadrado
+    jg %%fueraCoordenadasDentroCuadrado
     mov RAX,1
-fueraCoordenadasDentroCuadrado:
+%%fueraCoordenadasDentroCuadrado:
     mov RAX,0
 %endmacro
 
