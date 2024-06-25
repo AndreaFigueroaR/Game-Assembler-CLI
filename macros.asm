@@ -29,137 +29,140 @@ section     .bss
 ;Pos: Recupera la ultima partida guardada si el usuario quiere y ademas esta existe. Sino crea una nueva inicializando las variables
 ;     con sus valores estandar.
 %macro mRecuperacionPartida 6
-    mov     r8,%1
-    mov     r9,%2
-    mov     r10,%3
-    mov     r11,%4
-    mov     r12,%5
-    mov     r13,%6
+    mov     R8,     %1
+    mov     R9,     %2
+    mov     R10,    %3
+    mov     R11,    %4
+    mov     R12,    %5
+    mov     R13,    %6
     
-    sub     rsp,8
-    call    recuperacionPartida
-    add     rsp,8
+    sub     RSP,    8
+    call        recuperacionPartida
+    add     RSP,    8
 %endmacro
 
 ;Pre: Recibe las direcciones de memoria para modificar: infoOcas, infoZorro, rotacionTablero
 ;Pos: Pregunta si se quiere personalizar cada uno de los elementos que contienen las direcciones recibidas.
 ;     Si el usuario decide cambiar alguno se cambia, si no se deja como está.
 %macro personalizarPartida 3
-    mov     rdi,%1
-    mov     rsi,%2
-    mov     rcx,%3
-    sub     rsp,8
-    call    personalizarPartida
-    add     rsp,8
+    mov     RDI,    %1
+    mov     RSI,    %2
+    mov     rcx,    %3
+
+    sub     RSP,    8
+    call        personalizarPartida
+    add     RSP,    8
 %endmacro
 
 
 ; Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, rotacionTablero
 ; Pos: Imprime por pantalla la tabla del juego con la información de las variables.
 %macro imprimirTabla 3
-    mov     RDI,%1
-    mov     RSI,%2
-    mov     RDX,[%3]
-    sub     rsp,8
-    call    imprimirTablero
-    add     rsp,8
+    mov     RDI,    %1
+    mov     RSI,    %2
+    mov     RDX,    [%3]
+    
+    sub     RSP,    8
+    call        imprimirTablero
+    add     RSP,    8
 %endmacro
 
 ; Pre: Recibe las direcciones de memoria de las variables infoOcas, posicionZorro, infoCoordenadas, jugadorActual, estadoPartida.
 ; Pos: Actualiza las variables según el comando ingresado por el usuario. Actualiza el estado del juego según si el zorro esta acorralado o si ya murieron 12 ocas
 %macro mRealizarJugada 5
 
-    mov     RDI, %1;->dirInfoOcas
-    mov     RSI, %2;->dirPosicionZorro
-    mov     RDX, %3;->dirInfoCoordenadas
-    mov     RCX, %4;->dirJugadorActual
-    mov     R8, %5 ;->dirEstadoPartida
+    mov     RDI,    %1;->dirInfoOcas
+    mov     RSI,    %2;->dirPosicionZorro
+    mov     RDX,    %3;->dirInfoCoordenadas
+    mov     RCX,    %4;->dirJugadorActual
+    mov     R8,     %5 ;->dirEstadoPartida
     
-    sub     rsp,8
-    call    realizarJugada
-    add     rsp,8
+    sub     RSP,    8
+    call        realizarJugada
+    add     RSP,    8
 %endmacro
 
 ; Pre: Recibe el jugadorActual, las direcciones donde guardar las coordenadas de origen y destino, la direccion de estadoPartida, la direccion donde esta la infoZorro, la direccion donde esta la infoOcas.
 ; Post: Recibe input hasta que sea una acción válida: coordenadas adecuadas para el juagadorActual o comandos para interrumpir o guardar la partida, si lee comando para interrumpir la partida cambia el estado de la partida, si es un movimiento valido deja inicializadas las coordenadas.
 %macro mProcesarComando 6
 
-    mov RDI,    %1  ;->jugadorActual
-    mov RSI,    %2  ;->dirInfoCoordenadas
-    mov RDX,    %3  ;->dirEstadisticas
-    mov RCX,    %4  ;->dirEstadoPartida 
-    mov R8,     %5  ;->dirInfoOcas
-    mov R9,     %6  ;->dirRotacion
+    mov     RDI,    %1  ;->jugadorActual
+    mov     RSI,    %2  ;->dirInfoCoordenadas
+    mov     RDX,    %3  ;->dirEstadisticas
+    mov     RCX,    %4  ;->dirEstadoPartida 
+    mov     R8,     %5  ;->dirInfoOcas
+    mov     R9,     %6  ;->dirRotacion
 
-    sub RSP,    8
+    sub     RSP,    8
     call        procesarComando
-    add RSP,    8
+    add     RSP,    8
 %endmacro
 
 %macro mMostrarAcciones 0
-    mov RDI,comandos
-    sub RSP,8
-    call puts
-    add rsp,8
+    mov     RDI,    comandos
+
+    sub     RSP,    8
+    call        puts
+    add     RSP,    8
 %endmacro
 
 
 ; Pre: Recibe la dirección de memoria de la variable estadoPartida.
 ; Pos: Imprime por pantalla el mensaje de fin del juego según el estado final del juego.
 %macro imprimirMsgFinJuego 1
-    mov     rdi,%1              ; Copio la direccion de estadoPartida al rdi
-    mov     rsi,[rdi]           ; Copio el contenido de estadoPartida al rsi
+    mov     RDI,    %1              ; Copio la direccion de estadoPartida al RDI
+    mov     RSI,    [RDI]           ; Copio el contenido de estadoPartida al RSI
 
-    cmp     rsi,1
-    jne     ganaronOcas
-    mov     rdi,msgGanoZorro
-    jmp     fin
-ganaronOcas:
-    mov     rdi,msgGanaronOcas
-finImprimirMsgFinJuego:
+    cmp     RSI,    1
+    jne     %%ganaronOcas
+    mov     RDI,    msgGanoZorro
+    jmp     %%fin
+%%ganaronOcas:
+    mov     RDI,    msgGanaronOcas
+%%fin:
     mPuts
 %endmacro
 
 ; Pre: Recibe la dirección de memoria de la variable estadisticas.
 ; Pos: Imprime por pantalla las estadisticas finales de los movimientos del zorro.
 %macro mMostrarEstadisticas 1
-    mov             rdi,msgEstadisticas
+    mov             RDI,msgEstadisticas
     mPuts
-    mov             rdi,separador
+    mov             RDI,separador
     mPuts
 ;   Imprimo estadisticas
     xor             rbx,rbx                     ; Uso el registro rbx como auxiliar para recorrer el vector ya que printf preserva el contenido de este registro
-    mov             rdi,msgEstMovAdelante
+    mov             RDI,msgEstMovAdelante
     imprimirEst     [%1]
-    mov             rdi,msgEstMovAtras
+    mov             RDI,msgEstMovAtras
     imprimirEst     [%1]
-    mov             rdi,msgEstMovIzq
+    mov             RDI,msgEstMovIzq
     imprimirEst     [%1]
-    mov             rdi,msgEstMovDer
+    mov             RDI,msgEstMovDer
     imprimirEst     [%1]
-    mov             rdi,msgEstMovAdelanteIzq
+    mov             RDI,msgEstMovAdelanteIzq
     imprimirEst     [%1]
-    mov             rdi,msgEstMovAdelanteDer
+    mov             RDI,msgEstMovAdelanteDer
     imprimirEst     [%1]
-    mov             rdi,msgEstMovAtrasIzq
+    mov             RDI,msgEstMovAtrasIzq
     imprimirEst     [%1]
-    mov             rdi,msgEstMovAtrasDer
+    mov             RDI,msgEstMovAtrasDer
     imprimirEst     [%1]
 
-    mov             rdi,separador
+    mov             RDI,separador
     mPuts
 %endmacro
 
 ; Pre: Recibe la dirección de memoria de la variable estadisticas.
 ; Pos: Imprime por pantalla la estadistica actual.
 %macro imprimirEst 1
-    mov                 rax,[%1]                        ; Me guardo la direccion de memoria a estadisticas.
-    mov                 rsi,[rax+rbx]                   ; Me guardo el dato de la estadistica actual en el rsi.
-    mov                 [datoEstadistica],rsi
-    mov                 qword[datoEstadistica+8],0
-    mov                 rsi,[datoEstadistica]
+    mov     rax,                        [%1]                        ; Me guardo la direccion de memoria a estadisticas.
+    mov     RSI,                        [RAX+RBX]                   ; Me guardo el dato de la estadistica actual en el RSI.
+    mov     [datoEstadistica],          RSI
+    mov     qword[datoEstadistica+8],   0
+    mov     RSI,                        [datoEstadistica]
     mPrintf
-    add                 rbx,8
+    add     RBX,                        8
 %endmacro
 
 ;Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, jugadorActual, rotacionTablero, 
@@ -167,28 +170,28 @@ finImprimirMsgFinJuego:
 ;Pos: Guarda la partida guardando los datos de las variables en un archivo partida.txt. Si el archivo no existe,
 ;     lo crea, sino lo sobreescribe. 
 %macro mGuardarPartida 6
-    mov     r8,%1
-    mov     r9,%2
-    mov     r10,%3
-    mov     r11,%4
-    mov     r12,%5
-    mov     r13,%6
+    mov     R8,     %1
+    mov     R9,     %2
+    mov     R10,    %3
+    mov     R11,    %4
+    mov     R12,    %5
+    mov     R13,    %6
     
-    sub     rsp,8
+    sub     RSP,    8
     call    guardarPartida
-    add     rsp,8
+    add     RSP,    8
 %endmacro
 
 ;Pre: Recibe las direcciones de memoria de las variables estadisticas, coordOrigenZorro y coordDestinoZorro.
 ;Pos: Actualiza los datos de las estadisticas segun la posicion anterior del zorro y la nueva.
 %macro mActualizarEstadisticas 3
-    mov     r8,%1
-    mov     r9,%2
-    mov     r10,%3
+    mov     R8,     %1
+    mov     R9,     %2
+    mov     R10,    %3
     
-    sub     rsp,8
+    sub     RSP,    8
     call    actualizarEstadisticas
-    add     rsp,8
+    add     RSP,    8
 %endmacro
 
 ;******************************************************************************************************************
@@ -197,61 +200,59 @@ finImprimirMsgFinJuego:
 
 %macro ubicarPersonajes 0
     ;ubicando zorro
-    sub     rsp,8
+    sub     RSP,    8
     call    coincidirZorro
-    add     rsp,8
+    add     RSP,    8
+
     ;ubicando ocas
     mov     qword[desplazVector],0
-    mov     rcx,[cantOcasVivas]
-    sub     rsp,8
+    mov     RCX,    [cantOcasVivas]
+
+    sub     RSP,    8
     call    coincidirOcas
-    add     rsp,8
+    add     RSP,    8
 %endmacro
 
 %macro cambiarSimbA 1
     ;cambia a què apunta punteroSimb al ròtulo recibido
-    mov     r8,%1
-    mov     [punteroSimb],r8
+    mov     R8,    %1
+    mov     [punteroSimb],  R8
 %endmacro
 
 %macro esPar? 1
-    mov     rax,[%1]
+    mov     RAX,    [%1]
     ;verifica el menos significativo
-    and     rax,1
-    mov     [esPar],rax
+    and     RAX,            1
+    mov     [esPar],        RAX
 %endmacro
 
 %macro mostrarSimb 0
     ;muestra el simbolo apuntado en punteroSimb
-    mov     rdi,formato
-    mov     rsi,[punteroSimb]
-    mov     byte[rsi+1],0   ;agregando fin de strings
-    sub     rsp,8
-    call    printf
-    add     rsp,8
-%endmacro
+    mov     RDI,    formato
+    mov     RSI,    [punteroSimb]
+    mov     byte[RSI+1],0           ;agregando fin de strings
 
-%macro ponerPuts 0
-    sub     rsp,8
-    call    puts
-    add     rsp,8
+    sub     RSP,    8
+    call    printf
+    add     RSP,    8
 %endmacro
 
 %macro  mostrarUbicaciones 0
     ;POST: muestra la ubicacion horizontal e iniciliza la primer etiqueta vertical
-    sub     rsp,8
+    sub     RSP,    8
     call    mostrarUbiHorizontal
-    add     rsp,8
-    sub     rsp,8
+    add     RSP,    8
+    
+    sub     RSP,    8
     call    inicializarUbiV
-    add     rsp,8
+    add     RSP,    8
 %endmacro
 
 %macro actulizarIndicesMostrarUbiV 0
     ;POST: actualiza los inidces y muetras (si es necesario) la ubicaciòn lateral (Sea letra numero o espacio)
-    sub                 rsp,8
-    call                actIndexMostrarUbiV
-    add                 rsp,8
+    sub     RSP,    8
+    call    actIndexMostrarUbiV
+    add     RSP,    8
 %endmacro
 
 %macro tripleEspacio 0
@@ -265,104 +266,99 @@ finImprimirMsgFinJuego:
 
 %macro guardarEstadoJuego 0
     ;POST: guardar todos los vectores recibidos por registros RDI y RSI
-    mov         [rotacionTablero],rdx
-    mov         [dirBaseVector],rdi
-    mov         qword[cantElemVector],36
-    mov         qword[dirDestinoVector],infoOcas
+    mov     [rotacionTablero],      RDX
+    mov     [dirBaseVector],        RDI
+    mov     qword[cantElemVector],  36
+    mov     qword[dirDestinoVector],infoOcas
 
-    sub         rsp,8
-    call        guardarVector
-    add         rsp,8
+    sub     RSP,    8
+    call    guardarVector
+    add     RSP,    8
 
-    mov         [dirBaseVector],rsi
-    mov         qword[cantElemVector],3
-    mov         qword[dirDestinoVector],infoZorro
+    mov     [dirBaseVector],        RSI
+    mov     qword[cantElemVector],  3
+    mov     qword[dirDestinoVector],infoZorro
 
-    sub         rsp,8
-    call        guardarVector
-    add         rsp,8
+    sub     RSP,    8
+    call    guardarVector
+    add     RSP,    8
 %endmacro
 
 %macro rotarPoscionesPersonajes 0
     ;rotando zorro
-    mov     r10,[posicionZorro]  ;fil
-    mov     r9,8
-    mov     r11,[posicionZorro+r9]  ;col
-    mov     r9,0
+    mov     R10,[posicionZorro]  ;fil
+    mov     R9,     8
+    mov     R11,[posicionZorro+R9]  ;col
+    mov     R9,     0
     mov     qword[dirBaseVector],posicionZorro
 
-    sub     rsp,8
+    sub     RSP,    8
     call    rotarPosicion
-    add     rsp,8
+    add     RSP,    8
 
     ;rotando Ocas
     mov     qword[dirBaseVector],posicionesOcas
     mov     qword[desplazVector],0
 
-    sub     rsp,8
+    sub     RSP,    8
     call    rotarPosicionesOcas
-    add     rsp,8
+    add     RSP,    8
 %endmacro
 
 ;******************************************************************************************************************
-; MACROS PARA VALIDACION DE DATOS
+; MACROS PARA PROCESAR COMANDO
 ;******************************************************************************************************************
-
-;------------------------------------------------------------------------------------------------------------------
-; OPERACIONES AUXILIARES
 %macro movSeisParametros 6
-    mov RDI,    %1
-    mov RSI,    %2;
-    mov RDX,    %3;
-    mov RCX,    %4;
-    mov R8,     %5;
-    mov R9,     %6;
+;   Post:mueve los parametros recibidos a los registros por convenciòn para llamar a alguna rutina externa/funcion de C
+    mov     RDI,    %1
+    mov     RSI,    %2;
+    mov     RDX,    %3;
+    mov     RCX,    %4;
+    mov     R8,     %5;
+    mov     R9,     %6;
 %endmacro
 
 %macro movCuatroParametros 4
-    mov RDI,    %1
-    mov RSI,    %2;
-    mov RDX,    %3;
-    mov RCX,    %4;
+;   Post:mueve los parametros recibidos a los registros por convenciòn para llamar a alguna rutina externa/funcion de C
+    mov     RDI,    %1
+    mov     RSI,    %2;
+    mov     RDX,    %3;
+    mov     RCX,    %4;
 %endmacro
 
 %macro calcularDistancia 2
     ;Pre: recibe dos números
-    mov                 RAX,                %1
-    mov                 RBX,                %2
-    sub                 RAX,                RBX
-    test                rax,                RAX
-    jge                 %%fin    
-    neg                 RAX
+    ;Post: calcula el valor absolulto de su diferencia y deja el resultado en RAX
+    mov     RAX,    %1
+    mov     RBX,    %2
+    sub     RAX,    RBX
+    test    RAX,    RAX
+    jge     %%fin    
+    neg     RAX
 %%fin:
 %endmacro
 
 %macro puntoMedio 2
-    mov                 rax, %1
-    add rax, %2
-    shr rax, 1        ; Dividir la suma por 2 quitando un digito a la representacion binaria
+    ;Pre: recibe dos numeros
+    ;Post: halla el numero en medio de estos(a+b)/2 y deja el resultado en RAX
+    mov     RAX,    %1
+    add     RAX,    %2
+    shr     RAX,    1        
 %endmacro
-;------------------------------------------------------------------------------------------------------------------
 
 %macro guardarParametros 0
     ;Pre: Se dejaron en los resgistros RDI,RSI,... los siguientes punteros y datos 
-    ;   RDI    -> jugadorActual
-    ;   RSI    -> DirInfoCoordenadas
-    ;   RDX    -> DirEstadisticas
-    ;   RCX    -> DirEstadoPartida
-    ;   R8     -> DirInfoOcasYZorro
-    ;   R9     -> DirRotacion
     ;Post: Guarda localmente los datos y punteros
-    mov [jugadorActual],        RDI
-    mov [dirPosicionOrigen],    RSI
+    mov [jugadorActual],        RDI     ;-> jugadorActual
+    mov [dirPosicionOrigen],    RSI     ;-> DirInfoCoordenadas
     add RSI,                    16
     mov [dirPosicionDestino],   RSI
-    mov [dirEstadisticas],      RDX 
-    mov [dirEstadoPartida],     RCX
-    mov [dirInfoOcas],          R8
+    mov [dirEstadisticas],      RDX     ;-> DirEstadisticas 
+    mov [dirEstadoPartida],     RCX     ;-> DirEstadoPartida
+    mov [dirInfoOcas],          R8      ;-> DirInfoOcasYZorro
     add R8,                     288
     mov [dirInfoZorro],         R8
-    mov [dirRotacion],          R9
+    mov [dirRotacion],          R9      ;-> DirRotacion
     
 %endmacro
 
@@ -474,8 +470,8 @@ finImprimirMsgFinJuego:
 %macro chequearPosEnCruz 1
     dirNumEnRango   %1, 1,  7
 
-    mov     R8,     %1
-    add     R8,     8
+    mov     R8,         %1
+    add     R8,         8
     dirCharEnRango R8,'A','G'
 
     colProhididasPorFila 1,%1
@@ -486,46 +482,39 @@ finImprimirMsgFinJuego:
 
 ;recibo la direccion de donde inicia el vector de posicion, digamos 50A
 %macro traducirLetra 1
-    mov R8,%1
-    add R8,8
+    mov     R8,         %1
+    add     R8,         8
 
-    mov al, byte[R8]
-    mov qword[R8],1
-    cmp al, 'A'
-    je %%finMacro
-    mov qword[R8],2
-    cmp al, 'B'
-    je %%finMacro
-    mov qword[R8],3
-    cmp al, 'C'
-    je %%finMacro
-    mov qword[R8],4
-    cmp al, 'D'
-    je %%finMacro
-    mov qword[R8],5
-    cmp al, 'E'
-    je %%finMacro
-    mov qword[R8],6
-    cmp al, 'F'
-    je %%finMacro
-    mov qword[R8],7
+    mov     al,         byte[R8]
+    mov     qword[R8],  1
+    cmp     al,         'A'
+    je      %%finMacro
+    mov     qword[R8],  2
+    cmp     al,         'B'
+    je      %%finMacro
+    mov     qword[R8],  3
+    cmp     al,         'C'
+    je      %%finMacro
+    mov     qword[R8],  4
+    cmp     al,         'D'
+    je      %%finMacro
+    mov     qword[R8],  5
+    cmp     al,         'E'
+    je      %%finMacro
+    mov     qword[R8],  6
+    cmp     al,         'F'
+    je      %%finMacro
+    mov     qword[R8],  7
 %%finMacro:
-
 %endmacro
 
 %macro buscarCoincidenciaCoordenadas 5
 ;DEJA LOS RESULTADOS DE LA CUENTA EN EL RAX Y EL INDICE DE COINCIDENCIA EN R8
-    ; %1 -> Dirección de la matriz(vector de tuplas)
-    ; %2 -> Número de tuplas en la matriz
-    ; %3 -> X a buscar
-    ; %4 -> Y a buscar
-    ; %5 -> para parar al encontrar la primera coincidencia 0->no, 1->si
-
-    mov RSI, %1
-    mov RCX, %2
-    mov RBX, %3
-    mov R15, %4
-    mov R14, %5
+    mov RSI, %1; %1 -> Dirección de la matriz(vector de tuplas)
+    mov RCX, %2; %2 -> Número de tuplas en la matriz
+    mov RBX, %3; %3 -> X a buscar
+    mov R15, %4; %4 -> Y a buscar
+    mov R14, %5; %5 -> para parar al encontrar la primera coincidencia 0->no, 1->si
 
     xor RDI, RDI
     xor RAX, RAX
@@ -643,38 +632,38 @@ finImprimirMsgFinJuego:
 ;PRE: recibe el tamaño a copiar, la dir del vector DE DONDE se copiarà, y dir del vector DONDE se copiarà 
 ;POST: copia la cantidad de elementos indicados del vector que se recibiò en el segundo vector recibido
 %macro copiarVector 3
-    mov         qword[cantElemVector],%1
-    mov         qword[dirBaseVector],%2
+    mov         qword[cantElemVector],  %1
+    mov         qword[dirBaseVector],   %2
     mov         qword[dirDestinoVector],%3
 
-    sub         rsp,8
+    sub         RSP,8
     call        guardarVector
-    add         rsp,8
+    add         RSP,8
 %endmacro
 
 ;PRE: versor inicializado con la direcciòn a la que se quiere dar un paso
 ;POST: suma (1 paso) el versor a las coordenadas de origen (el resultado lo deja en coordenadas de origen)
 %macro sumarVersorACoordenadasOrigen 0
-    mov             r8,[filVersor]
-    add             [filOrigen],r8
-    mov             r8,[colVersor]
-    add             [colVersor],r8
+    mov             R8,[filVersor]
+    add             [filOrigen],R8
+    mov             R8,[colVersor]
+    add             [colVersor],R8
 %endmacro 
 
 ;PRE:
 ;POST: Guarda los datos recibidos por registros en los respectivos rotulos (guarda punteros de los que se necesitan editar y copias de los que no)
 %macro  guardarDatos 0
-    mov     [dirEstadoPartida],     r8
-    mov     [dirPosicionZorro],     rsi
+    mov     [dirEstadoPartida],     R8
+    mov     [dirPosicionZorro],     RSI
     mov     [dirCantidadOcasVivas], rdi
-    mov     r10,                    [rdi]
-    mov     [cantidadOcasVivas],    r10
+    mov     R10,                    [rdi]
+    mov     [cantidadOcasVivas],    R10
     add     rdi,                    16  ;<-offset para dir posicionesOcas
     mov     [dirPosicionesOcas],    rdi
 
     mov     [dirJugadorActual],     rcx
-    mov     r10,                     [rcx]
-    mov     [jugadorActual],       r10
+    mov     R10,                     [rcx]
+    mov     [jugadorActual],       R10
     ;guardando coordenadas
     copiarVector                    4,rdx,infoCoordenadas
 %endmacro
@@ -685,9 +674,9 @@ finImprimirMsgFinJuego:
     mov                 rcx,[cantidadOcasVivas]
     mov                 qword[desplazVector],0
     copiarVector        2,%1,coordenadasAux
-    sub                 rsp,8
+    sub                 RSP,8
     call                buscarOca
-    add                 rsp,8
+    add                 RSP,8
 %endmacro
 
 ;PRE:
@@ -709,45 +698,45 @@ finImprimirMsgFinJuego:
 ;PRE:recibe las direcciones que se van a salvar
 ;POST: las guarda en filAux y colAux (respectivamente)
 %macro salvarCoordenadas 2
-    mov     r8,[%1]
-    mov     [filAux],r8
-    mov     r8,[%2]
-    mov     [colAux],r8
+    mov     R8,[%1]
+    mov     [filAux],R8
+    mov     R8,[%2]
+    mov     [colAux],R8
 %endmacro
 
 ;PRE: recibe las direcciones (fil,col) donde dejar las coordenadas guardadas auxiliarmente
 ;POST: guardar en las direcciones recibidas las coordenadas guardadas
 %macro recuperarCoordenadas 2
-    mov     r8,[filAux]
-    mov     [%1],r8
-    mov     r8,[colAux]
-    mov     [%1],r8
+    mov     R8,[filAux]
+    mov     [%1],R8
+    mov     R8,[colAux]
+    mov     [%1],R8
 %endmacro
 
 ;PRE:
 ;POST: elimina a una oca del vector de posiciones (actualizando la cantidad de ocas vivas)
 %macro mMatarOca 0
-    sub     rsp,8
+    sub     RSP,8
     call    matarOca
-    add     rsp,8
+    add     RSP,8
 %endmacro
 
 ;PRE:
 ;POST: descuenta a una oca viva (por copia y por puntero)
 %macro excluirOca 0
     dec                 qword[cantidadOcasVivas]
-    mov                 r11,[cantidadOcasVivas]
-    mov                 r10,[dirCantidadOcasVivas]
-    mov                 [r10],r11
+    mov                 R11,[cantidadOcasVivas]
+    mov                 R10,[dirCantidadOcasVivas]
+    mov                 [R10],R11
 %endmacro 
 
 ;PRE:
 ;POST: setea el sentido de la jugada (direcciòn a la que se desea mover) y si es que es salto o no (1 si es salto 0 caso contrario)
 %macro definirSaltoYSentidoMovida 0
     salvarCoordenadas           filDestino,colDestino
-    sub         rsp,8
+    sub         RSP,8
     call        analizarMovida
-    add         rsp,8
+    add         RSP,8
     recuperarCoordenadas        filDestino,colDestino
 %endmacro 
 
@@ -758,8 +747,8 @@ finImprimirMsgFinJuego:
     sumarVersorACoordenadasOrigen
     corregirCasoFueraTablero
     buscarOcaPorCoordenadas         coordenadasOrigen
-    imul                            r8,qword[cantidadOcasVivas],16
-    cmp                             r8,[desplazVector]          ;si son iguales=>posiciòn libre 
+    imul                            R8,qword[cantidadOcasVivas],16
+    cmp                             R8,[desplazVector]          ;si son iguales=>posiciòn libre 
 %endmacro 
 
 ;PRE:
@@ -768,8 +757,8 @@ finImprimirMsgFinJuego:
     verificarPosEncruz              coordenadasOrigen
     cmp                             rax,1
     je                              %%finCorregir
-    mov                             r10,[dirPosicionesOcas]
-    copiarVector                    2,r10,coordenadasOrigen
+    mov                             R10,[dirPosicionesOcas]
+    copiarVector                    2,R10,coordenadasOrigen
     %%finCorregir:
 %endmacro
 
@@ -778,9 +767,9 @@ finImprimirMsgFinJuego:
 %macro buscarPosLibreEndireccion 2
     mov             qword[filVersor],%1
     mov             qword[colVersor],%2
-    sub             rsp,8
+    sub             RSP,8
     call            zorroAcorraladoUnVersor
-    add             rsp,8
+    add             RSP,8
     cmp             qword[haySgtMovida],1
 %endmacro
 
@@ -794,9 +783,9 @@ finImprimirMsgFinJuego:
 ;PRE:
 ;POST: cambia el estado de la partida si detrmina que el zorro està acorralado
 %macro mZorroAcorralado? 0
-    sub         rsp,8
+    sub         RSP,8
     call        zorroAcorraladoTotalemente
-    add         rsp,8
+    add         RSP,8
 %endmacro
 
 %macro coordenadasDentroCuadrado 1
@@ -873,12 +862,12 @@ fueraCoordenadasDentroCuadrado:
 ; MACROS PARA PERSONALIZAR PARTIDA
 ;******************************************************************************************************************
 ;Pre: Recibe las direcciones de memoria para modificar infoOcas, infoZorro, rotacionTablero en los registros
-; rsi, rdi, rcx respectivamente.
+; RSI, rdi, rcx respectivamente.
 ;Pos: Pregunta por cada elemento a personalizar.
 %macro mCustomizar 0
-    sub     rsp,8
+    sub     RSP,8
     call    customizar
-    add     rsp,8
+    add     RSP,8
 %endmacro
 
 
@@ -887,74 +876,74 @@ fueraCoordenadasDentroCuadrado:
 ;******************************************************************************************************************
 
 %macro mPuts 0
-    sub     rsp,8
+    sub     RSP,8
     call    puts
-    add     rsp,8
+    add     RSP,8
 %endmacro
 
 %macro mGets 0
-    sub     rsp,8
+    sub     RSP,8
     call    gets
-    add     rsp,8
+    add     RSP,8
 %endmacro
 
 %macro mAtoi 0
-    sub     rsp,8
+    sub     RSP,8
     call    atoi
-    add     rsp,8
+    add     RSP,8
 %endmacro
 
 %macro mPrintf 0
-    sub     rsp,8
+    sub     RSP,8
     call    printf
-    add     rsp,8
+    add     RSP,8
 %endmacro
 
 %macro mSprintf 0
-    sub     rsp,8
+    sub     RSP,8
     call    sprintf
-    add     rsp,8
+    add     RSP,8
 %endmacro
 
 %macro mClear 0
     mov     rdi,cmd_clear
-    sub     rsp,8
+    sub     RSP,8
     call    system
-    add     rsp,8
+    add     RSP,8
 %endmacro
 
 %macro mFOpen 0
-    sub     rsp,8
+    sub     RSP,8
     call    fopen
-    add     rsp,8
+    add     RSP,8
 %endmacro
 
 %macro mFGets 0
-    sub     rsp,8
+    sub     RSP,8
     call    fgets
-    add     rsp,8
+    add     RSP,8
 %endmacro
 
 %macro mFPuts 0
-    sub     rsp,8
+    sub     RSP,8
     call    fputs
-    add     rsp,8
+    add     RSP,8
 %endmacro
 
 %macro mFClose 0
-    sub     rsp,8
+    sub     RSP,8
     call    fclose
-    add     rsp,8
+    add     RSP,8
 %endmacro
 
 %macro mStrcmp 0
-    sub     rsp,8
+    sub     RSP,8
     call    strcmp
-    add     rsp,8
+    add     RSP,8
 %endmacro
 
 %macro mSscanf 0
-    sub     rsp,8
+    sub     RSP,8
     call    sscanf
-    add     rsp,8
+    add     RSP,8
 %endmacro     
