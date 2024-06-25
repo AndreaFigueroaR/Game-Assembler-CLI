@@ -44,13 +44,13 @@ section     .bss
 ;Pre: Recibe las direcciones de memoria para modificar: infoOcas, infoZorro, rotacionTablero
 ;Pos: Pregunta si se quiere personalizar cada uno de los elementos que contienen las direcciones recibidas.
 ;     Si el usuario decide cambiar alguno se cambia, si no se deja como está.
-%macro personalizarPartida 3
+%macro mPersonalizarPartida 3
     mov     RDI,    %1
     mov     RSI,    %2
     mov     rcx,    %3
 
     sub     RSP,    8
-    call        personalizarPartida
+    call    personalizarPartida
     add     RSP,    8
 %endmacro
 
@@ -397,9 +397,9 @@ section     .bss
 %endmacro
 
 %macro setParametrosScanDestino 0
-    mov     R9,             [dirPosicionDestino]
+    mov     R9,     [dirPosicionDestino]
     add     R9,     8
-    movCuatroParametros     input,  formatoMovimientoOca,   qword[dirPosicionDestino],  R9
+    movCuatroParametros     input,  formatoMovimientoZorro,  qword[dirPosicionDestino],  R9
 %endmacro 
 
 %macro actualizarPunteroOrigen 0
