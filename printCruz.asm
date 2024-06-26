@@ -3,13 +3,72 @@
 global imprimirTablero
 extern printf
 extern puts
+;Se muestran a los personajes y las ubicaciones en funciòn de la rotaciòn. Por ejemplo para una cruz reducida:
+;En las distintas rotaciones, la posiciòn (2,1) en el modelo del juego se grafica ante el usuario como:
+
+;   -> Rotacion = 0: no se rota.
+
+;             A B C D
+;              #####
+;          1   # # #
+;            #########  -> Posiciòn en el juego:     (2,1)
+;          2 #x# # # #  -> Posiciòn rotada:          (2,1)      //(i_r0 , j_r0)
+;            #########  -> Posiciòn en la matriz:    (4,2)
+;          3 # # # # # 
+;            #########
+;          4   # # #
+;              #####
+
+
+;   -> Rotacion = 1: se rotan 90 grados en sentido horario.
+
+;             1 2 3 4
+;              #####
+;          A   # #x#
+;            #########  -> Posiciòn en el juego:     (2,1)
+;          B # # # # #  -> Posiciòn rotada:          (1,3)      //(i_r1 , j_r1) = (j_r0 , 5-i_r0) = (1 , 5-2)
+;            #########  -> Posiciòn en la matriz:    (2,6)
+;          C # # # # # 
+;            #########
+;          D   # # #
+;              #####
+
+
+;   -> Rotacion = 2: se rotan 180 grados en sentido horario.
+
+;             D C B A
+;              #####
+;          4   # # #
+;            #########  -> Posiciòn en el juego:     (2,1)
+;          3 # # # # #  -> Posiciòn rotada:          (3,4)      //(i_r2 , j_r2) = (j_r1 , 5-i_r1) = (3 , 5-1)
+;            #########  -> Posiciòn en la matriz:    (6,8)
+;          2 # # # #x# 
+;            #########
+;          1   # # #
+;              #####
+
+
+;   -> Rotacion = 3: se rotan 270 grados en sentido horario.
+
+;             1 2 3 4
+;              #####
+;          D   # # #
+;            #########  -> Posiciòn en el juego:     (2,1)
+;          C # # # # #  -> Posiciòn rotada:          (4,2)      //(i_r3 , j_r3) = (j_r2 , 5-i_r2) = (4 , 5-3)
+;            #########  -> Posiciòn en la matriz:    (8,4)
+;          B # # # # # 
+;            #########
+;          A   #x# #
+;              #####
+
+;ENTONCES: Para variar lo que se muestra segùn la rotaciòn: aplicamos la misma tranformaciòn mostrada para una cruz pequeña tantas veces nos indique el còdigo de rotacion. En nuestro caso, el tablero tiene (a lo sumo) 7 casillas entonces usaremos 8 en vez de 5 (del ejemplo didactico). Despues de rotar, realizamos la redimensiòn (el doble para cada coordenada)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                             INICIALIZACIÓN DATOS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 section     .data
 ;   movimientos en la matriz
-    despl           dq  0
+    despl           dq  0           
     fil             dq  1
     col             dq  1
 
