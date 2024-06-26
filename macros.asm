@@ -200,18 +200,16 @@ section     .bss
 ;******************************************************************************************************************
 
 %macro ubicarPersonajes 0
-    ;ubicando zorro
-    sub     RSP,    8
-    call    coincidirZorro
-    add     RSP,    8
-
-    ;ubicando ocas
-    mov     qword[desplazVector],0
-    mov     RCX,    [cantOcasVivas]
-
-    sub     RSP,    8
-    call    coincidirOcas
-    add     RSP,    8
+	;ubicando zorro
+	sub     rsp,8
+	call    coincidirZorro
+	add     rsp,8
+	;ubicando ocas
+	mov     qword[desplazVectorP],0
+	mov     rcx,[cantOcasVivas]
+	sub     rsp,8
+	call    coincidirOcas
+	add     rsp,8
 %endmacro
 
 %macro cambiarSimbA 1
