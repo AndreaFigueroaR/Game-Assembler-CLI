@@ -347,11 +347,11 @@ section     .bss
     mov [dirPosicionDestino],   RSI
     mov [dirEstadisticas],      RDX     ;-> DirEstadisticas 
     mov [dirEstadoPartida],     RCX     ;-> DirEstadoPartida
-    mov [dirInfoOcas],          R8      ;-> DirInfoOcasYZorro
-    add R8,                     288
+    mov [dirInfoOcas],          R8      ;-> DirInfoOcas
+    add R8,                     288	;->desplazamiento hasta infoZorro
     mov [dirInfoZorro],         R8
     mov [dirRotacion],          R9      ;-> DirRotacion
-    
+    mov byte[inputValido],	'N'
 %endmacro
 
 %macro pedirMovimiento 0
