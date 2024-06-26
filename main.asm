@@ -52,7 +52,7 @@ continuarJugando:
     je                      partidaInterrumpida 
     
     mov                     rax,[jugadorActual]
-    cmp                     rax,1
+    cmp                     rax,0
     jne                     continuar
     mActualizarEstadisticas estadisticas,           coordenadasOrigen,  coordenadasDestino
     
