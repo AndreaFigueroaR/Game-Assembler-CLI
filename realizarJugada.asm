@@ -1,4 +1,5 @@
 %include "macros.asm"
+
 global realizarJugada
 extern printf
 
