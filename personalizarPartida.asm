@@ -1,9 +1,10 @@
-%include macros.asm
+%include "macros.asm"
 
 global  personalizarPartida
 extern  puts
 extern  printf
 extern gets
+extern customizar
 
 section     .data
     inicio		db	"Personalizar",0
