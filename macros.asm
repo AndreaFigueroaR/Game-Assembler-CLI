@@ -290,23 +290,23 @@ section     .bss
 
 %macro rotarPoscionesPersonajes 0
     ;rotando zorro
-    mov     R10,[posicionZorro]  ;fil
-    mov     R9,     8
-    mov     R11,[posicionZorro+R9]  ;col
-    mov     R9,     0
-    mov     qword[dirBaseVector],posicionZorro
+    mov     r10,[posicionZorro]  ;fil
+    mov     r9,8
+    mov     r11,[posicionZorro+r9]  ;col
+    mov     r9,0
+    mov     qword[dirBaseVectorP],posicionZorro
 
-    sub     RSP,    8
+    sub     rsp,8
     call    rotarPosicion
-    add     RSP,    8
+    add     rsp,8
 
     ;rotando Ocas
-    mov     qword[dirBaseVector],posicionesOcas
-    mov     qword[desplazVector],0
+    mov     qword[dirBaseVectorP],posicionesOcas
+    mov     qword[desplazVectorP],0
 
-    sub     RSP,    8
+    sub     rsp,8
     call    rotarPosicionesOcas
-    add     RSP,    8
+    add     rsp,8
 %endmacro
 
 ;******************************************************************************************************************
