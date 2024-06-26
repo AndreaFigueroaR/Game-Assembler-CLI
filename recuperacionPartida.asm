@@ -60,21 +60,21 @@ section     .bss
     estadoPartidaGuardado       resq 1
     estadisticasGuardadas       times 8 resq 1
 
-    dirInfoOcas                 resq 1
-    dirInfoZorro                resq 1
-    dirJugadorActual            resq 1
-    dirRotacionTablero          resq 1
-    dirEstadoPartida            resq 1
-    dirEstadisticas             resq 1
+    dirInfoOcasR                resq 1
+    dirInfoZorroR               resq 1
+    dirJugadorActualR           resq 1
+    dirRotacionTableroR         resq 1
+    dirEstadoPartidaR           resq 1
+    dirEstadisticasR            resq 1
 
 section     .text
 recuperacionPartida:
-    mov                 [dirInfoOcas],r8
-    mov                 [dirInfoZorro],r9
-    mov                 [dirJugadorActual],r10
-    mov                 [dirRotacionTablero],r11
-    mov                 [dirEstadoPartida],r12
-    mov                 [dirEstadisticas],r13
+    mov                 [dirInfoOcasR],r8
+    mov                 [dirInfoZorroR],r9
+    mov                 [dirJugadorActualR],r10
+    mov                 [dirRotacionTableroR],r11
+    mov                 [dirEstadoPartidaR],r12
+    mov                 [dirEstadisticasR],r13
 
 ;   Pregunto si se quiere recuperar la última partida guardada.
     mov                 rdi,pregunta
@@ -91,7 +91,6 @@ cargarInput:
 
     mov                 rdi,msgErrorInputInvalido
     mPuts
-    mov                 qword[input],0
     jmp                 cargarInput
 inicializarVariablesEstandar:
     mov                 r8,infoOcas
@@ -151,13 +150,13 @@ loopLecturaArchivo:
     leerPosicionesOcas:
     cmp                 byte[lineasLeidasArchivo],3
     jne                 leerPosicionZorro
-    lea                 rsi,[infoOcasGuardada+16]
+    lea                 rbx,[infoOcasGuardada+16]
     call                inicializarVector
     jmp                 continuarLeyendo
     leerPosicionZorro:
     cmp                 byte[lineasLeidasArchivo],4
     jne                 leerJugadorActual
-    lea                 rsi,[infoZorroGuardada+8]
+    lea                 rbx,[infoZorroGuardada+8]
     call                inicializarVector
     jmp                 continuarLeyendo
     leerJugadorActual:
@@ -187,7 +186,7 @@ loopLecturaArchivo:
     leerEstadisticas:
     cmp                 byte[lineasLeidasArchivo],8
     jne                 finArchivo
-    mov                 rsi,estadisticasGuardadas
+    mov                 rbx,estadisticasGuardadas
     call                inicializarVector    
     jmp                 finArchivo
 continuarLeyendo:
@@ -229,34 +228,38 @@ loopContarCaracteres:
 finContarCaracteres:
     ret
 
-; Recibe la direccion al vector a inicializar en el rsi.
-; Devuelve en el rsi la dirección de memoria al vector inicializado.
+; Recibe la direccion al vector a inicializar en el rbx.
+; Devuelve en el rbx la dirección de memoria al vector inicializado.
 inicializarVector:
     xor                 rcx,rcx                                 ; Inicializo el rcx en 0, con él recorro la linea
     xor                 r8,r8                                   ; Inicializo el r8 en 0. Auxiliar para avanzar en el vector.
 loopRecorrerLinea:
-    cmp                 byte[contenidoLineaArchivo+rcx],10      ; Comparo el caracter actual con el \n (10 en ASCII)
-    je                  finLinea
-    cmp                 byte[contenidoLineaArchivo+rcx],32      ; Comparo el caracter actual con el espacio (32 en ASCII)
-    je                  avanzarEnLaLinea
-;   Si llego aca es porque el caracter actual es un numero.
     mov                 dil,byte[contenidoLineaArchivo+rcx]     ; Actualizo dil con el caracter actual
+    cmp                 dil,10                                  ; Comparo el caracter actual con el \n (10 en ASCII)
+    je                  finLinea
+    cmp                 dil,32                                  ; Comparo el caracter actual con el espacio (32 en ASCII)
+    je                  avanzarEnVector
+;   Si llego aca es porque el caracter actual es un numero.
+    mov                 rax,10
+    imul                qword[rbx+r8]
+    mov                 [rbx+r8],rax
+
     mov                 [caracterLineaArchivo],dil              ; Me guardo el caracter actual en caracterLineaArchivo
-    mov                 qword[caracterLineaArchivo+8],0              ; Coloco un \0 después del número
+    mov                 qword[caracterLineaArchivo+8],0         ; Coloco un \0 después del número
     mov                 rdi,caracterLineaArchivo
     
     push                rcx                                     ; Quiero preservar el contenido de estos registros
-    push                rsi
     push                r8
-    mAtoi
+    mAtoi                                                       ; Convierto el numero a entero
     pop                 r8
-    pop                 rsi
     pop                 rcx
-    
-    mov                 [rsi+r8],rax                            ; Actualizo la posicion del vector con el nuevo dato
-    add                 r8,8
-avanzarEnLaLinea:
+
+    add                 [rbx+r8],rax                            ; Actualizo la posicion del vector con el nuevo dato
     inc                 rcx
+    jmp                 loopRecorrerLinea
+avanzarEnVector:
+    inc                 rcx
+    add                 r8,8
     jmp                 loopRecorrerLinea
 finLinea:
     ret
@@ -268,9 +271,10 @@ actualizarVariables:
     xor                 rsi,rsi                                 ; Inicializo el rsi en 0. Auxiliar para avanzar en el vector.
 loopCopiarInfoOcas:
     cmp                 rcx,36                                  ; 18 * 2 qwords = 36 qwords
+    
     jge                 finLoopCopiarInfoOcas
 
-    mov                 rdi,[dirInfoOcas]
+    mov                 rdi,[dirInfoOcasR]
     mov                 rax,[r8+rsi]
     mov                 [rdi+rsi],rax
     inc                 rcx
@@ -284,7 +288,7 @@ loopCopiarInfoZorro:
     cmp                 rcx,3                                   ; 3 * 1 qwords = 3 qwords
     jge                 finLoopCopiarInfoZorro
 
-    mov                 rdi,[dirInfoZorro]
+    mov                 rdi,[dirInfoZorroR]
     mov                 rax,[r9+rsi]
     mov                 [rdi+rsi],rax
 
@@ -293,15 +297,15 @@ loopCopiarInfoZorro:
     jmp                 loopCopiarInfoZorro
 finLoopCopiarInfoZorro:
 ;   Copio jugadorActual
-    mov                 rdi,[dirJugadorActual]
+    mov                 rdi,[dirJugadorActualR]
     mov                 rax,[r10]
     mov                 [rdi],rax
 ;   Copio rotacionTablero
-    mov                 rdi,[dirRotacionTablero]
+    mov                 rdi,[dirRotacionTableroR]
     mov                 rax,[r11]
     mov                 [rdi],rax
 ;   Copio estadoPartida
-    mov                 rdi,[dirEstadoPartida]
+    mov                 rdi,[dirEstadoPartidaR]
     mov                 rax,[r12]
     mov                 [rdi],rax
 ;   Copio estadisticas
@@ -311,7 +315,7 @@ loopCopiarEstadisticas:
     cmp                 rcx,8                                   ; 8 * 1 qwords = 8 qwords
     jge                 finLoopCopiarEstadisticas
 
-    mov                 rdi,[dirEstadisticas]
+    mov                 rdi,[dirEstadisticasR]
     mov                 rax,[r13+rsi]
     mov                 [rdi+rsi],rax
 
