@@ -606,8 +606,7 @@ finImprimirMsgFinJuego:
     add     rsp,8
     ;ubicando ocas
     mov     qword[desplazVectorP],0 ;<-auxiliar para recorrer el vector de posiciones de Ocas de forma segura
-    mov     rcx,[cantOcasVivas]     ;<-cantidad de posiciones de ocas
-con las que se compararà nen busqueda de una coincidencia con la    sub     rsp,8
+    mov     rcx,[cantOcasVivas]     ;<-cantidad de posiciones de ocas con las que se compararà nen busqueda de una coincidencia con la    sub     rsp,8
     call    coincidirOcas
     add     rsp,8
 %endmacro
