@@ -330,18 +330,6 @@ section     .bss
     mov     RCX,    %4;
 %endmacro
 
-%macro calcularDistancia 2
-    ;Pre: recibe dos números
-    ;Post: calcula el valor absolulto de su diferencia y deja el resultado en RAX
-    mov     RAX,    %1
-    mov     RBX,    %2
-    sub     RAX,    RBX
-    test    RAX,    RAX
-    jge     %%fin    
-    neg     RAX
-%%fin:
-%endmacro
-
 %macro puntoMedio 2
     ;Pre: recibe dos numeros
     ;Post: halla el numero en medio de estos(a+b)/2 y deja el resultado en RAX
@@ -596,6 +584,19 @@ section     .bss
     jne                 finValidacion
     apruebaValidacionTotal
 %endmacro
+
+%macro calcularDistancia 2
+    ;Pre: recibe dos números
+    ;Post: calcula el valor absolulto de su diferencia y deja el resultado en RAX
+    mov     RAX,    %1
+    mov     RBX,    %2
+    sub     RAX,    RBX
+    test    RAX,    RAX
+    jge     %%fin    
+    neg     RAX
+%%fin:
+%endmacro
+
 %macro distanciaCeroODos 2
     calcularDistancia   %1,                 %2
     cmp                 RAX,                2
