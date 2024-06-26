@@ -2,7 +2,7 @@
 ## Integrantes
   - Andrea Figueroa: 110450
   - Leticia Figueroa: 110510
-  - Candela Matelica:
+  - Candela Matelica: 110641
   - Jesabel Pugliese:
 ## Instrucciones de ejecución
  Estando en la ubicación donde se encuentren los archivos, correr los siguientes comandos en la terminal:<br>
