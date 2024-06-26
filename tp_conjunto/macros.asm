@@ -1,8 +1,75 @@
 extern puts
 section     .data
-        comandos                    db              "**************COMANDOS********************************************",10,"MOVIMIENTO",10,"  -Para especificar un movimiento indique (independientemente de la rotacion",10,"   elegida) primero la coordenada numèrica seguida de la alfabetica",10,"  -Movimiento de las ocas debe indicar origen->destino",10,"  -Movimiento del zorro solo indica destino",10,"INTERRUPCION",10,"  -Para interrumpir la partida indique (independientemente del jugador ",10,"   actual) : --interrumpir partida",10,"GUARDAR PARTIDA",10,"  -Para guardar el estado actual de la partida (sin interrumpir el juego ",10,"   actual) : --guardar partida",10,"******************************************************************",0
-        cmd_clear                   db              "clear",0
+    comandos                    db              "**************COMANDOS********************************************",10,"MOVIMIENTO",10,"  -Para especificar un movimiento indique (independientemente de la rotacion",10,"   elegida) primero la coordenada numèrica seguida de la alfabetica",10,"  -Movimiento de las ocas debe indicar origen->destino",10,"  -Movimiento del zorro solo indica destino",10,"INTERRUPCION",10,"  -Para interrumpir la partida indique (independientemente del jugador ",10,"   actual) : --interrumpir partida",10,"GUARDAR PARTIDA",10,"  -Para guardar el estado actual de la partida (sin interrumpir el juego ",10,"   actual) : --guardar partida",10,"******************************************************************",0
+    sinOcaEnOrigen              db              "ERROR: No se encontrò una oca en la posicion de origen indicada.",10,0
+    hayOcaEnDestino             db              "ERROR: Ya hay una oca en la posicion indicada",10,0
+    hayZorroEnDestino           db              "ERROR: El zorro ya se encuentra ocupando la posicion de destino indicada",10,0
+    cmd_clear                   db              "clear",0
 
+;#############################################################################
+;   Impresión del mensaje de fin del juego
+    msgGanoZorro                db              "PARTIDA TERMINADA: El zorro es el ganador!",0
+    msgGanaronOcas              db              "PARTIDA TERMINADA: Las ocas son las ganadoras!",0
+;   Impresión de estadísticas
+    msgEstadisticas             db              "Estadísticas de los movimientos realizados por el zorro:",0
+    msgEstMovAdelante           db              "Adelante: %d",10,0
+    msgEstMovAtras              db              "Atras: %d",10,0
+    msgEstMovIzq                db              "Izquierda: %d",10,0
+    msgEstMovDer                db              "Derecha: %d",10,0
+    msgEstMovAdelanteIzq        db              "Adelante-Izquierda: %d",10,0
+    msgEstMovAdelanteDer        db              "Adelante-Derecha: %d",10,0
+    msgEstMovAtrasIzq           db              "Atras-Izquierda: %d",10,0
+    msgEstMovAtrasDer           db              "Atras-Derecha: %d",10,0
+    separador                   db              "------------------------------------------------------------",0
+
+;#############################################################################
+
+
+
+
+
+
+
+;                               MACROS
+;#############################################################################
+;*****************************************************************************
+;                       GUARDAR Y RECUPERAR PARTIDA
+;*****************************************************************************
+;Pre: Recibe las direcciones de memoria de las variables del juego para inicializar en el siguiente orden: infoOcas, infoZorro, 
+;     jugadorActual, rotacionTablero, estadoPartida, estadisticas
+;Pos: Recupera la ultima partida guardada si el usuario quiere y ademas esta existe. Sino crea una nueva inicializando las variables
+;     con sus valores estandar.
+%macro mRecuperacionPartida 6
+    mov     R8,     %1
+    mov     R9,     %2
+    mov     R10,    %3
+    mov     R11,    %4
+    mov     R12,    %5
+    mov     R13,    %6
+    
+    sub     RSP,    8
+    call        recuperacionPartida
+    add     RSP,    8
+%endmacro
+
+;Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, jugadorActual, rotacionTablero, 
+;     estadoPartida y estadisticas.
+;Pos: Guarda la partida guardando los datos de las variables en un archivo partida.txt. Si el archivo no existe,
+;     lo crea, sino lo sobreescribe. 
+%macro mGuardarPartida 6
+    mov     R8,     %1
+    mov     R9,     %2
+    mov     R10,    %3
+    mov     R11,    %4
+    mov     R12,    %5
+    mov     R13,    %6
+    
+    sub     RSP,    8
+    call    guardarPartida
+    add     RSP,    8
+%endmacro
+
+;#############################################################################
 ;*****************************************************************************
 ;                              LLAMADOS
 ;*****************************************************************************
@@ -50,10 +117,10 @@ section     .data
         call        realizarJugada
         add     RSP,    8
     %endmacro
+
 ;*****************************************************************************
 ;PROCESAR COMANDO
 ;*****************************************************************************
-;calculos auxiliares
     %macro movSeisParametros 6
         mov RDI,    %1
         mov RSI,    %2;
@@ -300,7 +367,13 @@ section     .data
     add RSI,            16
     buscarCoincidenciaCoordenadas    RSI,    qword[n_ocas],     qword[x_origen],     qword[y_origen],    1
     cmp RAX,            1
-    jne finValidacion
+    jne %%noHayOcaEnOrigen
+    jmp %%fin
+%%noHayOcaEnOrigen:
+    mov RDI, sinOcaEnOrigen
+    mPrintf
+    jmp finValidacion
+%%fin:
 %endmacro
 
 %macro sinOcasEnDestino 0
@@ -308,7 +381,13 @@ section     .data
     add RSI,            16
     buscarCoincidenciaCoordenadas   RSI,    qword[n_ocas],    qword[x_destino],    qword[y_destino],    1
     cmp RAX,            0
-    jne finValidacion
+    jne %%hayOcaEnDestino
+    jmp %%fin
+%%hayOcaEnDestino:
+    mov RDI, hayOcaEnDestino
+    mPrintf
+    jmp finValidacion
+%%fin:
 %endmacro
 
 %macro sinZorroEnDestino 0
@@ -316,8 +395,13 @@ section     .data
     add RSI,            8
     buscarCoincidenciaCoordenadas   RSI,    1,    qword[x_destino],    qword[y_destino],    1
     cmp RAX, 0
-    jne finValidacion
-
+    jne %%HayZorroEnDestino
+    jmp %%fin
+%%HayZorroEnDestino:
+    mov RDI, hayZorroEnDestino
+    mPrintf
+    jmp finValidacion
+%%fin:
 %endmacro
 
 %macro movimientoAdelanteOCostado 0

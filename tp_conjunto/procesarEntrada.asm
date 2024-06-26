@@ -6,6 +6,8 @@ extern printf
 extern gets
 extern strcmp
 
+extern guardarPartida
+
 global procesarComando
 
 
@@ -15,7 +17,7 @@ global procesarComando
 section     .data
     ;mensajes salida
     mensajePedirMovOca              db "*****************************************************************",10,"* MOVIMIENTO DE LA OCA (origen->destino): ",0
-    mensajePedirMovZorro            db "*****************************************************************",10,"* MOVIMIENTO DEL ZORRO (origen): ",0
+    mensajePedirMovZorro            db "*****************************************************************",10,"* MOVIMIENTO DEL ZORRO (destino): ",0
     mensajeInputInvalido            db "Error en la instrucción recibida, por favor indique una accción válida.",0
     ;formato entrada
     formatoMovimientoOca            db "%li%c->%li%c",0
@@ -72,7 +74,7 @@ validarGuardarPartida:
     cmp     EAX,                    0
     jne     validarFormatoMovimiento
     ;llamada a guardar estadisticas 
-    ;mGuardarPartida     [dirInfoOcas],  [dirInfoZorro], jugadorActual, [dirRotacion], [dirEstadoPartida], [dirEstadisticas]
+    mGuardarPartida     [dirInfoOcas],  [dirInfoZorro], jugadorActual, [dirRotacion], [dirEstadoPartida], [dirEstadisticas]
     jmp     pedirInput
 
 validarFormatoMovimiento:
