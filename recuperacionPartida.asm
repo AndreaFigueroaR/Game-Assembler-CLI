@@ -91,6 +91,7 @@ cargarInput:
 
     mov                 rdi,msgErrorInputInvalido
     mPuts
+    mov                 qword[input],0
     jmp                 cargarInput
 inicializarVariablesEstandar:
     mov                 r8,infoOcas
