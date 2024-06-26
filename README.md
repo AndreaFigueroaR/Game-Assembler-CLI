@@ -21,4 +21,6 @@
   - ```gcc actualizarEstadisticas.o customizar.o guardarPartida.o macros.o main.o personalizarPartida.o printCruz.o procesarComando.o realizarJugada.o recuperacionPartida.o -o a.out -no-pie```
   ### Para ejecutar:
   - ```./a.out```
+## Instrucciones de Juego
+Cada partida se juega de a 2 jugadores: las ocas y el zorro.<br> Se detalla el modo de juego la inicio de cada ejecución. 
 
