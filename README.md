@@ -3,7 +3,7 @@
   - Andrea Figueroa: 110450
   - Leticia Figueroa: 110510
   - Candela Matelica: 110641
-  - Jesabel Pugliese:
+  - Jesabel Pugliese: 110860
 ## Instrucciones de ejecución
  Estando en la ubicación donde se encuentren los archivos, correr los siguientes comandos en la terminal:<br>
   ### Para ensamblar:
