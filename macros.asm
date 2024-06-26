@@ -57,7 +57,7 @@ section     .bss
 
 ; Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, rotacionTablero
 ; Pos: Imprime por pantalla la tabla del juego con la información de las variables.
-%macro imprimirTabla 3
+%macro mImprimirTabla 3
     mov     RDI,    %1
     mov     RSI,    %2
     mov     RDX,    [%3]
