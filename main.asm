@@ -1,27 +1,27 @@
 %include "macros.asm"
 
 global main
-extern system
-extern recuperacionPartida
-extern personalizarPartida
+
 extern imprimirTablero
 extern procesarComando
 extern realizarJugada
+extern system
+extern printf
+;###################################################
+extern recuperacionPartida
+extern personalizarPartida
 extern actualizarEstadisticas
 extern resultadoJuego
 extern mostrarEstadisticas
 extern guardarPartida
 extern sscanf
-extern puts
-extern printf
 extern gets
 extern strcmp
+;###################################################
 
-; despues fijarnos que los extern coincidan con los nombres de las rutinas externas usadas
-
-section .data
+section     .data
     
-section .bss   
+section     .bss    
     infoOcas                times 18 resq 2      ; infoOcas es un vector de la forma: [cantidadOcasVivas, simboloOcas, posFilOca1, posColOca1, ..., posFilOcaN, posColOcaN], donde 0 <= N <= 17
     infoZorro               times 0  resb        ; infoZorro es un vector de la forma: [simboloZorro, posFilZorro, posColZorro]
         simboloZorro                 resq 1
@@ -34,7 +34,10 @@ section .bss
         coordenadasOrigen            resq 2
         coordenadasDestino           resq 2
 
-section .text
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                             CÓDIGO FUENTE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+section     .text
 main:
 ;   INICIALIZACIÓN DEL JUEGO
     mRecuperacionPartida    infoOcas,               infoZorro,          jugadorActual,      rotacionTablero,    estadoPartida,  estadisticas
@@ -43,7 +46,7 @@ main:
 continuarJugando:
     mClear
     mMostrarAcciones
-    mImprimirTabla           infoOcas,               infoZorro,          rotacionTablero
+    mImprimirTabla          infoOcas,               infoZorro,          rotacionTablero
     mProcesarComando        qword[jugadorActual],   infoCoordenadas,    estadisticas,       estadoPartida,      infoOcas,       rotacionTablero  
     cmp                     qword[estadoPartida],   3
     je                      partidaInterrumpida 
@@ -61,7 +64,7 @@ continuarJugando:
 partidaFinalizada:
     mClear    
     imprimirMsgFinJuego     estadoPartida
-    mMostrarEstadisticas     estadisticas
+    mMostrarEstadisticas    estadisticas
     ret
     
 partidaInterrumpida:
