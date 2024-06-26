@@ -24,10 +24,6 @@ section     .data
 
 ;#############################################################################
 
-section     .bss
-    datoEstadistica             resq 2
-    
-
 ;                               MACROS
 ;#############################################################################
 ;*****************************************************************************
@@ -108,27 +104,27 @@ section     .bss
 
 ; Pre: Recibe las direcciones de memoria de las variables infoOcas, infoZorro, rotacionTablero
 ; Pos: Imprime por pantalla la tabla del juego con la información de las variables.
-    %macro mImprimirTabla 3
-        mov     RDI,%1
-        mov     RSI,%2
-        mov     RDX,[%3]
-        sub     rsp,8
-        call    imprimirTablero
-        add     rsp,8
-    %endmacro
+%macro mImprimirTabla 3
+    mov     RDI,%1
+    mov     RSI,%2
+    mov     RDX,[%3]
+    sub     rsp,8
+    call    imprimirTablero
+    add     rsp,8
+%endmacro
 
-    %macro mRealizarJugada 5
+%macro mRealizarJugada 5
+
+    mov     RDI,    %1;->dirInfoOcas
+    mov     RSI,    %2;->dirPosicionZorro
+    mov     RDX,    %3;->dirInfoCoordenadas
+    mov     RCX,    %4;->dirJugadorActual
+    mov     R8,     %5 ;->dirEstadoPartida
     
-        mov     RDI,    %1;->dirInfoOcas
-        mov     RSI,    %2;->dirPosicionZorro
-        mov     RDX,    %3;->dirInfoCoordenadas
-        mov     RCX,    %4;->dirJugadorActual
-        mov     R8,     %5 ;->dirEstadoPartida
-        
-        sub     RSP,    8
-        call        realizarJugada
-        add     RSP,    8
-    %endmacro
+    sub     RSP,    8
+    call        realizarJugada
+    add     RSP,    8
+%endmacro
 
 ; Pre: Recibe la dirección de memoria de la variable estadoPartida.
 ; Pos: Imprime por pantalla el mensaje de fin del juego según el estado final del juego.
@@ -179,14 +175,9 @@ finImprimirMsgFinJuego:
 ; Pre: Recibe la dirección de memoria a la direccion de memoria de la variable estadisticas.
 ; Pos: Imprime por pantalla la estadistica actual.
 %macro imprimirEst 1
-    mov     RAX,[%1]                            ; Me guardo la direccion de memoria a la direccion de memoria de estadisticas
-    mov     RAX,[RAX]                           ; Me guardo la direccion de memoria a estadisticas.
-    mov     RSI,[RAX+RBX]                       ; Me guardo el dato de la estadistica actual en el RSI.
-    mov     [datoEstadistica],RSI
-    mov     qword[datoEstadistica+8],0
-    mov     RSI,[datoEstadistica]
+    mov             RSI,[%1+RBX]                        ; Me guardo el dato de la estadistica actual en el RSI.
     mPrintf
-    add     RBX,8
+    add             RBX,8
 %endmacro
 
 ;Pre: Recibe las direcciones de memoria de las variables estadisticas, coordOrigenZorro y coordDestinoZorro.
