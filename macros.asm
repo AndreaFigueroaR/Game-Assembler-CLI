@@ -611,100 +611,99 @@ finImprimirMsgFinJuego:
     add     rsp,8
 %endmacro
 
-    %macro cambiarSimbA 1
-        ;cambia a què apunta punteroSimb al ròtulo recibido
-        mov     r8,%1
-        mov     [punteroSimb],r8
-    %endmacro
+%macro cambiarSimbA 1
+    ;cambia a què apunta punteroSimb al ròtulo recibido
+    mov     r8,%1
+    mov     [punteroSimb],r8
+%endmacro
 
-    %macro esPar? 1
-        mov     rax,[%1]
-        ;verifica el menos significativo
-        and     rax,1
-        mov     [esPar],rax
-    %endmacro
+%macro esPar? 1
+    mov     rax,[%1]
+    ;verifica el menos significativo
+    and     rax,1
+    mov     [esPar],rax
+%endmacro
 
-    %macro mostrarSimb 0
-        ;muestra el simbolo apuntado en punteroSimb
-        mov     rdi,formato
-        mov     rsi,[punteroSimb]
-        mov     byte[rsi+1],0   ;agregando fin de strings
-        sub     rsp,8
-        call    printf
-        add     rsp,8
-    %endmacro
+%macro mostrarSimb 0
+    ;muestra el simbolo apuntado en punteroSimb
+    mov     rdi,formato
+    mov     rsi,[punteroSimb]
+    mov     byte[rsi+1],0   ;agregando fin de strings
+    sub     rsp,8
+    call    printf
+    add     rsp,8
+%endmacro
+
+;POST: muestra la ubicacion horizontal e iniciliza la primer etiqueta vertical
+%macro  mostrarUbicaciones 0
+    sub     rsp,8
+    call    mostrarUbiHorizontal
+    add     rsp,8
+    
+    sub     rsp,8
+    call    inicializarUbiV
+    add     rsp,8
+%endmacro
+
+%macro actulizarIndicesMostrarUbiV 0
+    ;POST: actualiza los inidces y muetras (si es necesario) la ubicaciòn lateral (Sea letra numero o espacio)
+    sub                 rsp,8
+    call                actIndexMostrarUbiV
+    add                 rsp,8
+%endmacro
+
+%macro tripleEspacio 0
+    ;POST:muestra 3 espacios seguidos
+    cambiarSimbA    espacio
+    mostrarSimb
+    mostrarSimb
+    mostrarSimb
+%endmacro 
 
 
-    %macro  mostrarUbicaciones 0
-        ;POST: muestra la ubicacion horizontal e iniciliza la primer etiqueta vertical
-        sub     rsp,8
-        call    mostrarUbiHorizontal
-        add     rsp,8
-        
-        sub     rsp,8
-        call    inicializarUbiV
-        add     rsp,8
-    %endmacro
+%macro guardarEstadoJuego 0
+    ;POST: guardar todos los vectores recibidos por registros RDI y RSI
+    mov         qword[despl],0
+    mov         qword[fil],1
 
-    %macro actulizarIndicesMostrarUbiV 0
-        ;POST: actualiza los inidces y muetras (si es necesario) la ubicaciòn lateral (Sea letra numero o espacio)
-        sub                 rsp,8
-        call                actIndexMostrarUbiV
-        add                 rsp,8
-    %endmacro
+    mov         [rotacionTablero],rdx
+    mov         [dirBaseVectorP],rdi
+    mov         qword[cantElemVectorP],36
+    mov         qword[dirDestinoVectorP],infoOcas
 
-    %macro tripleEspacio 0
-        ;POST:muestra 3 espacios seguidos
-        cambiarSimbA    espacio
-        mostrarSimb
-        mostrarSimb
-        mostrarSimb
-    %endmacro 
+    sub         rsp,8
+    call        guardarVector
+    add         rsp,8
 
+    mov         [dirBaseVectorP],rsi
+    mov         qword[cantElemVectorP],3
+    mov         qword[dirDestinoVectorP],infoZorro
 
-    %macro guardarEstadoJuego 0
-        ;POST: guardar todos los vectores recibidos por registros RDI y RSI
-        mov         qword[despl],0
-        mov         qword[fil],1
+    sub         rsp,8
+    call        guardarVector
+    add         rsp,8
+%endmacro
 
-        mov         [rotacionTablero],rdx
-        mov         [dirBaseVectorP],rdi
-        mov         qword[cantElemVectorP],36
-        mov         qword[dirDestinoVectorP],infoOcas
+%macro rotarPoscionesPersonajes 0
+    ;rotando zorro
+    mov     r10,[posicionZorro]  ;fil
+    mov     r9,8
+    mov     r11,[posicionZorro+r9]  ;col
+    mov     r9,0
+    mov     qword[dirBaseVectorP],posicionZorro
 
-        sub         rsp,8
-        call        guardarVector
-        add         rsp,8
+    sub     rsp,8
+    call    rotarPosicion
+    add     rsp,8
 
-        mov         [dirBaseVectorP],rsi
-        mov         qword[cantElemVectorP],3
-        mov         qword[dirDestinoVectorP],infoZorro
+    ;rotando Ocas
+    mov     qword[dirBaseVectorP],posicionesOcas
+    mov     qword[desplazVectorP],0
 
-        sub         rsp,8
-        call        guardarVector
-        add         rsp,8
-    %endmacro
-
-    %macro rotarPoscionesPersonajes 0
-        ;rotando zorro
-        mov     r10,[posicionZorro]  ;fil
-        mov     r9,8
-        mov     r11,[posicionZorro+r9]  ;col
-        mov     r9,0
-        mov     qword[dirBaseVectorP],posicionZorro
-
-        sub     rsp,8
-        call    rotarPosicion
-        add     rsp,8
-
-        ;rotando Ocas
-        mov     qword[dirBaseVectorP],posicionesOcas
-        mov     qword[desplazVectorP],0
-
-        sub     rsp,8
-        call    rotarPosicionesOcas
-        add     rsp,8
-    %endmacro
+    sub     rsp,8
+    call    rotarPosicionesOcas
+    add     rsp,8
+%endmacro
 
 ;*****************************************************************************
 ;MACROS PARA REALIZAR JUGADA
