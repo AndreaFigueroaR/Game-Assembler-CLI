@@ -616,17 +616,22 @@ section     .bss
     jg                  %%validarSalto
     apruebaValidacionTotal
 %%validarSalto:
+    ;valido la distancia del salto
     distanciaCeroODos   qword[x_destino],   qword[x_origen]
     distanciaCeroODos   qword[y_destino],   qword[y_origen]
+
+    ;valido que halla una oca en el medio
     puntoMedio          qword[x_destino],   qword[x_origen]
     mov                 R8,                 RAX
     puntoMedio          qword[y_destino],   qword[y_origen]
     mov                 R9,                 RAX
+
     mov                 RSI,                qword[dirInfoOcas];
     add                 RSI,                16
     buscarCoincidenciaCoordenadas           RSI,    qword[n_ocas],     R8,     R9,    1
     cmp                 RAX,                1
     jne                 finValidacion
+
     apruebaValidacionTotal
 %endmacro
 
