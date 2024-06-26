@@ -52,7 +52,7 @@ section     .bss
 section     .text
 
 main:
-        mRecuperacionPartida    infoOcas,               infoZorro,          jugadorActual,      rotacionTablero,    estadoPartida,  estadisticas
+    mRecuperacionPartida    infoOcas,               infoZorro,          jugadorActual,      rotacionTablero,    estadoPartida,  estadisticas
     mMostrarAcciones
     continuarJugando:
     cmp                     qword[estadoPartida],    0
