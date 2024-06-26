@@ -2,9 +2,8 @@ extern puts
 section     .data
     comandos                    db              "**************COMANDOS********************************************",10,"MOVIMIENTO",10,"  -Para especificar un movimiento indique (independientemente de la rotacion",10,"   elegida) primero la coordenada numèrica seguida de la alfabetica",10,"  -Movimiento de las ocas debe indicar origen->destino",10,"  -Movimiento del zorro solo indica destino",10,"INTERRUPCION",10,"  -Para interrumpir la partida indique (independientemente del jugador ",10,"   actual) : --interrumpir partida",10,"GUARDAR PARTIDA",10,"  -Para guardar el estado actual de la partida (sin interrumpir el juego ",10,"   actual) : --guardar partida",10,"******************************************************************",0
     sinOcaEnOrigen              db              "ERROR: No se encontrò una oca en la posicion de origen indicada.",10,0
-    hayOcaEnDestino             db              "ERROR: Ya hay una oca en la posicion indicada.",10,0
-    hayZorroEnDestino           db              "ERROR: El zorro ya se encuentra ocupando la posicion de destino indicada.",10,0
-    OcaNoRetrocedeNiSalta       db              "ERROR: Las ocas no pueden retroceder ni dar saltos: avanzan y se mueven a los costados de uno en uno.",10,0
+    hayOcaEnDestino             db              "ERROR: Ya hay una oca en la posicion indicada",10,0
+    hayZorroEnDestino           db              "ERROR: El zorro ya se encuentra ocupando la posicion de destino indicada",10,0
     cmd_clear                   db              "clear",0
 
 ;#############################################################################
@@ -596,386 +595,380 @@ finImprimirMsgFinJuego:
 %endmacro
 
 ;*****************************************************************************
-;MACROS PARA IMPRIMIR CRUZ
+;IMPRIMIR CRUZ
 ;*****************************************************************************
 
-%macro ubicarPersonajes 0
-    ;ubicando zorro
-    sub     rsp,8
-    call    coincidirZorro          ;<-si la ubicaciòn actual de la matriz es la dle zorro, encunetra la coincidencia y cambia el sìmbolo a mostrar
-    add     rsp,8
-    ;ubicando ocas
-    mov     qword[desplazVectorP],0 ;<-auxiliar para recorrer el vector de posiciones de Ocas de forma segura
-    mov     rcx,[cantOcasVivas]     ;<-cantidad de posiciones de ocas con las que se compararà nen busqueda de una coincidencia con la    sub     rsp,8
-    call    coincidirOcas
-    add     rsp,8
-%endmacro
+    %macro ubicarPersonajes 0
+        ;ubicando zorro
+        sub     rsp,8
+        call    coincidirZorro
+        add     rsp,8
+        ;ubicando ocas
+        mov     qword[desplazVectorP],0
+        mov     rcx,[cantOcasVivas]
+        sub     rsp,8
+        call    coincidirOcas
+        add     rsp,8
+    %endmacro
 
-%macro cambiarSimbA 1
-    ;cambia a què apunta punteroSimb al ròtulo recibido
-    mov     r8,%1
-    mov     [punteroSimb],r8
-%endmacro
+    %macro cambiarSimbA 1
+        ;cambia a què apunta punteroSimb al ròtulo recibido
+        mov     r8,%1
+        mov     [punteroSimb],r8
+    %endmacro
 
-%macro esPar? 1
-    mov     rax,[%1]
-    ;verifica el menos significativo
-    and     rax,1
-    mov     [esPar],rax
-%endmacro
+    %macro esPar? 1
+        mov     rax,[%1]
+        ;verifica el menos significativo
+        and     rax,1
+        mov     [esPar],rax
+    %endmacro
 
-%macro mostrarSimb 0
-    ;muestra el simbolo apuntado en punteroSimb
-    mov     rdi,formato
-    mov     rsi,[punteroSimb]
-    mov     byte[rsi+1],0   ;agregando fin de strings
-    sub     rsp,8
-    call    printf
-    add     rsp,8
-%endmacro
-
-;POST: muestra la ubicacion horizontal e iniciliza la primer etiqueta vertical
-%macro  mostrarUbicaciones 0
-    sub     rsp,8
-    call    mostrarUbiHorizontal
-    add     rsp,8
-    
-    sub     rsp,8
-    call    inicializarUbiV
-    add     rsp,8
-%endmacro
-
-%macro actulizarIndicesMostrarUbiV 0
-    ;POST: actualiza los inidces y muetras (si es necesario) la ubicaciòn lateral (Sea letra numero o espacio)
-    sub                 rsp,8
-    call                actIndexMostrarUbiV
-    add                 rsp,8
-%endmacro
-
-%macro tripleEspacio 0
-    ;POST:muestra 3 espacios seguidos
-    cambiarSimbA    espacio
-    mostrarSimb
-    mostrarSimb
-    mostrarSimb
-%endmacro 
+    %macro mostrarSimb 0
+        ;muestra el simbolo apuntado en punteroSimb
+        mov     rdi,formato
+        mov     rsi,[punteroSimb]
+        mov     byte[rsi+1],0   ;agregando fin de strings
+        sub     rsp,8
+        call    printf
+        add     rsp,8
+    %endmacro
 
 
-%macro guardarEstadoJuego 0
-    ;POST: guardar todos los vectores recibidos por registros RDI y RSI
-    mov         qword[despl],0
-    mov         qword[fil],1
+    %macro  mostrarUbicaciones 0
+        ;POST: muestra la ubicacion horizontal e iniciliza la primer etiqueta vertical
+        sub     rsp,8
+        call    mostrarUbiHorizontal
+        add     rsp,8
+        
+        sub     rsp,8
+        call    inicializarUbiV
+        add     rsp,8
+    %endmacro
 
-    mov         [rotacionTablero],rdx
-    mov         [dirBaseVectorP],rdi
-    mov         qword[cantElemVectorP],36
-    mov         qword[dirDestinoVectorP],infoOcas
+    %macro actulizarIndicesMostrarUbiV 0
+        ;POST: actualiza los inidces y muetras (si es necesario) la ubicaciòn lateral (Sea letra numero o espacio)
+        sub                 rsp,8
+        call                actIndexMostrarUbiV
+        add                 rsp,8
+    %endmacro
 
-    sub         rsp,8
-    call        guardarVector
-    add         rsp,8
+    %macro tripleEspacio 0
+        ;POST:muestra 3 espacios seguidos
+        cambiarSimbA    espacio
+        mostrarSimb
+        mostrarSimb
+        mostrarSimb
+    %endmacro 
 
-    mov         [dirBaseVectorP],rsi
-    mov         qword[cantElemVectorP],3
-    mov         qword[dirDestinoVectorP],infoZorro
 
-    sub         rsp,8
-    call        guardarVector
-    add         rsp,8
-%endmacro
+    %macro guardarEstadoJuego 0
+        ;POST: guardar todos los vectores recibidos por registros RDI y RSI
+        mov         qword[despl],0
+        mov         qword[fil],1
 
-%macro rotarPoscionesPersonajes 0
-    ;rotando zorro
-    mov     r10,[posicionZorro]  ;fil
-    mov     r9,8
-    mov     r11,[posicionZorro+r9]  ;col
-    mov     r9,0
-    mov     qword[dirBaseVectorP],posicionZorro
+        mov         [rotacionTablero],rdx
+        mov         [dirBaseVectorP],rdi
+        mov         qword[cantElemVectorP],36
+        mov         qword[dirDestinoVectorP],infoOcas
 
-    sub     rsp,8
-    call    rotarPosicion
-    add     rsp,8
+        sub         rsp,8
+        call        guardarVector
+        add         rsp,8
 
-    ;rotando Ocas
-    mov     qword[dirBaseVectorP],posicionesOcas
-    mov     qword[desplazVectorP],0
+        mov         [dirBaseVectorP],rsi
+        mov         qword[cantElemVectorP],3
+        mov         qword[dirDestinoVectorP],infoZorro
 
-    sub     rsp,8
-    call    rotarPosicionesOcas
-    add     rsp,8
-%endmacro
+        sub         rsp,8
+        call        guardarVector
+        add         rsp,8
+    %endmacro
+
+    %macro rotarPoscionesPersonajes 0
+        ;rotando zorro
+        mov     r10,[posicionZorro]  ;fil
+        mov     r9,8
+        mov     r11,[posicionZorro+r9]  ;col
+        mov     r9,0
+        mov     qword[dirBaseVectorP],posicionZorro
+
+        sub     rsp,8
+        call    rotarPosicion
+        add     rsp,8
+
+        ;rotando Ocas
+        mov     qword[dirBaseVectorP],posicionesOcas
+        mov     qword[desplazVectorP],0
+
+        sub     rsp,8
+        call    rotarPosicionesOcas
+        add     rsp,8
+    %endmacro
 
 ;*****************************************************************************
-;MACROS PARA REALIZAR JUGADA
+;REALIZAR JUGADA
 ;*****************************************************************************
-
 ;PRE: recibe el tamaño a copiar, la dir del vector DE DONDE se copiarà, y dir del vector DONDE se copiarà 
 ;POST: copia la cantidad de elementos indicados del vector que se recibiò en el segundo vector recibido.Deja DesplazVector limpio (0)
-%macro copiarVector 3
-    mov         qword[cantElemVector],  %1
-    mov         qword[dirBaseVector],   %2
-    mov         qword[dirDestinoVector],%3
+    %macro copiarVector 3
+        mov         qword[cantElemVector],  %1
+        mov         qword[dirBaseVector],   %2
+        mov         qword[dirDestinoVector],%3
 
-    sub         rsp,8
-    call        guardarVector
-    add         rsp,8
-    mov         qword[desplazVector],   0
-%endmacro
+        sub         rsp,8
+        call        guardarVector
+        add         rsp,8
+        mov         qword[desplazVector],   0
+    %endmacro
 
-;PRE: versor inicializado con la direcciòn a la que se quiere dar un paso
-;POST: suma (1 paso) el versor a las coordenadas de origen (el resultado lo deja en coordenadas de origen)
-%macro sumarVersorACoordenadasOrigen 0
+    ;PRE: versor inicializado con la direcciòn a la que se quiere dar un paso
+    ;POST: suma (1 paso) el versor a las coordenadas de origen (el resultado lo deja en coordenadas de origen)
+    %macro sumarVersorACoordenadasOrigen 0
 
-    mov             r8,[filVersor]
-    add             [filOrigen],r8
-    mov             r8,[colVersor]
-    add             [colOrigen],r8
-%endmacro 
+        mov             r8,[filVersor]
+        add             [filOrigen],r8
+        mov             r8,[colVersor]
+        add             [colOrigen],r8
+    %endmacro 
 
-;PRE:
-;POST: Guarda los datos recibidos por registros en los respectivos rotulos (guarda punteros de los que se necesitan editar y copias de los que no)
-%macro  guardarDatos 0
-    mov     qword[esSalto],             0
-    mov     qword[haySgtMovida],        0
-    mov     qword[iteradorBuscarOca],   0
+    ;PRE:
+    ;POST: Guarda los datos recibidos por registros en los respectivos rotulos (guarda punteros de los que se necesitan editar y copias de los que no)
+    %macro  guardarDatos 0
+        mov     qword[esSalto],             0
+        mov     qword[haySgtMovida],        0
+        mov     qword[iteradorBuscarOca],   0
 
-    mov     [dirEstadoPartida],         r8
-    mov     [dirPosicionZorro],         rsi
-    mov     [dirCantidadOcasVivas],     rdi
-    mov     r10,                        [rdi]
-    mov     [cantidadOcasVivas],        r10
-    add     rdi,                        16  ;<-offset para dir posicionesOcas
-    mov     [dirPosicionesOcas],        rdi
+        mov     [dirEstadoPartida],         r8
+        mov     [dirPosicionZorro],         rsi
+        mov     [dirCantidadOcasVivas],     rdi
+        mov     r10,                        [rdi]
+        mov     [cantidadOcasVivas],        r10
+        add     rdi,                        16  ;<-offset para dir posicionesOcas
+        mov     [dirPosicionesOcas],        rdi
 
-    mov     [dirJugadorActual],         rcx
-    mov     r10,                        [rcx]
-    mov     [jugadorActual],            r10
-    ;guardando coordenadas
-    copiarVector                        4,rdx,infoCoordenadas
-%endmacro
+        mov     [dirJugadorActual],         rcx
+        mov     r10,                        [rcx]
+        mov     [jugadorActual],            r10
+        ;guardando coordenadas
+        copiarVector                        4,rdx,infoCoordenadas
+    %endmacro
 
-; PRE: Recibe el rotulo de la posicion que se quiere buscar. Ejem: buscarOcaPorCoordenadas coordenadasOrigen, esta no puede ser las coordenadas auxiliares 
-; POST:Deja en desplazVector el desplazamiento desde el inicio del vector
-%macro buscarOcaPorCoordenadas 1
-    mov                 rcx,[cantidadOcasVivas]
-    mov                 qword[desplazVector],0
-    copiarVector        2,%1,coordenadasAux
-    mov                 qword[iteradorBuscarOca],0
+    ; PRE: Recibe el rotulo de la posicion que se quiere buscar. Ejem: buscarOcaPorCoordenadas coordenadasOrigen, esta no puede ser las coordenadas auxiliares 
+    ; POST:Deja en desplazVector el desplazamiento desde el inicio del vector
+    %macro buscarOcaPorCoordenadas 1
+        mov                 rcx,[cantidadOcasVivas]
+        mov                 qword[desplazVector],0
+        copiarVector        2,%1,coordenadasAux
+        mov                 qword[iteradorBuscarOca],0
 
-    sub                 rsp,8
-    call                buscarOca
-    add                 rsp,8
-%endmacro
-
-
-;PRE:
-;POST: modifica la posiciòn de la oca con la misma posiciòn de origen a las coordenadas de destino 
-%macro modificarPosOca 0
-    mov                     qword[desplazVector],0
-    buscarOcaPorCoordenadas coordenadasOrigen
-    mov                     rax,[dirPosicionesOcas]
-    add                     rax,[desplazVector]
-    copiarVector            2,coordenadasDestino,rax
-%endmacro 
-
-;PRE:
-;POST: Cambia la coordenadas del del zorro a las coordenadas de destino (Ejecuta jugada)
-%macro modificarPosZorro 0
-    mov                     rax,[dirPosicionZorro]
-    copiarVector            2,coordenadasDestino,rax
-%endmacro
-
-;PRE:recibe las direcciones que se van a salvar
-;POST: las guarda en filAux y colAux (respectivamente)
-%macro salvarCoordenadas 2
-    mov     r8,[%1]
-    mov     [filAux],r8
-    mov     r8,[%2]
-    mov     [colAux],r8
-%endmacro
-
-;PRE: recibe las direcciones (fil,col) donde dejar las coordenadas guardadas auxiliarmente
-;POST: guardar en las direcciones recibidas las coordenadas guardadas
-%macro recuperarCoordenadas 2
-    mov     r8,[filAux]
-    mov     [%1],r8
-    mov     r8,[colAux]
-    mov     [%1],r8
-%endmacro
-
-;PRE:
-;POST: elimina a una oca del vector de posiciones (actualizando la cantidad de ocas vivas)
-%macro mMatarOca 0
-    sub     rsp,8
-    call    matarOca
-    add     rsp,8
-%endmacro
-
-;PRE:
-;POST: descuenta a una oca viva (por copia y por puntero)
-%macro excluirOca 0
-    dec                 qword[cantidadOcasVivas]
-    mov                 r11,[cantidadOcasVivas]
-    mov                 r10,[dirCantidadOcasVivas]
-    mov                 [r10],r11
-%endmacro 
-
-;PRE:
-;POST: setea el sentido de la jugada (direcciòn a la que se desea mover) y si es que es salto o no (1 si es salto 0 caso contrario)
-%macro definirSaltoYSentidoMovida 0
-    salvarCoordenadas           filDestino,colDestino
-    sub         rsp,8
-    call        analizarMovida
-    add         rsp,8
-    recuperarCoordenadas        filDestino,colDestino
-%endmacro 
-
-;PRE:
-;POST: si debe cambiar un caso fuera del tablero, lo hace. Si no, no 
-%macro corregirCasoFueraTablero 0
-    verificarPosEncruz              coordenadasOrigen
-    cmp                             rax,1                        
-    je                              %%finCorregir     
-    mov                             r10,[dirPosicionesOcas]
-    copiarVector                    2,r10,coordenadasOrigen
-    %%finCorregir:
-%endmacro
+        sub                 rsp,8
+        call                buscarOca
+        add                 rsp,8
+    %endmacro
 
 
-;PRE: versor inicializado con la direcciòn en la que se quiere buscar una posiciòn libre para el zorro,
-;coordenadas origen contiene la posiciòn desde la que se busca dar un paso (ya sea buscando desde la posicion del zorro o un paso en la misma dircciòn)
-;POST: deja las flags para que je salte si es que hay una posiciòn libre dado un paso en la direcciòn indicada por el versor desde la posicison indicada en coordenadas origen
-%macro calcularPosiblePosZorroEnUnSentido 0
-    sumarVersorACoordenadasOrigen
-    corregirCasoFueraTablero
-    buscarOcaPorCoordenadas         coordenadasOrigen
-    imul                            r8,qword[cantidadOcasVivas],16
-    cmp                             r8,[desplazVector]          ;si son iguales=>posiciòn libre 
-%endmacro
+    ;PRE:
+    ;POST: modifica la posiciòn de la oca con la misma posiciòn de origen a las coordenadas de destino 
+    %macro modificarPosOca 0
+        mov                     qword[desplazVector],0
+        buscarOcaPorCoordenadas coordenadasOrigen
+        mov                     rax,[dirPosicionesOcas]
+        add                     rax,[desplazVector]
+        copiarVector            2,coordenadasDestino,rax
+    %endmacro 
+
+    ;PRE:
+    ;POST: Cambia la coordenadas del del zorro a las coordenadas de destino (Ejecuta jugada)
+    %macro modificarPosZorro 0
+        mov                     rax,[dirPosicionZorro]
+        copiarVector            2,coordenadasDestino,rax
+    %endmacro
+
+    ;PRE:recibe las direcciones que se van a salvar
+    ;POST: las guarda en filAux y colAux (respectivamente)
+    %macro salvarCoordenadas 2
+        mov     r8,[%1]
+        mov     [filAux],r8
+        mov     r8,[%2]
+        mov     [colAux],r8
+    %endmacro
+
+    ;PRE: recibe las direcciones (fil,col) donde dejar las coordenadas guardadas auxiliarmente
+    ;POST: guardar en las direcciones recibidas las coordenadas guardadas
+    %macro recuperarCoordenadas 2
+        mov     r8,[filAux]
+        mov     [%1],r8
+        mov     r8,[colAux]
+        mov     [%1],r8
+    %endmacro
+
+    ;PRE:
+    ;POST: elimina a una oca del vector de posiciones (actualizando la cantidad de ocas vivas)
+    %macro mMatarOca 0
+        sub     rsp,8
+        call    matarOca
+        add     rsp,8
+    %endmacro
+
+    ;PRE:
+    ;POST: descuenta a una oca viva (por copia y por puntero)
+    %macro excluirOca 0
+        dec                 qword[cantidadOcasVivas]
+        mov                 r11,[cantidadOcasVivas]
+        mov                 r10,[dirCantidadOcasVivas]
+        mov                 [r10],r11
+    %endmacro 
+
+    ;PRE:
+    ;POST: setea el sentido de la jugada (direcciòn a la que se desea mover) y si es que es salto o no (1 si es salto 0 caso contrario)
+    %macro definirSaltoYSentidoMovida 0
+        salvarCoordenadas           filDestino,colDestino
+        sub         rsp,8
+        call        analizarMovida
+        add         rsp,8
+        recuperarCoordenadas        filDestino,colDestino
+    %endmacro 
+
+    ;PRE:
+    ;POST: si debe cambiar un caso fuera del tablero, lo hace. Si no, no 
+    %macro corregirCasoFueraTablero 0
+        verificarPosEncruz              coordenadasOrigen
+        cmp                             rax,1                        
+        je                              %%finCorregir     
+        mov                             r10,[dirPosicionesOcas]
+        copiarVector                    2,r10,coordenadasOrigen
+        %%finCorregir:
+    %endmacro
 
 
-;PRE: recibe solo coordenadas formadas con 1,0 o -1
-;POST: deja las flags para je salte si se encontrò una posiciòn libre en la direcciòn indicada (desde la posiciòn actual del zorro)
-%macro buscarPosLibreEndireccion 2
-    mov             qword[filVersor],%1
-    mov             qword[colVersor],%2
-    sub             rsp,8
-    call            zorroAcorraladoUnVersor
-    add             rsp,8
-    cmp             qword[haySgtMovida],1
-%endmacro
+    ;PRE: versor inicializado con la direcciòn en la que se quiere buscar una posiciòn libre para el zorro,
+    ;coordenadas origen contiene la posiciòn desde la que se busca dar un paso (ya sea buscando desde la posicion del zorro o un paso en la misma dircciòn)
+    ;POST: deja las flags para que je salte si es que hay una posiciòn libre dado un paso en la direcciòn indicada por el versor desde la posicison indicada en coordenadas origen
+    %macro calcularPosiblePosZorroEnUnSentido 0
+        sumarVersorACoordenadasOrigen
+        corregirCasoFueraTablero
+        buscarOcaPorCoordenadas         coordenadasOrigen
+        imul                            r8,qword[cantidadOcasVivas],16
+        cmp                             r8,[desplazVector]          ;si son iguales=>posiciòn libre 
+    %endmacro
 
-;PRE: recibe el còdigo del ganador: 1 ganò el zorro, 2 ganaron las ocas
-;POST: establece que la partida terminò (con el còdigo de quièn ganò recibido)
-%macro estadoTerminaPartida 1
-    mov     rdi,[dirEstadoPartida]
-    mov     qword[rdi],%1
-%endmacro
 
-;PRE:
-;POST: cambia el estado de la partida si detrmina que el zorro està acorralado
-%macro mZorroAcorralado? 0
-    sub         rsp,8
-    call        zorroAcorraladoTotalemente
-    add         rsp,8
-%endmacro
+    ;PRE: recibe solo coordenadas formadas con 1,0 o -1
+    ;POST: deja las flags para je salte si se encontrò una posiciòn libre en la direcciòn indicada (desde la posiciòn actual del zorro)
+    %macro buscarPosLibreEndireccion 2
+        mov             qword[filVersor],%1
+        mov             qword[colVersor],%2
+        sub             rsp,8
+        call            zorroAcorraladoUnVersor
+        add             rsp,8
+        cmp             qword[haySgtMovida],1
+    %endmacro
 
-;PRE:recibe la direccion de un vector de dos numeros de tamaño qword cada uno
-;POST: Verifica que las coordenadas nùmericas en el vector representen tuplas dentro del rango [1,7]x[1,7].
-;      Deja en el RAX: 0->si està FUERA, 1->si està DENTRO DE CUADRADO
-%macro coordenadasDentroCuadrado 1
+    ;PRE: recibe el còdigo del ganador: 1 ganò el zorro, 2 ganaron las ocas
+    ;POST: establece que la partida terminò (con el còdigo de quièn ganò recibido)
+    %macro estadoTerminaPartida 1
+        mov     rdi,[dirEstadoPartida]
+        mov     qword[rdi],%1
+    %endmacro
 
-    mov R10,%1
-    mov RAX,1
+    ;PRE:
+    ;POST: cambia el estado de la partida si detrmina que el zorro està acorralado
+    %macro mZorroAcorralado? 0
+        sub         rsp,8
+        call        zorroAcorraladoTotalemente
+        add         rsp,8
+    %endmacro
 
-    cmp qword[R10],     1
-    jl  %%fuera
+    %macro coordenadasDentroCuadrado 1
+    ;0->FUERA 1->DENTRO DE CUADRADO
+    ;recibe la direccion de un vector de dos numeros
+        mov R10,%1
+        mov RAX,1
 
-    mov R10,%1
-    cmp qword[R10+8],   1
-    jl %%fuera
+        cmp qword[R10],     1
+        jl  %%fuera
 
-    mov R10,%1
-    cmp qword[R10],     7
-    jg  %%fuera
+        mov R10,%1
+        cmp qword[R10+8],   1
+        jl %%fuera
 
-    mov R10,%1
-    cmp qword[R10+8],   7
-    jg %%fuera
+        mov R10,%1
+        cmp qword[R10],     7
+        jg  %%fuera
 
-    mov RAX,1
-    jmp %%fin
-%%fuera:
-    mov RAX,0
-%%fin:
-%endmacro
+        mov R10,%1
+        cmp qword[R10+8],   7
+        jg %%fuera
+
+        mov RAX,1
+        jmp %%fin
+    %%fuera:
+        mov RAX,0
+    %%fin:
+    %endmacro
+
+    ;pre: Recibe nun numero de fila sensible y la direccion de las coordenadas a validar
+    ;post: Deja en RAX un 1 si es que estaba en rango y un cero si no estaba en rango
+    %macro colProhididasPorFilaNum 2
+        mov     RAX,            1;inicia como si sì estuviese en la cruz
+
+        mov     R10,            %2;contiene la direccion de la tupla
+        cmp     qword[R10],     %1;contiene un numero de fila sensible
+        jne     %%fin
         
-;PRE: Recibe nun numero de fila sensible (en la que se tendria que tener cuidado con el valor de la columna) y la direccion de las coordenadas a validar
-;POST: Deja en RAX un 1 si es que estaba en rango y un cero si no estaba en rango
-%macro colProhididasPorFilaNum 2
-    mov     RAX,            1       ;-> inicia como si sì estuviese en la cruz
+        add     R10,            8;para tener la direccion de la columna
+        ;si es la fila sensible no puede ser ninguna de las siguientes columnas
+        cmp     qword[R10],     1
+        je      %%fueraCruz
 
-    mov     R10,            %2      ;-> contiene la direccion de la tupla
-    cmp     qword[R10],     %1      ;-> contiene un numero de fila sensible
-    jne     %%fin                   ;-> si la coordenada no tenia de fila esta fila sensible entonces las columnas no representarìan un problema sea cual sea su valor
-    
-    ;si es que coincidiò la fila de la coordenada recibida con la fila sensible indicada entonces se debe validar la columna de la coordenada
-    add     R10,            8       ;-> desplazamiento para tener la direccion de la columna
-    
-    ;la columna no puede valer 1,2,6,7. Se verifica que no sea ninguna:
-    cmp     qword[R10],     1
-    je      %%fueraCruz
+        cmp     qword[R10],     2 
+        je      %%fueraCruz
 
-    cmp     qword[R10],     2 
-    je      %%fueraCruz
+        cmp     qword[R10],     6
+        je      %%fueraCruz
 
-    cmp     qword[R10],     6
-    je      %%fueraCruz
+        cmp     qword[R10],     7 
+        je      %%fueraCruz
+        
+        mov     RAX,1
+        jmp     %%fin
+    %%fueraCruz:
+        mov RAX,0
 
-    cmp     qword[R10],     7 
-    je      %%fueraCruz
-    
-    mov     RAX,1
-    jmp     %%fin
-%%fueraCruz:
-    mov RAX,0
+    %%fin:
+    ;0->FUERA CRUZ, 1->DENTRO
+    %endmacro
+    ;Pre: Recibe la direccion donde inicia la tupla con las coordenadas x e Y
+    ;Post:si la coordenada de origen esta en la cruz deja 1 en el rax si no està deja 0
+    %macro verificarPosEncruz 1
+        coordenadasDentroCuadrado %1
+        cmp RAX, 0
+        je %%fuera
 
-%%fin:
-;0->FUERA CRUZ, 1->DENTRO
-%endmacro
+        colProhididasPorFilaNum 1,%1
+        cmp RAX,0
+        je %%fuera
 
-;PRE: Recibe la direccion donde inicia la tupla con las coordenadas x e Y (numeros de tamaño qword)
-;POST:si la coordenada de origen esta en la cruz deja 1 en el rax si no està deja 0
-%macro verificarPosEncruz 1
-    coordenadasDentroCuadrado %1            ;-> valida que las coordenadas (X e Y) esten dentro de rango [1,7]
-    cmp RAX, 0
-    je %%fuera
+        colProhididasPorFilaNum 2,%1
+        cmp RAX,0
+        je %%fuera
 
-    ;para cada valor posible de filas "sensibles"(en la que la columna n puede valer cualquier numero entre 1 y 7) :1,2,6,7
-    ;se valida que la coordenada no estè fuera de la cruz
-    colProhididasPorFilaNum 1,%1
-    cmp RAX,0
-    je %%fuera
+        colProhididasPorFilaNum 6,%1
+        cmp RAX,0
+        je %%fuera
 
-    colProhididasPorFilaNum 2,%1
-    cmp RAX,0
-    je %%fuera
+        colProhididasPorFilaNum 7,%1
+        cmp RAX,0
+        je %%fuera
 
-    colProhididasPorFilaNum 6,%1
-    cmp RAX,0
-    je %%fuera
-
-    colProhididasPorFilaNum 7,%1
-    cmp RAX,0
-    je %%fuera
-
-    mov RAX,1
-    jmp %%fin
-%%fuera:
-    mov RAX,0
-%%fin:
-    ;si RAX contiene: 1->Dentro CRUZ, 0->FUERA CRUZ
-%endmacro
+        mov RAX,1
+        jmp %%fin
+    %%fuera:
+        mov RAX,0
+    %%fin:
+    ;1->Dentro CRUZ, 0->FUERA CRUZ
+    %endmacro
 
     %macro mGuardarSentidoMovida 0
         sub     rsp,8
