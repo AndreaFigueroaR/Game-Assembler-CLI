@@ -267,22 +267,25 @@ section     .bss
 
 %macro guardarEstadoJuego 0
     ;POST: guardar todos los vectores recibidos por registros RDI y RSI
-    mov     [rotacionTablero],      RDX
-    mov     [dirBaseVector],        RDI
-    mov     qword[cantElemVector],  36
-    mov     qword[dirDestinoVector],infoOcas
+    mov         qword[despl],		0
+    mov         qword[fil],		1
 
-    sub     RSP,    8
-    call    guardarVector
-    add     RSP,    8
+    mov         [rotacionTablero],	rdx
+    mov         [dirBaseVectorP],	rdi
+    mov         qword[cantElemVectorP],	36
+    mov         qword[dirDestinoVectorP],infoOcas
 
-    mov     [dirBaseVector],        RSI
-    mov     qword[cantElemVector],  3
-    mov     qword[dirDestinoVector],infoZorro
+    sub         rsp,8
+    call        guardarVector
+    add         rsp,8
 
-    sub     RSP,    8
-    call    guardarVector
-    add     RSP,    8
+    mov         [dirBaseVectorP],	rsi
+    mov         qword[cantElemVectorP],	3
+    mov         qword[dirDestinoVectorP],infoZorro
+
+    sub         rsp,8
+    call        guardarVector
+    add         rsp,8
 %endmacro
 
 %macro rotarPoscionesPersonajes 0
