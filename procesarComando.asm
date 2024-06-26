@@ -62,60 +62,60 @@ pedirInput:
     pedirMovimiento
 
 validarInterrupcion:
-    compararInput                   comandoInterrupcion
-    cmp     EAX,                    0
-    jne     validarGuardarPartida
-    mov     RAX,                    [dirEstadoPartida]
+    compararInput                   comandoInterrupcion     ;->¿Se esta indicando que se quiere interrumpir la partida?
+    cmp     EAX,                    0 
+    jne     validarGuardarPartida                           ;-> si no se prosigue a comparar si se està tratando de unicamente guardar la partida
+    mov     RAX,                    [dirEstadoPartida]      ;-> si sì se cambia el estado de la partida 3->partida interrumpida 
     mov     qword[RAX],             3
-    apruebaValidacionTotal 
+    apruebaValidacionTotal                                  ;->se cambia inputValido a 'S' y se pasa al fin de la validacion
 
 validarGuardarPartida:
-    compararInput                   comandoGuardar
+    compararInput                   comandoGuardar          ;->¿Se esta indicando que se quiere guardar la partida?
     cmp     EAX,                    0
-    jne     validarFormatoMovimiento
-    ;llamada a guardar estadisticas 
-    mGuardarPartida     [dirInfoOcas],  [dirInfoZorro], jugadorActual, [dirRotacion], [dirEstadoPartida], [dirEstadisticas]
+    jne     validarFormatoMovimiento                        ;-> si no se prosigue a validar si es algun movimiento valido del jugador actual
+                                                            ;-> si sì se guarda la partida y se vuelve a pedir alguna accion a realizar  
+    mGuardarPartida     [dirInfoOcas],  [dirInfoZorro], jugadorActual, [dirRotacion], [dirEstadoPartida], [dirEstadisticas]  
     jmp     pedirInput
 
 validarFormatoMovimiento:
-    cmp     qword[jugadorActual],   0
+    cmp     qword[jugadorActual],   0                       ;-> segun el jugador actual se valida el formato del input (que deberia ser un movimiento de tipo '4E' )
     je      movimientoZorro
 
 movimientoOca:
-    setParametrosScanOrigenYDestino
-    mSscanf
-    cmp     EAX,                4
+    setParametrosScanOrigenYDestino                         ;-> guardo en los registros las direcciones del formato de un movimiento de una oca, direccion donde dejar las coordenadas X e Y de origen y las de las coordenadas X e Y de destino
+    mSscanf                                                 ;-> se transforman las coordenadas numericas a un numeros y las alfabeticas se dejan contiguas en memoria  
+    cmp     EAX,                4                           ;-> valido la cantidad de conversiones exitosas (2 valores numericos y dos chares)
     jne     finValidacion
-    chequearPosEnCruz           [dirPosicionOrigen]
-    chequearPosEnCruz           [dirPosicionDestino]
-    jmp     validacionLogicaMovOca
+    chequearPosEnCruz           [dirPosicionOrigen]         ;-> valido que la coordenada de origen estè dentro de la cruz 
+    chequearPosEnCruz           [dirPosicionDestino]        ;-> valido que la coordenada de destino estè dentro de la cruz 
+    jmp     validacionLogicaMovOca                          ;-> termino con la validacion fisica del input y continuo para ver si es un movimiento valido
 
 movimientoZorro:
-    setParametrosScanDestino
-    mSscanf
-    cmp     EAX,                2
+    setParametrosScanDestino                                ;-> guardo en los registros las direcciones del formato de un movimiento de un zorro y las direcciones donde dejar las coordenadas X e Y de destino
+    mSscanf                                                 ;-> se transforman las coordenadas numericas a un numeros y las alfabeticas se dejan contiguas en memoria 
+    cmp     EAX,                2                           ;-> valido la cantidad de conversiones exitosas (1 valor numerico y 1 char)
     jne     finValidacion
     chequearPosEnCruz           [dirPosicionDestino]
     jmp     validacionLogicaMovZorro
 
 validacionLogicaMovOca:
-    traducirLetra               [dirPosicionOrigen]
+    traducirLetra               [dirPosicionOrigen]         ;-> piso chares con valor numerico correspondiente
     traducirLetra               [dirPosicionDestino]
-    guardarDatosOrigenYDestino
+    guardarDatosOrigenYDestino                              ;-> guardo una copia local de los numeros de las coordenadas (para facilitar los calculos)
 
-    unaOcaEnOrigen
-    sinOcasEnDestino
-    sinZorroEnDestino
-    movimientoAdelanteOCostado    
+    unaOcaEnOrigen                                          ;-> valido que exista una oca en la posicion de origen indicada
+    sinOcasEnDestino                                        ;-> valido que no haya ya una oca ocupando la posicion de destino
+    sinZorroEnDestino                                       ;-> valido que el zorro no estè en la posicion de destino
+    movimientoAdelanteOCostado                              ;-> valido que el movimiento represente solo moverse adelante, a la izquierda o a la derecha (pasos simples)
 
 validacionLogicaMovZorro:
-    traducirLetra               [dirPosicionDestino]
-    actualizarPunteroOrigen
-    guardarDatosOrigenYDestino
+    traducirLetra               [dirPosicionDestino]        ;-> piso chare de la coordenada de destino con valor numerico correspondiente
+    actualizarPunteroOrigen                                 ;-> actualizo el puntero de la coordenada de origen con la ultima posicion del zorro
+    guardarDatosOrigenYDestino                              ;-> guardo una copia local de los numeros de las coordenadas (para facilitar los calculos)
     
-    sinOcasEnDestino
-    sinZorroEnDestino
-    movimientoSimpleOSalto    
+    sinOcasEnDestino                                        ;-> valido que no haya una oca ocupando la posicion de destino
+    sinZorroEnDestino                                       ;-> el zorro no puede quedarse quieto
+    movimientoSimpleOSalto                                  ;-> valido que sea un paso simple o que sea un salto con una oca en medio
 
 
 finValidacion:
