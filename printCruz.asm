@@ -4,17 +4,24 @@ global imprimirTablero
 extern printf
 extern puts
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                             INICIALIZACIÓN DATOS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 section     .data
-    ;movimientos en la matriz
+;   movimientos en la matriz
     despl           dq  0
     fil             dq  1
     col             dq  1
-    ;impresiòn del tablero
+
+;   impresiòn del tablero
     formato             db  "%s",0
     pared               dw  "#"
     salto               dw  10
     espacio             dw  " "
-
+    
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                             RESERVA DE MEMORIA
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 section     .bss   
     seguridad                   resb    50
     infoOcas                    times 0 resb            
