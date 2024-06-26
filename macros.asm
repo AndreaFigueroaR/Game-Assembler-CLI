@@ -641,36 +641,42 @@ section     .bss
     mov         qword[dirBaseVector],   %2
     mov         qword[dirDestinoVector],%3
 
-    sub         RSP,8
+    sub         rsp,8
     call        guardarVector
-    add         RSP,8
+    add         rsp,8
+    mov         qword[desplazVector],   0
 %endmacro
 
 ;PRE: versor inicializado con la direcciòn a la que se quiere dar un paso
 ;POST: suma (1 paso) el versor a las coordenadas de origen (el resultado lo deja en coordenadas de origen)
 %macro sumarVersorACoordenadasOrigen 0
-    mov             R8,[filVersor]
-    add             [filOrigen],R8
-    mov             R8,[colVersor]
-    add             [colVersor],R8
+
+    mov             r8,[filVersor]
+    add             [filOrigen],r8
+    mov             r8,[colVersor]
+    add             [colOrigen],r8
 %endmacro 
 
 ;PRE:
 ;POST: Guarda los datos recibidos por registros en los respectivos rotulos (guarda punteros de los que se necesitan editar y copias de los que no)
 %macro  guardarDatos 0
-    mov     [dirEstadoPartida],     R8
-    mov     [dirPosicionZorro],     RSI
-    mov     [dirCantidadOcasVivas], rdi
-    mov     R10,                    [rdi]
-    mov     [cantidadOcasVivas],    R10
-    add     rdi,                    16  ;<-offset para dir posicionesOcas
-    mov     [dirPosicionesOcas],    rdi
+    mov     qword[esSalto],             0
+    mov     qword[haySgtMovida],        0
+    mov     qword[iteradorBuscarOca],   0
 
-    mov     [dirJugadorActual],     rcx
-    mov     R10,                     [rcx]
-    mov     [jugadorActual],       R10
+    mov     [dirEstadoPartida],         r8
+    mov     [dirPosicionZorro],         rsi
+    mov     [dirCantidadOcasVivas],     rdi
+    mov     r10,                        [rdi]
+    mov     [cantidadOcasVivas],        r10
+    add     rdi,                        16  ;<-offset para dir posicionesOcas
+    mov     [dirPosicionesOcas],        rdi
+
+    mov     [dirJugadorActual],         rcx
+    mov     r10,                        [rcx]
+    mov     [jugadorActual],            r10
     ;guardando coordenadas
-    copiarVector                    4,rdx,infoCoordenadas
+    copiarVector                        4,rdx,infoCoordenadas
 %endmacro
 
 ; PRE: Recibe el rotulo de la posicion que se quiere buscar. Ejem: buscarOcaPorCoordenadas coordenadasOrigen, esta no puede ser las coordenadas auxiliares 
