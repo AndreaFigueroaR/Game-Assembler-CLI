@@ -45,7 +45,7 @@ extern puts
 
 section     .data
     nombreArchivo               db                  "partida.txt",0
-    modoApertura                db                  "w+",0
+    modoApertura                db                  "w",0
     msgErrorGuardarPartida      db                  "Hubo un error al intentar guardar la partida.",0
     formatoNumAStr              db                  "%d",10,0
     formatoNumAStrCaracter      db                  "%d ",0
