@@ -800,21 +800,31 @@ section     .bss
 %endmacro
 
 %macro coordenadasDentroCuadrado 1
+;0->FUERA 1->DENTRO DE CUADRADO
+;recibe la direccion de un vector de dos numeros
     mov R10,%1
-    cmp qword[R10],     1
-    jl  %%fueraCoordenadasDentroCuadrado
-
-    cmp qword[R10+8],   1
-    jl %%fueraCoordenadasDentroCuadrado
-    
-    cmp qword[R10],     7
-    jg  %%fueraCoordenadasDentroCuadrado
-
-    cmp qword[R10+8],   7
-    jg %%fueraCoordenadasDentroCuadrado
     mov RAX,1
-%%fueraCoordenadasDentroCuadrado:
+
+    cmp qword[R10],     1
+    jl  %%fuera
+
+    mov R10,%1
+    cmp qword[R10+8],   1
+    jl %%fuera
+
+    mov R10,%1
+    cmp qword[R10],     7
+    jg  %%fuera
+
+    mov R10,%1
+    cmp qword[R10+8],   7
+    jg %%fuera
+
+    mov RAX,1
+    jmp %%fin
+%%fuera:
     mov RAX,0
+%%fin:
 %endmacro
 
 ;pre: Recibe nun numero de fila sensible y la direccion de las coordenadas a validar
@@ -827,20 +837,26 @@ section     .bss
     jne     %%fin
     
     add     R10,            8;para tener la direccion de la columna
-
+    ;si es la fila sensible no puede ser ninguna de las siguientes columnas
     cmp     qword[R10],     1
     je      %%fueraCruz
+
     cmp     qword[R10],     2 
     je      %%fueraCruz
+
     cmp     qword[R10],     6
     je      %%fueraCruz
+
     cmp     qword[R10],     7 
     je      %%fueraCruz
     
+    mov     RAX,1
+    jmp     %%fin
 %%fueraCruz:
     mov RAX,0
 
 %%fin:
+;0->FUERA CRUZ, 1->DENTRO
 %endmacro
 ;Pre: Recibe la direccion donde inicia la tupla con las coordenadas x e Y
 ;Post:si la coordenada de origen esta en la cruz deja 1 en el rax si no està deja 0
@@ -852,12 +868,15 @@ section     .bss
     colProhididasPorFilaNum 1,%1
     cmp RAX,0
     je %%fuera
+
     colProhididasPorFilaNum 2,%1
     cmp RAX,0
     je %%fuera
+
     colProhididasPorFilaNum 6,%1
     cmp RAX,0
     je %%fuera
+
     colProhididasPorFilaNum 7,%1
     cmp RAX,0
     je %%fuera
@@ -867,6 +886,13 @@ section     .bss
 %%fuera:
     mov RAX,0
 %%fin:
+;1->Dentro CRUZ, 0->FUERA CRUZ
+%endmacro
+
+%macro mGuardarSentidoMovida 0
+    sub     rsp,8
+    call    guardarSentidoMovida
+    add     rsp,8
 %endmacro
 
 ;******************************************************************************************************************
