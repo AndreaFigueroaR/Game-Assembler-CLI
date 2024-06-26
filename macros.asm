@@ -2,10 +2,10 @@ extern puts
 section     .data
     comandos                    db              "**************COMANDOS********************************************",10,"MOVIMIENTO",10,"  -Para especificar un movimiento indique (independientemente de la rotacion",10,"   elegida) primero la coordenada numèrica seguida de la alfabetica",10,"  -Movimiento de las ocas debe indicar origen->destino",10,"  -Movimiento del zorro solo indica destino",10,"INTERRUPCION",10,"  -Para interrumpir la partida indique (independientemente del jugador ",10,"   actual) : --interrumpir partida",10,"GUARDAR PARTIDA",10,"  -Para guardar el estado actual de la partida (sin interrumpir el juego ",10,"   actual) : --guardar partida",10,"******************************************************************",0
     sinOcaEnOrigen              db              "ERROR: No se encontrò una oca en la posicion de origen indicada.",10,0
-    hayOcaEnDestino             db              "ERROR: Ya hay una oca en la posicion indicada",10,0
-    hayZorroEnDestino           db              "ERROR: El zorro ya se encuentra ocupando la posicion de destino indicada",10,0
+    hayOcaEnDestino             db              "ERROR: Ya hay una oca en la posicion indicada.",10,0
+    hayZorroEnDestino           db              "ERROR: El zorro ya se encuentra ocupando la posicion de destino indicada.",10,0
+    OcaNoRetrocedeNiSalta       db              "ERROR: Las ocas no pueden retroceder ni dar saltos: avanzan y se mueven a los costados de uno en uno.",10,0
     cmd_clear                   db              "clear",0
-
 ;#############################################################################
 ;   Impresión del mensaje de fin del juego
     msgGanoZorro                db              "PARTIDA TERMINADA: El zorro es el ganador!",0
