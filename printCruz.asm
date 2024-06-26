@@ -238,9 +238,7 @@ coincidirZorro:
 ;__________________________________________________________
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 coincidirOcas:
-    mov                 qword[desplazVectorP],0
-starLoopCoincidirOcas:
-    ;PRE: rcx inicializado con la cantidad de ocas vivas. DesplazVectorP inicializado en 0
+    ;PRE: rcx inicializado con la cantidad de ocas vivas. DesplazaVectorP inicializado en 0
     ;POST: si la posicion actual es la de alguna OCA, cambia el simbolo
     mov                 rax,[desplazVectorP]
     mov                 r9,[posicionesOcas+rax]
@@ -255,7 +253,7 @@ starLoopCoincidirOcas:
     jmp                 finCoincidirOcas        ;hay coincidencia
     siguienteOca:
     add                 qword[desplazVectorP],16 ;analiza de a pares
-    loop    starLoopCoincidirOcas
+    loop    coincidirOcas   
     finCoincidirOcas:
     ret
 ;__________________________________________________________
