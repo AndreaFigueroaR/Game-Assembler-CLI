@@ -1,52 +1,54 @@
 %include "macros.asm"
 
-global procesarComando
-
 extern sscanf
 extern puts
 extern printf
 extern gets
 extern strcmp
+
 extern guardarPartida
+
+global procesarComando
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                             INICIALIZACIÓN DATOS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 section     .data
     ;mensajes salida
-    mensajePedirMovOca          db "* MOVIMIENTO DE LA OCA: ",0
-    mensajePedirMovZorro        db "* MOVIMIENTO DEL ZORRO: ",0
-    mensajeInputInvalido        db "Error en la instrucción recibida, por favor indique una accción válida.",0
+    mensajePedirMovOca              db "*****************************************************************",10,"* MOVIMIENTO DE LA OCA (origen->destino): ",0
+    mensajePedirMovZorro            db "*****************************************************************",10,"* MOVIMIENTO DEL ZORRO (destino): ",0
+    mensajeInputInvalido            db "Error en la instrucción recibida, por favor indique una accción válida.",0
     ;formato entrada
-    formatoMovimientoOca        db "%li%c->%li%c",0
-    formatoMovimientoZorro      db "%li%c",0
-    comandoInterrupcion         db "--interrumpir partida", 0
-    comandoGuardar              db "--guardar partida",     0
-    ;variables auxiliares
-    inputValido                 db 'N'
+    formatoMovimientoOca            db "%li%c->%li%c",0
+    formatoMovimientoZorro          db "%li%c",0
+    comandoInterrupcion             db "--interrumpir partida", 0
+    comandoGuardar                  db "--guardar partida",     0
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                             RESERVA DE MEMORIA
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 section     .bss
     ;DATOS POR VALOR
-    jugadorActual               resq    1 
-    coordenadasOrigen           times   0   resb
-        x_origen                            resq 1
-        y_origen                            resq 1
-    coordenadasDestino          times   0   resb     
-        x_destino                           resq 1
-        y_destino                           resq 1
-    n_ocas                      resq    1
-    input                       resb    50
+    jugadorActual                   resq    1 
+    coordenadasOrige    times   0   resb
+        x_origen                    resq    1
+        y_origen                    resq    1
+    coordenadasDestino  times   0   resb     
+        x_destino                   resq    1
+        y_destino                   resq    1
+    n_ocas                          resq    1
+    input                           resb    100
+    inputValido                     resb    'N'
 
     ;DATOS POR REFERENCIA
-    dirPosicionOrigen           resq    1
-    dirPosicionDestino          resq    1
-    dirEstadoPartida            resq    1 
-    dirInfoZorro                resq    1
-    dirInfoOcas                 resq    1              
-    dirEstadisticas             resq    1
-    dirRotacion                 resq    1
+    dirPosicionOrigen               resq    1
+    dirPosicionDestino              resq    1
+    dirEstadoPartida                resq    1 
+    dirInfoZorro                    resq    1
+    dirInfoOcas                     resq    1              
+    dirEstadisticas                 resq    1
+    dirRotacion                     resq    1
      
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                             CÓDIGO FUENTE
