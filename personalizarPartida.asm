@@ -7,7 +7,6 @@ extern gets
 extern customizar
 
 section     .data
-    inicio		db	"Personalizar",0
     CMNV		db	"Comando no valido",0
     msg		db	"Desea personalizar esta partida? (S/N) ",0
 
