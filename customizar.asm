@@ -44,8 +44,6 @@ SolicitarParaZorro:
     mov     rdi,SimboloZorro
     mGets 
 	mov     al, [SimboloZorro]
-
-    mov     esi,SimboloZorro
 	call    validarChar
 
 ChequeoZorro:
@@ -60,7 +58,7 @@ SolicitarParaOca:
     mov     rdi, SimboloOca
     mGets
 	
-    mov     rsi,SimboloOca
+    mov     al,[SimboloOca]
     call	    validarChar
 
     cmp     rdi, '2'
@@ -104,8 +102,6 @@ control:
 
 validarChar:
 
-	mov		al,[rsi] ; la esi apunta a la direccion donde se almacena el simbolo a chequear
-
 	cmp 	al, 'A'
 	jl 	    charInvalido
 	
@@ -138,9 +134,6 @@ finValidarChar:
 ; 3 -> la concentraicon de ocas se encuentra en el cuadrante izquierdo
 
 validarOrientacion:
-
-	;mov		rax,[rsi] ; la esi apunta a la direccion de memoria donde se encuentra el simbolo a validar
-
 	cmp 	rax,0
 	je 	    orientacionValida
 	
