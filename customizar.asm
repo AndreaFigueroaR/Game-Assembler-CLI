@@ -103,10 +103,9 @@ control:
 ; caracteres alfabetico
 
 validarChar:
-; linea innecesaria antes de llamar a la subrutina interna muevo al 'al' el simbolo
+
 	mov		al,[rsi] ; la esi apunta a la direccion donde se almacena el simbolo a chequear
 
-; a charlar que caracteres ASCII tomamos como validos
 	cmp 	al, 'A'
 	jl 	    charInvalido
 	
@@ -139,7 +138,7 @@ finValidarChar:
 ; 3 -> la concentraicon de ocas se encuentra en el cuadrante izquierdo
 
 validarOrientacion:
-	;linea innecesaria ya muevo antes de llamar a la subrutina interna
+
 	;mov		rax,[rsi] ; la esi apunta a la direccion de memoria donde se encuentra el simbolo a validar
 
 	cmp 	rax,0
