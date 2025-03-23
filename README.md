@@ -3,7 +3,7 @@
 | Nombre   | Apellido  | Correo FIUBA         | Usuario de Github                                 |
 |----------|-----------|----------------------|--------------------------------------------------|
 | Candela  | Matelica  | cmatelica@fi.uba.ar | [candematelica](https://github.com/candematelica)|
-| Josué    | Martel    | nmartel@fi.uba.ar   | [josValentin-fiuba](https://github.com/josValentin-fiuba) |
+| Jesabel    | Pugliese    | jpugliese@fi.uba.ar   | [jesapugliese](https://github.com/jesapugliese) |
 | Leticia  | Figueroa  | lfigueroar@fi.uba.ar| [leticiafrR](https://github.com/leticiafrR)      |
 | Andrea   | Figueroa  | afigueroa@fi.uba.ar | [AndreaFigueroaR](https://github.com/AndreaFigueroaR)    
 ## Instrucciones de ejecución
