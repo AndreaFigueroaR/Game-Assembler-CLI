@@ -1,9 +1,9 @@
-# Trabajo Práctico Organización del Computador
-## Integrantes
-  - Andrea Figueroa: 110450
-  - Leticia Figueroa: 110510
-  - Candela Matelica: 110641
-  - Jesabel Pugliese: 110860
+# Trabajo Práctico Juego por Linea de comando desarrollado en assembler (x86)
+## Colaboradores
+  - Andrea Figueroa
+  - Leticia Figueroa
+  - Candela Matelica
+  - Jesabel Pugliese
 ## Instrucciones de ejecución
 Estando en la ubicación donde se encuentren los archivos, correr el siguiente comando en la terminal: <br>
 ```sh run.sh```
