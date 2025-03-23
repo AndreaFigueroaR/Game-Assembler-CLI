@@ -1,4 +1,4 @@
-# Trabajo Práctico Juego por Linea de comando desarrollado en assembler (x86)
+# Proyecto Zorro vs Ocas- versión por Linea de comando- desarrollado en assembler (x86)
 ## Colaboradores
   - Andrea Figueroa
   - Leticia Figueroa
