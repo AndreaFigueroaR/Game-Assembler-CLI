@@ -1,9 +1,11 @@
 # Proyecto Zorro vs Ocas- versión por Linea de comando- desarrollado en assembler (x86)
-## Colaboradores
-  - Andrea Figueroa
-  - Leticia Figueroa
-  - Candela Matelica
-  - Jesabel Pugliese
+## Desarrolladores
+| Nombre   | Apellido  | Correo FIUBA         | Usuario de Github                                 |
+|----------|-----------|----------------------|--------------------------------------------------|
+| Candela  | Matelica  | cmatelica@fi.uba.ar | [candematelica](https://github.com/candematelica)|
+| Josué    | Martel    | nmartel@fi.uba.ar   | [josValentin-fiuba](https://github.com/josValentin-fiuba) |
+| Leticia  | Figueroa  | lfigueroar@fi.uba.ar| [leticiafrR](https://github.com/leticiafrR)      |
+| Andrea   | Figueroa  | afigueroa@fi.uba.ar | [AndreaFigueroaR](https://github.com/AndreaFigueroaR)    
 ## Instrucciones de ejecución
 Estando en la ubicación donde se encuentren los archivos, correr el siguiente comando en la terminal: <br>
 ```sh run.sh```
