@@ -7,17 +7,16 @@ El objetivo del juego es capturar o ser capturado dependiendo del rol que juegue
 
 
 ### Roles:
-Un jugador controla al **Zorro**. <br>
-El otro jugador controla las **Ocas**. <br>
+- Un jugador controla al **Zorro**. <br>
+- El otro jugador controla las **Ocas**. <br>
 
 ### Objetivos:
 
 **Zorro**: 
-- capturar 12 ocas 
+Capturar 12 ocas 
 
 **Ocas**:
-- acorralar al Zorro de tal manera que no pueda moverse, o que
-- 6 ocas llegan a la parte inferior del tablero
+Acorralar al Zorro de tal manera que no pueda moverse, o que 6 ocas llegan a la parte inferior del tablero
 
 ### Movimientos:
 
