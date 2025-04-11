@@ -4,6 +4,7 @@
 
 El juego del Zorro y las Ocas se desarrolla en un tablero de 7x7 casillas, con un total de 33 casillas utilizables contando con 1 ficha correspondiente al zorro y 17 fichas que representan a las ocas. 
 El objetivo del juego es capturar o ser capturado dependiendo del rol que juegue cada jugador. <br>
+![Logo del proyecto](assets/zorro_y_oca.png)
 
 
 ### Roles:
