@@ -35,7 +35,9 @@ El otro jugador controla las **Ocas**. <br>
 El juego termina automáticamente cuando:
 - El Zorro captura 12 ocas.
 - El Zorro no puede realizar ningún movimiento válido porque quedo acorralado o 6 ocas llegaron a la parte mas inferior del tablero.
-
+***
+**También podrás encontrar instrucciones al iniciar la partida**
+***
 ## Desarrolladores
 | Nombre   | Apellido  | Correo FIUBA         | Usuario de Github                                 |
 |----------|-----------|----------------------|--------------------------------------------------|
@@ -46,5 +48,3 @@ El juego termina automáticamente cuando:
 ## Instrucciones de ejecución
 Estando en la ubicación donde se encuentren los archivos, correr el siguiente comando en la terminal: <br>
 ```sh run.sh```
-## Instrucciones de Juego
-Cada partida se juega de a 2 jugadores: las ocas y el zorro.<br> Se detalla el modo de juego la inicio de cada ejecución. 
